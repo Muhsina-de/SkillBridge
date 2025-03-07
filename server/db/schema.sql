@@ -1,0 +1,5 @@
+-- DROP DATABASE
+DROP DATABASE IF EXISTS skillbridge_db;
+
+-- CREATE DATABASE
+CREATE DATABASE skillbridge_db;
