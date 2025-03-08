@@ -1,21 +1,21 @@
-import dotenv from 'dotenv';
-dotenv.config();
-
 import { Sequelize } from 'sequelize';
+import { config } from 'dotenv';
 
-const sequelize = process.env.DB_URL
-  ? new Sequelize(process.env.DB_URL)
-  : new Sequelize(
-      process.env.DB_NAME || '',
-      process.env.DB_USER || '',
-      process.env.DB_PASSWORD,
-      {
-        host: 'localhost',
-        dialect: 'postgres',
-        dialectOptions: {
-          decimalNumbers: true,
-        },
-      }
-    );
+// Load environment variables
+config();
+
+const sequelize = new Sequelize(
+  process.env.DB_NAME || 'skillbridge_db',
+  process.env.DB_USER || 'postgres',
+  process.env.DB_PASSWORD || 'password123',
+  {
+    host: process.env.DB_HOST || 'localhost',
+    dialect: 'postgres',
+    dialectOptions: {
+      decimalNumbers: true,
+    },
+    logging: false // Disable logging in production
+  }
+);
 
 export default sequelize;
