@@ -1,5 +1,6 @@
 import {DataTypes, Sequelize, Model, Optional} from 'sequelize';    
 import { User } from './userprofile.js';
+import sequelize from '../config/connection'
 interface SessionAttributes {
     id: number;
     menteeId: number;
@@ -32,7 +33,6 @@ export class Session extends Model<SessionAttributes, SessionCreationAttributes>
 export function SessionFactory(sequelize: Sequelize): typeof Session {
 Session.init(
     {
-
         id: {
             type: DataTypes.INTEGER,
             autoIncrement: true,
@@ -58,22 +58,17 @@ Session.init(
             type: DataTypes.TIME,
             allowNull: false,
         },
-        skill: 
-        {
+        skill: {
             type: DataTypes.STRING,
             allowNull: false,
         },
-
-        price: 
-        {
+        price: {
             type: DataTypes.INTEGER,
             allowNull: false,
         },
-
-        sessionNotes:{
+        sessionNotes: {
             type: DataTypes.TEXT,
         },
-
         duration: {
             type: DataTypes.INTEGER,
             allowNull: false,
@@ -84,6 +79,8 @@ Session.init(
     },
     {
         timestamps: false,
+        tableName: 'sessions',
+        sequelize
     });
 
     return Session;

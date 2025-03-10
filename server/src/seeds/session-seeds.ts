@@ -1,54 +1,42 @@
-import { Session } from "../models/session.js";
+import { Session } from "../models/session";
 
-export const seedSessions = async () => {   
+export const seedSessions = async () => {
     await Session.bulkCreate([
         {
-            menteeId: 1,
-            mentorId: 2,
-            status: 'pending',
-            date: '2021-10-01',
-            time: '10:00:00',
-            skill: 'javascript',
-            price: 50,
-            sessionNotes: 'Need help with React',
-            duration: 60,
-            message: 'Hello, I need help with React'
-        },
-        {
-            menteeId: 2,
-            mentorId: 1,
+            menteeId: 2, // JaneSmith
+            mentorId: 1, // JohnDoe
             status: 'accepted',
-            date: '2021-10-02',
-            time: '11:00:00',
-            skill: 'node',
+            date: new Date('2024-03-20'),
+            time: '14:00',
+            skill: 'React',
+            price: 50,
+            duration: 60,
+            sessionNotes: 'Introduction to React Hooks',
+            message: 'Looking forward to learning React!'
+        },
+        {
+            menteeId: 2, // JaneSmith
+            mentorId: 3, // BobJohnson
+            status: 'accepted',
+            date: new Date('2024-03-21'),
+            time: '15:00',
+            skill: 'PostgreSQL',
             price: 60,
-            sessionNotes: 'Need help with Express',
-            duration: 60,
-            message: 'Hello, I need help with Express'
+            duration: 90,
+            sessionNotes: 'Database design fundamentals',
+            message: 'Need help with database concepts'
         },
         {
-            menteeId: 3,
-            mentorId: 2,
-            status: 'rejected',
-            date: '2021-10-03',
-            time: '12:00:00',
-            skill: 'react',
-            price: 70,
-            sessionNotes: 'Need help with Redux',
+            menteeId: 2, // JaneSmith
+            mentorId: 1, // JohnDoe
+            status: 'pending',
+            date: new Date('2024-03-25'),
+            time: '16:00',
+            skill: 'Node.js',
+            price: 55,
             duration: 60,
-            message: 'Hello, I need help with Redux'
-        },
-        {
-            menteeId: 4,
-            mentorId: 1,
-            status: 'cancelled',
-            date: '2021-10-04',
-            time: '13:00:00',
-            skill: 'javascript',
-            price: 80,
-            sessionNotes: 'Need help with JavaScript',
-            duration: 60,
-            message: 'Hello, I need help with JavaScript'
+            sessionNotes: 'Building REST APIs',
+            message: 'Want to learn backend development'
         }
-    ], {individualHooks: true});
-}
+    ], { individualHooks: true });
+};
