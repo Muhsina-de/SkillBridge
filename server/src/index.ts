@@ -2,6 +2,7 @@ import express, { Request, Response } from 'express';
 import cors from 'cors';
 import path from 'path';
 import reviewRoutes from './routes/review.routes';
+import gitRoutes from './routes/github.Routes';
 import { createServer, startServer } from './server';
 
 const app = createServer();
@@ -13,6 +14,7 @@ app.use(express.json());
 // API Routes
 app.use('/api/reviews', reviewRoutes);
 
+app.use('/api', gitRoutes)
 app.get('/api/health', (_req: Request, res: Response) => {
   res.json({ message: 'Server is running!' });
 });

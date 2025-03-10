@@ -1,5 +1,6 @@
 import { DataTypes, Model, Optional, Sequelize } from 'sequelize';
 import { User } from './userprofile';
+import sequelize from '../config/connection';
 
 /**
  * Interface representing a Review's attributes

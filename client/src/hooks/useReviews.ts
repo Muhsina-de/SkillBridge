@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { reviewService, Review, ReviewSubmission } from '../services/reviewService';
-
+import reviewService from '../services/reviewService';
+import { Review, ReviewSubmission } from '../types/reviews';
 interface UseReviewsReturn {
   reviews: Review[];
   loading: boolean;

@@ -1,5 +1,6 @@
 import {DataTypes, Sequelize, Model, Optional} from 'sequelize';    
 import { User } from './userprofile.js';
+import sequelize from '../config/connection'
 interface SessionAttributes {
     id: number;
     menteeId: number;
