@@ -3,7 +3,7 @@ import { API_BASE_URL, API_ENDPOINTS } from '../constants/api';
 import { Review, ReviewSubmission } from '../types/reviews';
 import { validateReviews } from '../utils/validation';
 
-const reviewService = {
+export const reviewService = {
   getReviewsByMentor: async (mentorId: number): Promise<Review[]> => {
     try {
       const response = await axios.get<unknown>(
@@ -67,4 +67,4 @@ const reviewService = {
   },
 };
 
-export default reviewService; 
+export type { Review, ReviewSubmission }; 

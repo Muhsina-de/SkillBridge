@@ -7,10 +7,10 @@ export interface Review {
   comment: string;
   createdAt: string;
   updatedAt: string;
-  mentee?: {
+  mentee: {
     id: number;
     username: string;
-    profilePicture: string;
+    profilePicture?: string;
   };
 }
 
