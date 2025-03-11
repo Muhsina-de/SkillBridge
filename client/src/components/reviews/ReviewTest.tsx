@@ -36,8 +36,10 @@ const ReviewTest: React.FC = () => {
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
 
-  // Ensure we have a valid array of reviews
-  const validReviews = Array.isArray(reviews) ? reviews : [];
+  // Ensure we have a valid array of reviews with complete mentee data
+  const validReviews = Array.isArray(reviews) 
+    ? reviews.filter(review => review.mentee && review.mentee.id && review.mentee.username)
+    : [];
 
   return (
     <div className="max-w-4xl mx-auto p-6 space-y-8">

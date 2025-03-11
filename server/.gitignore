@@ -1,6 +1,5 @@
 # Dependencies
 node_modules/
-**/node_modules/
 npm-debug.log*
 
 # Environment variables
@@ -10,20 +9,14 @@ npm-debug.log*
 .env.test
 .env.production
 .env.*.local
-**/.env
-**/.env.*
 
 # Build files
 dist/
 build/
-**/dist/
-**/build/
 
 # Logs
 logs/
 *.log
-**/logs/
-**/*.log
 
 # IDE/Editor files
 .vscode/
@@ -36,9 +29,4 @@ logs/
 
 # OS files
 .DS_Store
-Thumbs.db
-**/.DS_Store
-
-# Test coverage
-coverage/
-**/coverage/
+Thumbs.db 
