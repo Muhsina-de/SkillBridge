@@ -17,10 +17,11 @@ const testMentor = {
   twitter: "https://twitter.com/janesmith"
 };
 
-const MentorProfile = () => {
-  const handleBookingSubmit = (formData: any) => {
+const MentorProfile: React.FC = () => {
+  const handleBookingSubmit = async (formData: any): Promise<void> => {
     // This will be replaced with actual API call later
     console.log('Booking submitted:', formData);
+    return Promise.resolve();
   };
 
   return (

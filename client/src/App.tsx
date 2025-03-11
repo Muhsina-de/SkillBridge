@@ -1,17 +1,25 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, SetStateAction } from 'react'
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom'
 import axios from 'axios'
 import Navbar from './components/layout/Navbar'
 import MentorProfile from './pages/MentorProfile'
 import ReviewTest from './components/reviews/ReviewTest'
+import TrendingReposPage from './components/TrendingRepos/TrendingReposPage'
+import RepoDetail from './components/TrendingRepos/RepoDetail'
+import SignIn from './components/signIn/signIn'
+import SignUp from './components/signUp/signUp'
+
+interface HealthResponse {
+  message: string;
+}
 
 function App() {
   const [message, setMessage] = useState('')
 
   useEffect(() => {
-    axios.get('http://localhost:3000/api/health')
-      .then(response => setMessage(response.data.message))
-      .catch(error => console.error('Error:', error))
+    axios.get<HealthResponse>('http://localhost:3000/api/health')
+      .then((response: { data: { message: SetStateAction<string> } }) => setMessage(response.data.message))
+      .catch((error: unknown) => console.error('Error:', error))
   }, [])
 
   return (
@@ -24,13 +32,24 @@ function App() {
           <nav className="space-x-4">
             <Link to="/" className="text-gray-600 hover:text-gray-900">Home</Link>
             <Link to="/reviews" className="text-gray-600 hover:text-gray-900">Review Test</Link>
+            <Link to="/trending" className="text-gray-600 hover:text-gray-900">Github Trending Repos</Link>
           </nav>
         </div>
 
         {/* Routes */}
+       
         <Routes>
           <Route path="/" element={<MentorProfile />} />
           <Route path="/reviews" element={<ReviewTest />} />
+          <Route path="/trending" element={<TrendingReposPage />} />
+          <Route path="/repo/:owner/:repo" element={<RepoDetail />} />
+           <Route path="/signin" Component={SignIn} />
+           <Route path="/signup" Component={SignUp} />
+             
+                  
+                
+             
+
         </Routes>
 
         {message && (
@@ -38,6 +57,7 @@ function App() {
             <p className="text-sm text-gray-500">Server status: {message}</p>
           </div>
         )}
+
       </div>
     </Router>
   )
