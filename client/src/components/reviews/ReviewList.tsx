@@ -1,23 +1,6 @@
 import { useState } from 'react';
 import ReviewCard from './ReviewCard';
-
-interface Review {
-  id: number;
-  rating: number;
-  comment: string;
-  createdAt: string;
-  mentorId: number;
-  mentee: {
-    id: number;
-    username: string;
-    profilePicture?: string;
-  };
-}
-
-interface ReviewListProps {
-  reviews: Review[];
-  mentorId?: number;
-}
+import { Review, ReviewListProps } from '../../types/reviews';
 
 const ReviewList: React.FC<ReviewListProps> = ({ reviews, mentorId }) => {
   const [sortBy, setSortBy] = useState<'recent' | 'rating'>('recent');

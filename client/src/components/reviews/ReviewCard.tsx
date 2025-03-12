@@ -1,18 +1,5 @@
 import { StarIcon } from '@heroicons/react/24/solid';
-
-interface ReviewCardProps {
-  review: {
-    id: number;
-    rating: number;
-    comment: string;
-    createdAt: string;
-    mentee: {
-      id: number;
-      username: string;
-      profilePicture?: string;
-    };
-  };
-}
+import { ReviewCardProps } from '../../types/reviews';
 
 const ReviewCard: React.FC<ReviewCardProps> = ({ review }) => {
   const renderStars = () => {
@@ -39,23 +26,32 @@ const ReviewCard: React.FC<ReviewCardProps> = ({ review }) => {
       {/* Header: User info and date */}
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-3">
-          {review.mentee.profilePicture ? (
-            <img
-              src={review.mentee.profilePicture}
-              alt={review.mentee.username}
-              className="w-10 h-10 rounded-full"
-            />
+          {review.mentee ? (
+            <>
+              {review.mentee.profilePicture ? (
+                <img
+                  src={review.mentee.profilePicture}
+                  alt={review.mentee.username}
+                  className="w-10 h-10 rounded-full"
+                />
+              ) : (
+                <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
+                  <span className="text-gray-500 font-medium">
+                    {review.mentee.username.charAt(0)}
+                  </span>
+                </div>
+              )}
+              <div>
+                <p className="font-medium text-gray-900">{review.mentee.username}</p>
+                <p className="text-sm text-gray-500">{formatDate(review.createdAt)}</p>
+              </div>
+            </>
           ) : (
-            <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
-              <span className="text-gray-500 font-medium">
-                {review.mentee.username.charAt(0)}
-              </span>
+            <div>
+              <p className="font-medium text-gray-900">Anonymous User</p>
+              <p className="text-sm text-gray-500">{formatDate(review.createdAt)}</p>
             </div>
           )}
-          <div>
-            <p className="font-medium text-gray-900">{review.mentee.username}</p>
-            <p className="text-sm text-gray-500">{formatDate(review.createdAt)}</p>
-          </div>
         </div>
         <div className="flex items-center">
           {renderStars()}

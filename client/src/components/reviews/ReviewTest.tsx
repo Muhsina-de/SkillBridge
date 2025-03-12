@@ -3,15 +3,13 @@ import { useReviews } from '../../hooks/useReviews';
 import ReviewForm from './ReviewForm';
 import ReviewList from './ReviewList';
 import ReviewSummary from './ReviewSummary';
+import { ReviewFormData } from '../../types/reviews';
 
 const ReviewTest: React.FC = () => {
   // Using mentor ID 1 (JohnDoe) from our seed data
   const { reviews, loading, error, submitReview } = useReviews(1);
 
-  const handleSubmitReview = async (data: {
-    rating: number;
-    comment: string;
-  }) => {
+  const handleSubmitReview = async (data: ReviewFormData) => {
     try {
       console.log('Submitting review with data:', {
         sessionId: 1,
