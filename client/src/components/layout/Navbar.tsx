@@ -9,7 +9,7 @@ const Navbar: React.FC = () => {
   return (
     <nav className="bg-white shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-16">
+        <div className="flex justify-between items-center h-16">
           <div className="flex">
             {/* Logo */}
             <Link to="/" className="flex-shrink-0 flex items-center">
@@ -41,18 +41,24 @@ const Navbar: React.FC = () => {
             </div>
           </div>
 
+          {/* Centered Username */}
+          <div className="flex flex-grow justify-center">
+            {isAuthenticated && user?.username ? (
+              <span className="text-blue-600 text-lg">
+                Logged in as {user?.username}
+              </span>
+            ) : null}
+          </div>
+
           {/* Desktop Auth Buttons */}
           <div className="hidden sm:ml-6 sm:flex sm:items-center sm:space-x-4">
             {isAuthenticated ? (
-              <>
-                <span className="text-gray-700">Welcome, {user?.username}!</span>
-                <button
-                  onClick={logout}
-                  className="px-4 py-2 text-blue-600 hover:text-blue-800"
-                >
-                  Sign Out
-                </button>
-              </>
+              <button
+                onClick={logout}
+                className="px-4 py-2 text-blue-600 hover:text-blue-800"
+              >
+                Sign Out
+              </button>
             ) : (
               <>
                 <Link
@@ -129,7 +135,7 @@ const Navbar: React.FC = () => {
             {isAuthenticated ? (
               <div className="space-y-1">
                 <span className="block pl-3 pr-4 py-2 text-base font-medium text-gray-700">
-                  Welcome, {user?.username}!
+                  Logged in as {user?.username}
                 </span>
                 <button
                   onClick={() => {

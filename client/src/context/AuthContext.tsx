@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext, ReactNode } from 'react';
+import React, { createContext, useContext, useState, ReactNode } from 'react';
 
 interface User {
   id: string;
@@ -9,9 +9,8 @@ interface User {
 
 interface AuthContextType {
   user: User | null;
-  setUser: (user: User | null) => void;
   isAuthenticated: boolean;
-  login: (user: User) => void;
+  setUser: (user: User) => void;
   logout: () => void;
 }
 
@@ -19,36 +18,25 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
-  if (context === undefined) {
+  if (!context) {
     throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
 };
 
-interface AuthProviderProps {
-  children: ReactNode;
-}
-
-export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
+export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
 
-  const login = (userData: User) => {
-    setUser(userData);
-  };
+  const isAuthenticated = user !== null;
 
   const logout = () => {
     setUser(null);
+    localStorage.removeItem('token');
   };
 
-  const value = {
-    user,
-    setUser,
-    isAuthenticated: !!user,
-    login,
-    logout,
-  };
-
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={{ user, isAuthenticated, setUser, logout }}>
+      {children}
+    </AuthContext.Provider>
+  );
 };
-
-export default AuthContext; 
