@@ -23,7 +23,7 @@ interface RepositoryResponse {
 // GET /api/github/trending
 // Fetches the trending repositories from GitHub
 // Returns an array of RepositoryItem objects
-router.get('/github/trending', async function (req, res) {
+router.get('/trending', async function (req, res) {
  const token = process.env.GITHUB_TOKEN;
  if (!token) {
    return res.status(400).json({ error: 'GitHub token is missing from environment variables' });

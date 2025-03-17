@@ -7,9 +7,9 @@ import sequelize from '../config/connection';
  */
 interface ReviewAttributes {
   id: number;
-  sessionId: number;
-  menteeId: number;
-  mentorId: number;
+  session_id: number;
+  mentee_id: number;
+  mentor_id: number;
   rating: number;
   comment: string;
   createdAt?: Date;
@@ -28,9 +28,9 @@ interface ReviewCreationAttributes extends Optional<ReviewAttributes, 'id'> {}
  */
 export class Review extends Model<ReviewAttributes, ReviewCreationAttributes> implements ReviewAttributes {
   public id!: number;
-  public sessionId!: number;
-  public menteeId!: number;
-  public mentorId!: number;
+  public session_id!: number;
+  public mentee_id!: number;
+  public mentor_id!: number;
   public rating!: number;
   public comment!: string;
 
@@ -39,13 +39,13 @@ export class Review extends Model<ReviewAttributes, ReviewCreationAttributes> im
 
   /**
    * Updates the mentor's average rating based on all their reviews
-   * @param mentorId - ID of the mentor to update
+   * @param mentor_id - ID of the mentor to update
    * @throws Error if the update fails
    */
-  public static async updateMentorRating(mentorId: number): Promise<void> {
+  public static async updateMentorRating(mentor_id: number): Promise<void> {
     try {
       const reviews = await Review.findAll({
-        where: { mentorId }
+        where: { mentor_id }
       });
       
       const averageRating = reviews.length > 0
@@ -54,7 +54,7 @@ export class Review extends Model<ReviewAttributes, ReviewCreationAttributes> im
       
       await User.update(
         { rating: Number(averageRating.toFixed(1)) },
-        { where: { id: mentorId } }
+        { where: { id: mentor_id } }
       );
     } catch (error) {
       console.error('Error updating mentor rating:', error);
@@ -76,7 +76,7 @@ export function ReviewFactory(sequelize: Sequelize): typeof Review {
         autoIncrement: true,
         primaryKey: true,
       },
-      sessionId: {
+      session_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
@@ -84,7 +84,7 @@ export function ReviewFactory(sequelize: Sequelize): typeof Review {
           key: 'id',
         },
       },
-      menteeId: {
+      mentee_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
@@ -92,7 +92,7 @@ export function ReviewFactory(sequelize: Sequelize): typeof Review {
           key: 'id',
         },
       },
-      mentorId: {
+      mentor_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
@@ -118,17 +118,19 @@ export function ReviewFactory(sequelize: Sequelize): typeof Review {
     },
     {
       sequelize,
+      modelName: 'Review',
       tableName: 'reviews',
+      underscored: true,
       timestamps: true,
       hooks: {
         afterCreate: async (review: Review) => {
-          await Review.updateMentorRating(review.mentorId);
+          await Review.updateMentorRating(review.mentor_id);
         },
         afterUpdate: async (review: Review) => {
-          await Review.updateMentorRating(review.mentorId);
+          await Review.updateMentorRating(review.mentor_id);
         },
         afterDestroy: async (review: Review) => {
-          await Review.updateMentorRating(review.mentorId);
+          await Review.updateMentorRating(review.mentor_id);
         }
       }
     }

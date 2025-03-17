@@ -1,18 +1,15 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 
-interface AuthRequest extends Request {
+export interface AuthRequest extends Request {
   user?: {
-    id: string;
+    id: number;
     email: string;
-    
   };
-  
 }
 
 export const authenticateJWT = (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
-
     const authHeader = req.headers.authorization;
     if (!authHeader) {
       return res.status(401).json({ message: 'No authorization header' });
@@ -24,7 +21,7 @@ export const authenticateJWT = (req: AuthRequest, res: Response, next: NextFunct
     }
 
     const secret = process.env.JWT_SECRET || 'test-secret';
-    const decoded = jwt.verify(token, secret) as { id: string; email: string };
+    const decoded = jwt.verify(token, secret) as { id: number; email: string };
 
     req.user = decoded;
     next();

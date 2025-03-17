@@ -36,8 +36,8 @@ export function createServer() {
 
 
   // API Routes
-  app.use('/api/reviews',authenticateJWT,reviewRoutes);
-  app.use('/api', gitRoutes);
+  app.use('/api/reviews', reviewRoutes);
+  app.use('/api/github', gitRoutes);
 
   app.use('/api/auth', authRoutes);
   app.use('/api/profiles', authenticateJWT, profileRoutes);
