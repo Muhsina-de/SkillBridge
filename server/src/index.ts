@@ -8,18 +8,19 @@ import profileRoutes from './routes/profile.Route';
 import { createServer, startServer } from './server';
 
 const app = createServer();
-const port = process.env.PORT ? parseInt(process.env.PORT) : 3000;
+const port = process.env.PORT ? parseInt(process.env.PORT) : 3001;
 
 app.use(cors());
 app.use(express.json());
 
 // API Routes
 app.use('/api/reviews', reviewRoutes);
-app.use('api/auth', authRoutes)
-app.use('/api', gitRoutes)
-app.use('api/profile', profileRoutes)
+app.use('/api/auth', authRoutes);
+app.use('/api/github', gitRoutes);
+app.use('/api/profile', profileRoutes);
+
 app.get('/api/health', (_req: Request, res: Response) => {
-  res.json({ message: 'Serve is running!' });
+  res.json({ message: 'Server is running!' });
 });
 
 app.use(express.static(path.join(__dirname, '../public')));

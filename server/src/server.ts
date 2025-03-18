@@ -26,7 +26,10 @@ export function createServer() {
   
   // Configure CORS
   const corsOptions = {
-    origin: 'http://localhost:5173', // Adjust this to match your frontend's URL
+    origin: ['http://localhost:5173', 'http://localhost:3000'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true,
     optionsSuccessStatus: 200
   };
   app.use(cors(corsOptions));
@@ -47,6 +50,11 @@ export function createServer() {
     res.json({ message: 'Server is running!' });
   });
 
+  // Add a simple test endpoint
+  app.get('/api/test', (req, res) => {
+    res.json({ message: 'Server is running!' });
+  });
+
   // Serve static files
   app.use(express.static(path.join(__dirname, '../public')));
 
@@ -58,11 +66,12 @@ export function createServer() {
   return app;
 }
 
-export function startServer(app: express.Application, port: number = 3000) {
+export function startServer(app: express.Application, port: number = 3001) {
   // Sync Sequelize models and then start the server
   sequelize.sync({ force: false }).then(() => {
     app.listen(port, () => {
       console.log(`Server running at http://localhost:${port}`);
+      console.log('CORS enabled for:', ['http://localhost:5173', 'http://localhost:3000']);
     });
   }).catch((err) => {
     console.error('Unable to connect to the database:', err);

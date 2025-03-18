@@ -57,40 +57,40 @@ const MentorsPage: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredMentors.map(mentor => (
             <div key={mentor.id} className="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-md transition">
-              <Link to={`/mentor/${mentor.id}`} className="block">
-                <div className="p-6">
-                  <div className="flex items-center mb-4">
-                    <img
-                      src={mentor.profilePicture}
-                      alt={mentor.username}
-                      className="w-16 h-16 rounded-full"
-                    />
-                    <div className="ml-4">
+              <div className="p-6">
+                <div className="flex items-center mb-4">
+                  <img
+                    src={mentor.profilePicture}
+                    alt={mentor.username}
+                    className="w-16 h-16 rounded-full"
+                  />
+                  <div className="ml-4">
+                    <Link to={`/mentor/${mentor.id}`} className="block">
                       <h3 className="text-xl font-semibold text-gray-900">{mentor.username}</h3>
-                      <div className="flex items-center mt-1">
-                        <Link 
-                          to={`/reviews?mentorId=${mentor.id}`}
-                          className="flex items-center text-gray-600 hover:text-blue-600"
-                        >
-                          <span className="text-yellow-400 mr-1">⭐</span>
-                          <span>{mentor.rating}</span>
-                        </Link>
-                      </div>
+                    </Link>
+                    <div className="flex items-center mt-1">
+                      <Link 
+                        to={`/reviews?mentorId=${mentor.id}`}
+                        className="flex items-center text-gray-600 hover:text-blue-600"
+                      >
+                        <span className="text-yellow-400 mr-1">⭐</span>
+                        <span>{mentor.rating}</span>
+                      </Link>
                     </div>
                   </div>
-                  <p className="text-gray-600 text-sm mb-4 line-clamp-2">{mentor.bio}</p>
-                  <div className="flex flex-wrap gap-2">
-                    {mentor.skills.map(skill => (
-                      <span
-                        key={skill}
-                        className="px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-full"
-                      >
-                        {skill}
-                      </span>
-                    ))}
-                  </div>
                 </div>
-              </Link>
+                <p className="text-gray-600 text-sm mb-4 line-clamp-2">{mentor.bio}</p>
+                <div className="flex flex-wrap gap-2">
+                  {mentor.skills.map(skill => (
+                    <span
+                      key={skill}
+                      className="px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-full"
+                    >
+                      {skill}
+                    </span>
+                  ))}
+                </div>
+              </div>
               <div className="px-6 py-4 bg-gray-50 border-t border-gray-100">
                 <Link
                   to={`/mentor/${mentor.id}`}

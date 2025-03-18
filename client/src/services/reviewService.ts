@@ -3,11 +3,20 @@ import { API_BASE_URL, API_ENDPOINTS } from '../constants/api';
 import { Review, ReviewSubmission } from '../types/reviews';
 import { validateReviews } from '../utils/validation';
 
+// Get the auth token from localStorage
+const getAuthToken = () => localStorage.getItem('token');
+
 const reviewService = {
   getReviewsByMentor: async (mentorId: number): Promise<Review[]> => {
     try {
+      const token = getAuthToken();
       const response = await axios.get<unknown>(
-        `${API_BASE_URL}${API_ENDPOINTS.REVIEWS.GET_BY_MENTOR(mentorId)}`
+        `${API_BASE_URL}${API_ENDPOINTS.REVIEWS.GET_BY_MENTOR(mentorId)}`,
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        }
       );
       return validateReviews(response.data);
     } catch (error) {
@@ -18,8 +27,14 @@ const reviewService = {
 
   getReviewBySession: async (sessionId: number): Promise<Review | null> => {
     try {
+      const token = getAuthToken();
       const response = await axios.get<unknown>(
-        `${API_BASE_URL}${API_ENDPOINTS.REVIEWS.GET_BY_SESSION(sessionId)}`
+        `${API_BASE_URL}${API_ENDPOINTS.REVIEWS.GET_BY_SESSION(sessionId)}`,
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        }
       );
       const reviews = validateReviews([response.data]);
       return reviews[0] || null;
@@ -31,9 +46,15 @@ const reviewService = {
 
   submitReview: async (reviewData: ReviewSubmission): Promise<Review> => {
     try {
+      const token = getAuthToken();
       const response = await axios.post<Review>(
         `${API_BASE_URL}${API_ENDPOINTS.REVIEWS.SUBMIT}`,
-        reviewData
+        reviewData,
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        }
       );
       return response.data;
     } catch (error) {
@@ -44,9 +65,15 @@ const reviewService = {
 
   updateReview: async (reviewId: number, data: Partial<ReviewSubmission>): Promise<Review> => {
     try {
+      const token = getAuthToken();
       const response = await axios.put<Review>(
         `${API_BASE_URL}${API_ENDPOINTS.REVIEWS.UPDATE(reviewId)}`,
-        data
+        data,
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        }
       );
       return response.data;
     } catch (error) {
@@ -57,8 +84,14 @@ const reviewService = {
 
   deleteReview: async (reviewId: number): Promise<void> => {
     try {
+      const token = getAuthToken();
       await axios.delete(
-        `${API_BASE_URL}${API_ENDPOINTS.REVIEWS.DELETE(reviewId)}`
+        `${API_BASE_URL}${API_ENDPOINTS.REVIEWS.DELETE(reviewId)}`,
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        }
       );
     } catch (error) {
       console.error('Error deleting review:', error);
@@ -66,4 +99,5 @@ const reviewService = {
     }
   },
 };
+
 export default reviewService; 
