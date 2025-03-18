@@ -11,7 +11,8 @@ const ActivityNotifications: React.FC = () => {
   }[]>([]);
 
   useEffect(() => {
-    socket.current.on('userActivity', (activity: { type: 'join' | 'leave' | 'comment' | 'reaction'; username: string; timestamp: Date }) => {
+    const currentSocket = socket.current;
+    currentSocket.on('userActivity', (activity: { type: 'join' | 'leave' | 'comment' | 'reaction'; username: string; timestamp: Date }) => {
       setNotifications(prev => [activity, ...prev].slice(0, 5));
       setTimeout(() => {
         setNotifications(prev => prev.filter(n => n !== activity));
@@ -19,7 +20,7 @@ const ActivityNotifications: React.FC = () => {
     });
 
     return () => {
-      socket.current.off('userActivity');
+      currentSocket.off('userActivity');
     };
   }, []);
 

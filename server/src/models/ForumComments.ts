@@ -53,7 +53,7 @@ ForumComment.init(
   {
     sequelize,
     modelName: 'ForumComment',
-    tableName: 'forum_comment',
+    tableName: 'forum_comments',
   }
 );
 

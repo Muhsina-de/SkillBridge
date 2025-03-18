@@ -16,7 +16,7 @@ export const getAllTopics = async (req: Request, res: Response) => {
     const topics = await ForumTopic.findAll({
       include: [
         { model: User, attributes: ['username', 'profilePicture'] },
-        { model: ForumComment, as: 'Comments', attributes: ['id'] }
+        { model: ForumComment,  attributes: ['id'] }
       ],
       order: [['createdAt', 'DESC']]
     });
@@ -34,7 +34,6 @@ export const getTopicById = async (req: Request, res: Response) => {
         { model: User, attributes: ['username', 'profilePicture'] },
         {
           model: ForumComment,
-          as: 'Comments',
           include: [{ model: User, attributes: ['username', 'profilePicture'] }]
         }
       ]
