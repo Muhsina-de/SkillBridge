@@ -5,6 +5,7 @@ import reviewRoutes from './routes/review.routes';
 import gitRoutes from './routes/github.Routes';
 import authRoutes from './routes/authRoutes';
 import profileRoutes from './routes/profile.Route';
+import forumRoutes from './routes/forums.routes';
 import {UserFactory} from './models/user';
 import { authenticateJWT } from './middleware/authmiddleware'; // Import the authentication middleware
 import { Sequelize } from 'sequelize';
@@ -33,14 +34,12 @@ export function createServer() {
   
   app.use(express.json());
  
-
-
   // API Routes
-  app.use('/api/reviews',authenticateJWT,reviewRoutes);
+  app.use('/api/reviews', authenticateJWT, reviewRoutes);
   app.use('/api', gitRoutes);
-
   app.use('/api/auth', authRoutes);
   app.use('/api/profiles', authenticateJWT, profileRoutes);
+  app.use('/api/forum', forumRoutes);
  // app.use(authenticateJWT); // Use the authentication middleware for all routes under /api
 
   app.get('/api/health', (_req: Request, res: Response) => {

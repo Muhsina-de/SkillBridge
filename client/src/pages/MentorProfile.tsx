@@ -1,4 +1,4 @@
-import UserProfileCard from '../components/profile/UserProfileCard';
+import UserProfileCard from '../components/profile/UserProfile';
 import SessionBookingForm from '../components/sessions/SessionBookingForm';
 
 // Test data - will be replaced with real data later

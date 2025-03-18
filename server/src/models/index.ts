@@ -3,9 +3,9 @@ import { config } from 'dotenv';
 import { UserFactory } from './userprofile';
 import { SessionFactory } from './session';
 import { ReviewFactory } from './review';
-
-// Load environment variables
-config();
+import ForumTopic from './ForumTopics';
+import ForumComment from './ForumComments';
+// Load environment variablesconfig();
 
 /**
  * Database configuration options
@@ -68,6 +68,18 @@ Review.belongsTo(User, { foreignKey: 'mentorId', as: 'mentor' });
 Review.belongsTo(Session, { foreignKey: 'sessionId' });
 Session.hasOne(Review, { foreignKey: 'sessionId' });
 
+
+
+User.hasMany(ForumTopic, { foreignKey: 'userId' });
+ForumTopic.belongsTo(User, { foreignKey: 'userId' });
+
+User.hasMany(ForumComment, { foreignKey: 'userId' });
+ForumComment.belongsTo(User, { foreignKey: 'userId' });
+
+ForumTopic.hasMany(ForumComment, { foreignKey: 'topicId' });
+ForumComment.belongsTo(ForumTopic, { foreignKey: 'topicId' });
+
+
 // Test database connection
 sequelize
   .authenticate()
@@ -79,4 +91,4 @@ sequelize
     process.exit(1); // Exit if we can't connect to the database
   });
 
-export { sequelize, User, Session, Review };
+export { sequelize, User, Session, Review, ForumTopic, ForumComment };

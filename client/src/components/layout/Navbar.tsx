@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 
 const Navbar: React.FC = () => {
-  const { user, isAuthenticated, logout } = useAuth();
+  const { user, logout } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
@@ -28,9 +28,15 @@ const Navbar: React.FC = () => {
                 to="/trending"
                 className="text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 border-transparent hover:border-blue-500"
               >
-                Trending
+                Trending Repos
               </Link>
-              {isAuthenticated && user?.role === 'mentor' && (
+              <Link
+                to="/forum"
+                className="text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 border-transparent hover:border-blue-500"
+              >
+                Forums
+              </Link>
+              {user?.role === 'mentor' && (
                 <Link
                   to="/dashboard"
                   className="text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 border-transparent hover:border-blue-500"
@@ -43,7 +49,7 @@ const Navbar: React.FC = () => {
 
           {/* Centered Username */}
           <div className="flex flex-grow justify-center">
-            {isAuthenticated && user?.username ? (
+            {user?.username ? (
               <span className="text-blue-600 text-lg">
                 Logged in as {user?.username}
               </span>
@@ -52,7 +58,7 @@ const Navbar: React.FC = () => {
 
           {/* Desktop Auth Buttons */}
           <div className="hidden sm:ml-6 sm:flex sm:items-center sm:space-x-4">
-            {isAuthenticated ? (
+            {user ? (
               <button
                 onClick={logout}
                 className="px-4 py-2 text-blue-600 hover:text-blue-800"
@@ -119,9 +125,16 @@ const Navbar: React.FC = () => {
               className="block pl-3 pr-4 py-2 text-base font-medium text-gray-700 hover:bg-gray-50"
               onClick={() => setIsMenuOpen(false)}
             >
-              Trending
+              Trending Repos
             </Link>
-            {isAuthenticated && user?.role === 'mentor' && (
+            <Link
+              to="/forum"
+              className="block pl-3 pr-4 py-2 text-base font-medium text-gray-700 hover:bg-gray-50"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Forums
+            </Link>
+            {user?.role === 'mentor' && (
               <Link
                 to="/dashboard"
                 className="block pl-3 pr-4 py-2 text-base font-medium text-gray-700 hover:bg-gray-50"
@@ -132,7 +145,7 @@ const Navbar: React.FC = () => {
             )}
           </div>
           <div className="pt-4 pb-3 border-t border-gray-200">
-            {isAuthenticated ? (
+            {user ? (
               <div className="space-y-1">
                 <span className="block pl-3 pr-4 py-2 text-base font-medium text-gray-700">
                   Logged in as {user?.username}

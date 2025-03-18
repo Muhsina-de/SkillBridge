@@ -1,12 +1,12 @@
 import express from 'express';
 import { User } from '../models/userprofile';
-import {authMiddleware } from '../middleware/auth';
+import { auth } from '../middleware/auth';
 
 const router = express.Router();
 
 //sign in user
 
-router.get('/', authMiddleware, async (req, res) => {
+router.get('/', auth, async (req, res) => {
   try {
     const profiles = await User.findAll();
     res.json(profiles);
@@ -16,7 +16,7 @@ router.get('/', authMiddleware, async (req, res) => {
 });
 
 // Get a profile by id
-router.get('/:id', authMiddleware, async (req, res) => {
+router.get('/:id', auth, async (req, res) => {
   try {
     const profile = await User.findByPk(req.params.id);
     if (!profile) {
@@ -30,7 +30,7 @@ router.get('/:id', authMiddleware, async (req, res) => {
 });
 
 // Update a profile
-router.put('/:id', authMiddleware, async (req, res) => {
+router.put('/:id', auth, async (req, res) => {
   try {
     const profile = await User.findByPk(req.params.id);
     if (!profile) {
@@ -46,7 +46,7 @@ router.put('/:id', authMiddleware, async (req, res) => {
 );
 
 // Create a new profile
-router.post('/', authMiddleware, async (req, res) => {
+router.post('/', auth, async (req, res) => {
   try {
     const { username, email, bio } = req.body;
     const newProfile = await User.create({

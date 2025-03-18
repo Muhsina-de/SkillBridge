@@ -3,18 +3,47 @@ import React, { createContext, useContext, useState, ReactNode } from 'react';
 interface User {
   id: string;
   username: string;
-  email: string;
-  role: 'mentor' | 'mentee';
+  email?: string;
+  role?: string;
+  profilePicture?: string;
 }
 
 interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
+  login: (userData: User) => void;
   setUser: (user: User) => void;
   logout: () => void;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+const AuthContext = createContext<AuthContextType>({
+  user: null,
+  isAuthenticated: false,
+  login: () => {},
+  setUser: () => {},
+  logout: () => {}
+});
+
+export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const [user, setUser] = useState<User | null>(null);
+
+  const isAuthenticated = user !== null;
+
+  const login = (userData: User) => {
+    setUser(userData);
+  };
+
+  const logout = () => {
+    setUser(null);
+    localStorage.removeItem('token');
+  };
+
+  return (
+    <AuthContext.Provider value={{ user, isAuthenticated, login, setUser, logout }}>
+      {children}
+    </AuthContext.Provider>
+  );
+};
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
@@ -24,19 +53,4 @@ export const useAuth = () => {
   return context;
 };
 
-export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
-
-  const isAuthenticated = user !== null;
-
-  const logout = () => {
-    setUser(null);
-    localStorage.removeItem('token');
-  };
-
-  return (
-    <AuthContext.Provider value={{ user, isAuthenticated, setUser, logout }}>
-      {children}
-    </AuthContext.Provider>
-  );
-};
+export default AuthContext;

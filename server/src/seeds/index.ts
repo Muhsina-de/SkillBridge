@@ -1,5 +1,8 @@
 import sequelize from '../config/connection';
 import { User, Session, Review } from '../models';
+import ForumTopic from '../models/ForumTopics';
+import ForumComment from '../models/ForumComments';
+import { forumSeeds } from './forum.Seeds';
 
 /**
  * Seed all database tables in the correct order
@@ -32,15 +35,28 @@ const seedAll = async () => {
     await seedReviews();
     console.log('\n----- REVIEWS SEEDED -----\n');
 
+    // Seed forum data
+    console.log('Seeding forum topics...');
+    await ForumTopic.bulkCreate(forumSeeds.topics);
+    console.log('\n----- FORUM TOPICS SEEDED -----\n');
+
+    console.log('Seeding forum comments...');
+    await ForumComment.bulkCreate(forumSeeds.comments);
+    console.log('\n----- FORUM COMMENTS SEEDED -----\n');
+
     // Verify seeded data
     const userCount = await User.count();
     const sessionCount = await Session.count();
     const reviewCount = await Review.count();
+    const topicCount = await ForumTopic.count();
+    const commentCount = await ForumComment.count();
 
     console.log('\n----- SEEDING SUMMARY -----');
     console.log(`Users seeded: ${userCount}`);
     console.log(`Sessions seeded: ${sessionCount}`);
     console.log(`Reviews seeded: ${reviewCount}`);
+    console.log(`Forum topics seeded: ${topicCount}`);
+    console.log(`Forum comments seeded: ${commentCount}`);
     console.log('\n----- ALL SEEDS COMPLETED SUCCESSFULLY -----\n');
 
     // Exit successfully
