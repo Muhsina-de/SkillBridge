@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext'; 
 import TopicCard from '../components/forums/TopicCard';
-import { API_BASE_URL } from '../constants/api';
+
 const ForumPage: React.FC = () => {
   interface Topic {
     id: number;
@@ -23,11 +23,12 @@ const ForumPage: React.FC = () => {
   useEffect(() => {
     const fetchTopics = async () => {
       try {
-        const response = await axios.get(`${API_BASE_URL}/api/forum/topics`);
-        setTopics(response.data as Topic[]);
-        setLoading(false);
-      } catch (err) {
-        setError('Failed to load topics');
+        const response = await axios.get(`http://localhost:3000/api/forum/topics`);
+        const data = response.data as Topic[];
+        setTopics(data);
+      } catch (err: any) {
+        setError(err.response?.data?.message || 'Failed to load topics');
+      } finally {
         setLoading(false);
       }
     };

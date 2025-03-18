@@ -42,7 +42,7 @@ const Forums: React.FC = () => {
         userId: 1,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
-        User: { username: "reactLearner", profilePicture: null },
+        User: { username: "reactLearner", profilePicture: undefined },
         Comments: []
       },
       {
@@ -53,8 +53,8 @@ const Forums: React.FC = () => {
         userId: 2,
         createdAt: new Date(Date.now() - 86400000).toISOString(),
         updatedAt: new Date(Date.now() - 86400000).toISOString(),
-        User: { username: "apiDeveloper", profilePicture: null },
-        Comments: [{id: 1, content: "Sample comment", createdAt: new Date().toISOString()}]
+        User: { username: "apiDeveloper", profilePicture: undefined },
+        Comments: [{id: 1, content: "Sample comment", createdAt: new Date().toISOString(), userId: 2, topicId: 2, updatedAt: new Date().toISOString()}]
       }
     ];
   

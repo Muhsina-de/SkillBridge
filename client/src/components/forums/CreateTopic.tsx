@@ -4,11 +4,9 @@ import { createTopic } from '../../services/forum.service';
 
 const CreateTopic: React.FC = () => {
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({
-    title: '',
-    content: '',
-    category: ''
-  });
+  const [title, setTitle] = useState('');
+  const [content, setContent] = useState('');
+  const [category, setCategory] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
 
@@ -16,16 +14,25 @@ const CreateTopic: React.FC = () => {
     e.preventDefault();
     setIsSubmitting(true);
     setError('');
-    
+
     try {
-      const response = await createTopic(formData);
-      // Navigate directly to the new topic page
-      navigate(`/forum/topics/${response.data}`);
+      const response = await createTopic({ title, content, category });
+
+      if (response.status === 200) {
+        const data = response.data as { topicId: number };
+        navigate(`/forum/topics/${data.topicId}`);
+      } else {
+        const errorMessage = (response.data as { message: string }).message || 'Failed to create topic. Please try again.';
+        setError(errorMessage);
+      }
     } catch (error) {
       setError('Failed to create topic. Please try again.');
+    } finally {
       setIsSubmitting(false);
     }
   };
+
+ 
 
   return (
     <div className="max-w-2xl mx-auto p-6">
@@ -40,8 +47,8 @@ const CreateTopic: React.FC = () => {
           <label className="block text-sm font-semibold text-gray-700">Title</label>
           <input
             type="text"
-            value={formData.title}
-            onChange={(e) => setFormData({...formData, title: e.target.value})}
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
             required
             className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500"
           />
@@ -50,8 +57,8 @@ const CreateTopic: React.FC = () => {
         <div>
           <label className="block text-sm font-semibold text-gray-700">Category</label>
           <select
-            value={formData.category}
-            onChange={(e) => setFormData({...formData, category: e.target.value})}
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
             required
             className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500"
           >
@@ -66,8 +73,8 @@ const CreateTopic: React.FC = () => {
         <div>
           <label className="block text-sm font-semibold text-gray-700">Content</label>
           <textarea
-            value={formData.content}
-            onChange={(e) => setFormData({...formData, content: e.target.value})}
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
             required
             rows={6}
             className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500"

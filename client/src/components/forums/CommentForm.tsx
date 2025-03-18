@@ -2,10 +2,11 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { API_BASE_URL } from '../../constants/api';
 import { useAuth } from '../../context/AuthContext';
+import { ForumComment } from '../../types/forum.types';
 
 interface CommentFormProps {
   topicId: number;
-  onCommentAdded: (comment: any) => void;
+  onCommentAdded: (comment: ForumComment) => void;
 }
 
 const CommentForm: React.FC<CommentFormProps> = ({ topicId, onCommentAdded }) => {
@@ -33,7 +34,7 @@ const CommentForm: React.FC<CommentFormProps> = ({ topicId, onCommentAdded }) =>
         userId: user.id
       });
       
-      onCommentAdded(response.data);
+      onCommentAdded(response.data as ForumComment);
       setContent('');
       setError('');
     } catch (err) {

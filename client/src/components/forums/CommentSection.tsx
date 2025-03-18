@@ -6,6 +6,7 @@ import { ForumComment } from '../../types/forum.types';
 interface CommentSectionProps {
   topicId: number;
   comments?: ForumComment[];
+  
 }
 
 const CommentSection: React.FC<CommentSectionProps> = ({ topicId, comments = [] }) => {
@@ -27,7 +28,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({ topicId, comments = [] 
       <div className="mt-8 space-y-4">
         {localComments.length > 0 ? (
           localComments.map(comment => (
-            <CommentCard key={comment.id} comment={comment} />
+            <CommentCard key={comment.id} comment = {{ ...comment, createdAt: new Date(comment.createdAt) }} />
           ))
         ) : (
           <p className="text-center text-gray-500 py-4">
