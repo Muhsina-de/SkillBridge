@@ -1,7 +1,7 @@
 {
-  "name": "skillbridge-server",
+  "name": "ravenest-server",
   "version": "1.0.0",
-  "description": "SkillBridge backend server",
+  "description": "RaveNest backend server",
   "main": "src/index.ts",
   "scripts": {
     "start": "node dist/index.js",

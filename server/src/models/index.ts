@@ -11,7 +11,7 @@ config();
  * Database configuration options
  */
 const dbConfig = {
-  name: process.env.DB_NAME || 'skillbridge_db',
+  name: process.env.DB_NAME || 'ravenest_db',
   user: process.env.DB_USER || 'postgres',
   password: process.env.DB_PASSWORD || 'postgres',
   host: process.env.DB_HOST || 'localhost',

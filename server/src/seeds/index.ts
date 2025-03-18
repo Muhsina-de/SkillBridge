@@ -1,5 +1,4 @@
-import sequelize from '../config/connection';
-import { User, Session, Review } from '../models';
+import { sequelize, User, Session, Review } from '../models';
 
 /**
  * Seed all database tables in the correct order

@@ -34,7 +34,7 @@ router.get('/trending', async function (req, res) {
    hostname: 'api.github.com',
    path: '/search/repositories?q=stars:>1000&sort=stars&order=desc', // Repositories with more than 1000 stars
    headers: {
-     'User-Agent': 'SkillBridge-App',
+     'User-Agent': 'RaveNest-App',
      'Accept': 'application/vnd.github.v3+json',
      'Authorization': `Bearer ${process.env.GITHUB_TOKEN}` // GitHub token
    }
