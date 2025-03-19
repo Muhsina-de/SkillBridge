@@ -105,7 +105,7 @@ router.get('/mentor/:mentorId/summary', async (req: Request, res: Response) => {
     const summary = {
       totalReviews: reviews.length,
       averageRating: reviews.length > 0
-        ? Number((reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length).toFixed(1))
+        ? Number((reviews.reduce((sum: number, r: { rating: number }) => sum + r.rating, 0) / reviews.length).toFixed(1))
         : 0
     };
 

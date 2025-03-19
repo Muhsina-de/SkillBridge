@@ -12,11 +12,15 @@
     "postinstall": "tsc",
     "test": "jest --config jest.config.js --forceExit",
     "test:watch": "jest --watch",
-    "seed": "ts-node src/seeds/index.ts"
+    "seed": "ts-node src/seeds/index.ts",
+    "migrate": "ts-node src/migrations/index.ts",
+    "migrate:undo": "ts-node src/migrations/undo.ts"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
+    "@types/bcryptjs": "^2.4.6",
     "bcrypt": "^5.1.1",
+    "bcryptjs": "^3.0.2",
     "concurrently": "^8.2.2",
     "cors": "^2.8.5",
     "express": "^4.21.2",

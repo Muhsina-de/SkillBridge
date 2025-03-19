@@ -1,8 +1,8 @@
 import { Sequelize } from 'sequelize';
 import { config } from 'dotenv';
-import { UserFactory } from './userprofile';
-import { SessionFactory } from './session';
-import { ReviewFactory } from './review';
+import { initUser } from './userprofile';
+import { initSession } from './session';
+import { initReview } from './review';
 
 // Load environment variables
 config();
@@ -11,7 +11,7 @@ config();
  * Database configuration options
  */
 const dbConfig = {
-  name: process.env.DB_NAME || 'ravenest_db',
+  name: process.env.DB_NAME || 'ravenest',
   user: process.env.DB_USER || 'postgres',
   password: process.env.DB_PASSWORD || 'postgres',
   host: process.env.DB_HOST || 'localhost',
@@ -33,40 +33,64 @@ const sequelize = new Sequelize(
   }
 );
 
-/**
- * Initialize models using their respective factories
- */
-const User = UserFactory(sequelize);
-const Session = SessionFactory(sequelize);
-const Review = ReviewFactory(sequelize);
+// Initialize models
+const User = initUser(sequelize);
+const Session = initSession(sequelize);
+const Review = initReview(sequelize, User);
 
-/**
- * Define User-Session associations
- * - A user can have many sessions as mentee
- * - A user can have many sessions as mentor
- * - A session belongs to a user as mentee
- * - A session belongs to a user as mentor
- */
-User.hasMany(Session, { foreignKey: 'menteeId', as: 'menteeSessions' });
-User.hasMany(Session, { foreignKey: 'mentorId', as: 'mentorSessions' });
-Session.belongsTo(User, { foreignKey: 'menteeId', as: 'mentee' });
-Session.belongsTo(User, { foreignKey: 'mentorId', as: 'mentor' });
+// Define associations
+User.hasMany(Session, { 
+  foreignKey: 'menteeId', 
+  as: 'menteeSessions',
+  onDelete: 'CASCADE'
+});
 
-/**
- * Define User-Review and Session-Review associations
- * - A user can have many reviews as mentee
- * - A user can have many reviews as mentor
- * - A review belongs to a user as mentee
- * - A review belongs to a user as mentor
- * - A review belongs to a session
- * - A session can have one review
- */
-User.hasMany(Review, { foreignKey: 'menteeId', as: 'menteeReviews' });
-User.hasMany(Review, { foreignKey: 'mentorId', as: 'mentorReviews' });
-Review.belongsTo(User, { foreignKey: 'menteeId', as: 'mentee' });
-Review.belongsTo(User, { foreignKey: 'mentorId', as: 'mentor' });
-Review.belongsTo(Session, { foreignKey: 'sessionId' });
-Session.hasOne(Review, { foreignKey: 'sessionId' });
+User.hasMany(Session, { 
+  foreignKey: 'mentorId', 
+  as: 'mentorSessions',
+  onDelete: 'CASCADE'
+});
+
+Session.belongsTo(User, { 
+  foreignKey: 'menteeId', 
+  as: 'mentee'
+});
+
+Session.belongsTo(User, { 
+  foreignKey: 'mentorId', 
+  as: 'mentor'
+});
+
+User.hasMany(Review, { 
+  foreignKey: 'menteeId', 
+  as: 'givenReviews',
+  onDelete: 'CASCADE'
+});
+
+User.hasMany(Review, { 
+  foreignKey: 'mentorId', 
+  as: 'receivedReviews',
+  onDelete: 'CASCADE'
+});
+
+Review.belongsTo(User, { 
+  foreignKey: 'menteeId', 
+  as: 'mentee'
+});
+
+Review.belongsTo(User, { 
+  foreignKey: 'mentorId', 
+  as: 'mentor'
+});
+
+Review.belongsTo(Session, { 
+  foreignKey: 'sessionId'
+});
+
+Session.hasOne(Review, { 
+  foreignKey: 'sessionId',
+  onDelete: 'CASCADE'
+});
 
 // Test database connection
 sequelize

@@ -5,21 +5,8 @@ import reviewRoutes from './routes/review.routes';
 import gitRoutes from './routes/github.Routes';
 import authRoutes from './routes/authRoutes';
 import profileRoutes from './routes/profile.Route';
-import {UserFactory} from './models/user';
-import { authenticateJWT } from './middleware/authmiddleware'; // Import the authentication middleware
-import { Sequelize } from 'sequelize';
-
-const sequelize = new Sequelize({
-  dialect: 'postgres',
-  host: process.env.DB_HOST,
-  username: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
-  port: Number(process.env.DB_PORT) || 5432,
-  logging: false, // Disable logging if not needed
-});
-// Initialize the User model
-const User = UserFactory(sequelize);
+import { authenticateJWT } from './middleware/authmiddleware';
+import { sequelize } from './models';
 
 export function createServer() {
   const app = express();
@@ -35,16 +22,12 @@ export function createServer() {
   app.use(cors(corsOptions));
   
   app.use(express.json());
- 
-
 
   // API Routes
   app.use('/api/reviews', reviewRoutes);
   app.use('/api/github', gitRoutes);
-
   app.use('/api/auth', authRoutes);
-  app.use('/api/profiles', authenticateJWT, profileRoutes);
- // app.use(authenticateJWT); // Use the authentication middleware for all routes under /api
+  app.use('/api/profile', authenticateJWT, profileRoutes);
 
   app.get('/api/health', (_req: Request, res: Response) => {
     res.json({ message: 'Server is running!' });

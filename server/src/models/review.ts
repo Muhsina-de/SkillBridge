@@ -1,6 +1,4 @@
-import { DataTypes, Model, Optional, Sequelize } from 'sequelize';
-import { User } from './userprofile';
-import sequelize from '../config/connection';
+import { DataTypes, Model, Optional, Sequelize, ModelStatic } from 'sequelize';
 
 /**
  * Interface representing a Review's attributes
@@ -42,7 +40,7 @@ export class Review extends Model<ReviewAttributes, ReviewCreationAttributes> im
    * @param mentor_id - ID of the mentor to update
    * @throws Error if the update fails
    */
-  public static async updateMentorRating(mentor_id: number): Promise<void> {
+  public static async updateMentorRating(mentor_id: number, User: ModelStatic<Model>): Promise<void> {
     try {
       const reviews = await Review.findAll({
         where: { mentor_id }
@@ -63,12 +61,7 @@ export class Review extends Model<ReviewAttributes, ReviewCreationAttributes> im
   }
 }
 
-/**
- * Factory function to initialize the Review model
- * @param sequelize - Sequelize instance
- * @returns Review model
- */
-export function ReviewFactory(sequelize: Sequelize): typeof Review {
+export function initReview(sequelize: Sequelize, User: ModelStatic<Model>): typeof Review {
   Review.init(
     {
       id: {
@@ -124,13 +117,13 @@ export function ReviewFactory(sequelize: Sequelize): typeof Review {
       timestamps: true,
       hooks: {
         afterCreate: async (review: Review) => {
-          await Review.updateMentorRating(review.mentor_id);
+          await Review.updateMentorRating(review.mentor_id, User);
         },
         afterUpdate: async (review: Review) => {
-          await Review.updateMentorRating(review.mentor_id);
+          await Review.updateMentorRating(review.mentor_id, User);
         },
         afterDestroy: async (review: Review) => {
-          await Review.updateMentorRating(review.mentor_id);
+          await Review.updateMentorRating(review.mentor_id, User);
         }
       }
     }
