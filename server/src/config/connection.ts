@@ -18,5 +18,7 @@ const sequelize = new Sequelize(
     logging: process.env.NODE_ENV === 'development' ? console.log : false
   }
 );
+console.log('Sequelize instance created');
+
 
 export default sequelize;

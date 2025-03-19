@@ -1,4 +1,5 @@
 export const API_BASE_URL = 'http://localhost:3001';
+<<<<<<< HEAD
 
 export const AUTH_ENDPOINTS = {
   LOGIN: `${API_BASE_URL}/api/auth/login`,
@@ -29,6 +30,8 @@ export const SESSION_ENDPOINTS = {
   GET_MENTEE_SESSIONS: (menteeId: number) => `${API_BASE_URL}/api/sessions/mentee/${menteeId}`,
   UPDATE_STATUS: (sessionId: number) => `${API_BASE_URL}/api/sessions/${sessionId}/status`,
 };
+=======
+>>>>>>> origin/master
 
 export const API_ENDPOINTS = {
   REVIEWS: {

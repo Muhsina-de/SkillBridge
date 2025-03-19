@@ -23,7 +23,7 @@ interface AuthResponse {
 }
 
 class AuthService {
-  async login(credentials: LoginCredentials): Promise<AuthResponse> {
+  async login(credentials: LoginCredentials): Promise<AuthResponse> { 
     try {
       console.log('Attempting login...');
       const response = await axiosInstance.post<AuthResponse>('/api/auth/login', credentials);

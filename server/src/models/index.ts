@@ -1,11 +1,20 @@
 import { Sequelize } from 'sequelize';
 import { config } from 'dotenv';
+<<<<<<< HEAD
 import { initUser } from './userprofile';
 import { initSession } from './session';
 import { initReview } from './review';
 
 // Load environment variables
 config();
+=======
+import { UserFactory } from './userprofile';
+import { SessionFactory } from './session';
+import { ReviewFactory } from './review';
+import ForumTopic from './ForumTopics';
+import ForumComment from './ForumComments';
+// Load environment variablesconfig();
+>>>>>>> origin/master
 
 /**
  * Database configuration options
@@ -13,7 +22,7 @@ config();
 const dbConfig = {
   name: process.env.DB_NAME || 'ravenest',
   user: process.env.DB_USER || 'postgres',
-  password: process.env.DB_PASSWORD || 'postgres',
+  password: process.env.DB_PASSWORD || 'SNH123!@im',
   host: process.env.DB_HOST || 'localhost',
   dialect: 'postgres' as const,
   logging: process.env.NODE_ENV === 'production' ? false : console.log,
@@ -92,6 +101,18 @@ Session.hasOne(Review, {
   onDelete: 'CASCADE'
 });
 
+
+
+User.hasMany(ForumTopic, { foreignKey: 'userId' });
+ForumTopic.belongsTo(User, { foreignKey: 'userId' });
+
+User.hasMany(ForumComment, { foreignKey: 'userId' });
+ForumComment.belongsTo(User, { foreignKey: 'userId' });
+
+ForumTopic.hasMany(ForumComment, { foreignKey: 'Id' });
+ForumComment.belongsTo(ForumTopic, { foreignKey: 'Id' });
+
+
 // Test database connection
 sequelize
   .authenticate()
@@ -103,4 +124,4 @@ sequelize
     process.exit(1); // Exit if we can't connect to the database
   });
 
-export { sequelize, User, Session, Review };
+export { sequelize, User, Session, Review, ForumTopic, ForumComment };

@@ -8,26 +8,26 @@ interface AuthRequest extends Request {
   };
 }
 
-export const authMiddleware = (req: AuthRequest, res: Response, next: NextFunction) => {
+export const auth = (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
-    const authHeader = req.headers.authorization;
-    if (!authHeader) {
-      return res.status(401).json({ message: 'No authorization header' });
-    }
-
-    const token = authHeader.split(' ')[1];
+    const token = req.header('Authorization')?.replace('Bearer ', '');
+    
     if (!token) {
-      return res.status(401).json({ message: 'No token provided' });
+      return res.status(401).json({ message: 'Authentication required' });
     }
+    console.log("TOKEnPASSES!")
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'test-secret') as {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-fallback-secret') as {
       id: string;
       email: string;
     };
-
+    
+    // Add user info to request object
     req.user = decoded;
+    // console.log("reqUser", req.user);
+    
     next();
   } catch (error) {
-    return res.status(401).json({ message: 'Invalid token' });
+    res.status(401).json({ message: 'Invalid or expired token' });
   }
-}; 
+};

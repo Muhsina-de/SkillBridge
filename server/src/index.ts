@@ -5,10 +5,11 @@ import reviewRoutes from './routes/review.routes';
 import gitRoutes from './routes/github.Routes';
 import authRoutes from './routes/authRoutes';
 import profileRoutes from './routes/profile.Route';
+import forumRoutes from './routes/forums.routes';
 import { createServer, startServer } from './server';
 
 const app = createServer();
-const port = process.env.PORT ? parseInt(process.env.PORT) : 3001;
+const port = process.env.PORT ? parseInt(process.env.PORT) : 3001;    
 
 app.use(cors());
 app.use(express.json());
@@ -18,6 +19,7 @@ app.use('/api/reviews', reviewRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/github', gitRoutes);
 app.use('/api/profile', profileRoutes);
+app.use('/api/forum', forumRoutes);
 
 app.get('/api/health', (_req: Request, res: Response) => {
   res.json({ message: 'Server is running!' });

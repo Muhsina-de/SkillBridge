@@ -1,8 +1,9 @@
 import axios from 'axios';
+import { API_BASE_URL } from '../constants/api';
 
 // Create an axios instance with default config
 const api = axios.create({
-  baseURL: 'http://localhost:3001',
+  baseURL: API_BASE_URL,
   headers: {
     'Content-Type': 'application/json'
   },
@@ -23,4 +24,25 @@ api.interceptors.request.use(
   }
 );
 
-export default api; 
+// User-related API calls
+export const fetchUserReviews = async (userId: string) => {
+  try {
+    const response = await api.get(`/api/reviews/user/${userId}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching user reviews:', error);
+    return [];
+  }
+};
+
+export const fetchUserSessions = async (userId: string) => {
+  try {
+    const response = await api.get(`/api/sessions/user/${userId}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching user sessions:', error);
+    return [];
+  }
+};
+
+export default api;

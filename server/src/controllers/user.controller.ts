@@ -3,19 +3,19 @@ import { User } from '../models/userprofile';
 import { generateToken } from '../utils/jwt';
 import bcrypt from 'bcryptjs';
 
-export const signUp = async (req: Request, res: Response) => {
+export const signUp = async (req: Request, res: Response) => {        
   try {
     const { username, email, password, role } = req.body;
-    
+
     // Check if user with same email already exists
-    const existingUser = await User.findOne({ where: { email } });
+    const existingUser = await User.findOne({ where: { email } });    
     if (existingUser) {
       return res.status(400).json({ message: 'User already exists' });
     }
 
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
-    
+
     // Create user with default values for optional fields
     const newUser = await User.create({
       username,
@@ -56,7 +56,7 @@ export const login = async (req: Request, res: Response) => {
     }
 
     const token = generateToken(user.id, user.email);
-    res.status(200).json({ 
+    res.status(200).json({
       token,
       user: {
         id: user.id,
@@ -70,6 +70,3 @@ export const login = async (req: Request, res: Response) => {
     res.status(500).json({ error: errorMessage });
   }
 };
-
-
-
