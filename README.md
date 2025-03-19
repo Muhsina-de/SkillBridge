@@ -1,4 +1,4 @@
-# SkillBridge
+# RaveNest
 
 A skill-sharing marketplace connecting mentors and learners in the tech industry.
 
@@ -13,7 +13,7 @@ A skill-sharing marketplace connecting mentors and learners in the tech industry
 ```bash
 # Clone and enter the project
 git clone [your-repo-url]
-cd SkillBridge
+cd RaveNest
 
 # Install and start
 cd server
@@ -26,7 +26,7 @@ The backend will be available at http://localhost:3000
 
 ## Project Structure
 ```
-SkillBridge/
+RaveNest/
 ├── client/               # Frontend
 │   └── src/
 │       ├── components/

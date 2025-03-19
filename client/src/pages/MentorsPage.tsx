@@ -1,39 +1,56 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import UserProfileCard from '../components/profile/UserProfileCard';
-
-// Test data - will be replaced with real data later
-const testMentors = [
-  {
-    id: 1,
-    username: "Jane Smith",
-    email: "jane.smith@example.com",
-    skills: ["JavaScript", "React", "Node.js", "TypeScript"],
-    role: "mentor",
-    rating: 4.8,
-    profilePicture: "https://api.dicebear.com/7.x/avataaars/svg?seed=jane",
-    bio: "Senior full-stack developer with 8 years of experience. Passionate about teaching and helping others grow in their tech journey.",
-    availability: ["Monday", "Wednesday", "Friday"],
-    location: "New York, NY",
-    linkedin: "https://linkedin.com/in/janesmith",
-    github: "https://github.com/janesmith",
-    twitter: "https://twitter.com/janesmith"
-  },
-  // Add more test mentors here
-];
+import mentorService, { Mentor } from '../services/mentorService';
 
 const MentorsPage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
+  const [mentors, setMentors] = useState<Mentor[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchMentors = async () => {
+      try {
+        setLoading(true);
+        const data = await mentorService.getAllMentors();
+        setMentors(data);
+      } catch (err) {
+        setError('Failed to load mentors. Please try again later.');
+        console.error('Error fetching mentors:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchMentors();
+  }, []);
 
   // Filter mentors based on search and skills
-  const filteredMentors = testMentors.filter(mentor => {
+  const filteredMentors = mentors.filter(mentor => {
     const matchesSearch = mentor.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         mentor.bio.toLowerCase().includes(searchTerm.toLowerCase());
+                         (mentor.bio?.toLowerCase() || '').includes(searchTerm.toLowerCase());
     const matchesSkills = selectedSkills.length === 0 || 
                          selectedSkills.some(skill => mentor.skills.includes(skill));
     return matchesSearch && matchesSkills;
   });
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-xl text-gray-600">Loading mentors...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-xl text-red-600">{error}</div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
@@ -60,7 +77,7 @@ const MentorsPage: React.FC = () => {
               <div className="p-6">
                 <div className="flex items-center mb-4">
                   <img
-                    src={mentor.profilePicture}
+                    src={mentor.profilePicture || 'https://api.dicebear.com/7.x/avataaars/svg?seed=default'}
                     alt={mentor.username}
                     className="w-16 h-16 rounded-full"
                   />
@@ -74,12 +91,12 @@ const MentorsPage: React.FC = () => {
                         className="flex items-center text-gray-600 hover:text-blue-600"
                       >
                         <span className="text-yellow-400 mr-1">⭐</span>
-                        <span>{mentor.rating}</span>
+                        <span>{mentor.rating || 'No ratings yet'}</span>
                       </Link>
                     </div>
                   </div>
                 </div>
-                <p className="text-gray-600 text-sm mb-4 line-clamp-2">{mentor.bio}</p>
+                <p className="text-gray-600 text-sm mb-4 line-clamp-2">{mentor.bio || 'No bio available'}</p>
                 <div className="flex flex-wrap gap-2">
                   {mentor.skills.map(skill => (
                     <span
