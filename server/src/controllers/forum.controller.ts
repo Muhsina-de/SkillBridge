@@ -49,17 +49,23 @@ export const getTopicById = async (req: Request, res: Response) => {
 };
 
 export const createTopic = async (req: AuthenticatedRequest, res: Response) => {
+
   try {
     if (!req.user) {
       return res.status(401).json({ message: 'Not authenticated' });
     }
+
+    const authHeader = req.headers.authorization;
+    if (!authHeader) {
+      return res.status(401).json({ message: 'No authorization header' });
+    }
     
-    const { title, content, category } = req.body;
+    const { title, content, category, userId } = req.body;
     const topic = await ForumTopic.create({
       title,
       content,
       category,
-      userId: req.user.id
+      userId
     });
     res.status(201).json(topic);
   } catch (error) {
@@ -69,9 +75,17 @@ export const createTopic = async (req: AuthenticatedRequest, res: Response) => {
 };
 
 export const updateTopic = async (req: AuthenticatedRequest, res: Response) => {
+  console.log("REQupdate", req);
   try {
+
     if (!req.user) {
       return res.status(401).json({ message: 'Not authenticated' });
+    }
+
+    
+    const authHeader = req.headers.authorization;
+    if (!authHeader) {
+      return res.status(401).json({ message: 'No authorization header' });
     }
     
     const { title, content, category } = req.body;
@@ -81,9 +95,9 @@ export const updateTopic = async (req: AuthenticatedRequest, res: Response) => {
       return res.status(404).json({ message: 'Topic not found' });
     }
    
-    if (topic.userId !== req.user.id) {
-      return res.status(403).json({ message: 'Not authorized' });
-    }
+   
+   console.log("TUPDATETOPIC", topic); 
+   console.log("IDUPDATE", req.query.userId); 
    
     await topic.update({ title, content, category });
     res.json(topic);
@@ -100,14 +114,16 @@ export const deleteTopic = async (req: AuthenticatedRequest, res: Response) => {
     }
     
     const topic = await ForumTopic.findByPk(req.params.id);
-   
+    console.log("TOPIC", topic?.userId);
+    console.log("UserID", req.query.userId);
     if (!topic) {
       return res.status(404).json({ message: 'Topic not found' });
     }
    
-    if (topic.userId !== req.user.id) {
+    if (topic.userId !== Number(req.query.userId)) {
       return res.status(403).json({ message: 'Not authorized' });
     }
+    
    
     await topic.destroy();
     res.status(204).send();

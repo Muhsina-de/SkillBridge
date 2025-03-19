@@ -23,7 +23,8 @@ const ForumPage: React.FC = () => {
   useEffect(() => {
     const fetchTopics = async () => {
       try {
-        const response = await axios.get(`http://localhost:3000/api/forum/topics`);
+        const response = await axios.get(`http://localhost:3001/api/forum/topics`);
+      
         const data = response.data as Topic[];
         setTopics(data);
       } catch (err: any) {

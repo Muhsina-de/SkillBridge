@@ -18,14 +18,18 @@ const SignIn: React.FC = () => {
 
     try {
       const response = await axios.post<{ token: string, user: { id: string, username: string, email: string, role: 'mentor' | 'mentee' } }>(
-        'http://localhost:3000/api/auth/login',
+        'http://localhost:3001/api/auth/login',
         { email, password }
       );
       console.log(response.data);
       // Save the user and token in the auth state and redirect to the desired page
+    
       setUser(response.data.user);
       localStorage.setItem('token', response.data.token);
+      localStorage.setItem('user', JSON.stringify(response.data.user));
+
       navigate('/');
+      
     } catch (error) {
       console.error('Error:', error);
       setError('Username or password is incorrect');

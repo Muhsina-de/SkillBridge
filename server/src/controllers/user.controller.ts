@@ -22,22 +22,33 @@ export const signUp = async (req: Request, res: Response) => {
   }
 };
 
+
+
+
+
 export const login = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
     const user = await User.findOne({ where: { email } });
 
+  
     if (!user || !(await user.validatePassword(password))) {
       return res.status(400).json({ message: 'Invalid email or password.' });
     }
 
     const token = generateToken(user.id);
-    res.status(200).json({ token });
+    // Return both token and user object so the frontend can update auth state
+    res.status(200).json({
+      token,
+      user: {
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        role: user.role
+      }
+    });
   } catch (error) {
     const errorMessage = (error as Error).message;
     res.status(500).json({ error: errorMessage });
   }
 };
-
-
-

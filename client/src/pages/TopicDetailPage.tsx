@@ -47,16 +47,34 @@ const TopicDetailPage: React.FC = () => {
     fetchTopic();
   }, [id]);
 
+
+  console.log("IDHandledleDelete", id);
+
+  // const handleDeleteTopic = async () => {
+  //   if (!window.confirm('Are you sure you want to delete this topic?')) return;
+   
+  //   try {
+  //     await axios.delete(`${API_BASE_URL}/api/forum/topics/${id}`);
+  //     navigate('/forum');
+  //   } catch (err) {
+  //     setError('Failed to delete topic');
+  //   }
+  // };
+
   const handleDeleteTopic = async () => {
     if (!window.confirm('Are you sure you want to delete this topic?')) return;
-   
     try {
-      await axios.delete(`${API_BASE_URL}/api/forum/topics/${id}`);
+      const token = localStorage.getItem('token');
+  await axios.delete(`${API_BASE_URL}/api/forum/topics/${id}?userId=${user?.id}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+
       navigate('/forum');
     } catch (err) {
       setError('Failed to delete topic');
     }
   };
+  
 
   const handleAddComment = (newComment: { id: string; content: string; userId: string; createdAt: string }) => {
     if (topic) {
@@ -80,10 +98,10 @@ const TopicDetailPage: React.FC = () => {
             {user && user.id === topic.userId && (
               <div className="flex space-x-2">
                 <button
-                  onClick={() => navigate(`/forum/edit/${topic.id}`)}
+                  onClick={() => navigate(`/forum/edit-topics/${topic.id}`)}
                   className="px-3 py-1 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition"
                 >
-                  Edit
+                  Edit 
                 </button>
                 <button
                   onClick={handleDeleteTopic}

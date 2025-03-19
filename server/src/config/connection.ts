@@ -18,5 +18,7 @@ const sequelize = new Sequelize(
     logging: false // Disable logging in production
   }
 );
+console.log('Sequelize instance created');
+
 
 export default sequelize;

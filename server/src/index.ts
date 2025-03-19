@@ -9,7 +9,7 @@ import forumRoutes from './routes/forums.routes';
 import { createServer, startServer } from './server';
 
 const app = createServer();
-const port = process.env.PORT ? parseInt(process.env.PORT) : 3000;
+const port = process.env.PORT ? parseInt(process.env.PORT) : 3001;
 
 app.use(cors());
 app.use(express.json());
