@@ -15,6 +15,7 @@ export const auth = (req: AuthRequest, res: Response, next: NextFunction) => {
     if (!token) {
       return res.status(401).json({ message: 'Authentication required' });
     }
+    console.log("TOKEnPASSES!")
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-fallback-secret') as {
       id: string;
@@ -23,6 +24,7 @@ export const auth = (req: AuthRequest, res: Response, next: NextFunction) => {
     
     // Add user info to request object
     req.user = decoded;
+    // console.log("reqUser", req.user);
     
     next();
   } catch (error) {

@@ -13,7 +13,7 @@ import ForumComment from './ForumComments';
 const dbConfig = {
   name: process.env.DB_NAME || 'skillbridge_db',
   user: process.env.DB_USER || 'postgres',
-  password: process.env.DB_PASSWORD || 'postgres',
+  password: process.env.DB_PASSWORD || 'SNH123!@im',
   host: process.env.DB_HOST || 'localhost',
   dialect: 'postgres' as const,
   logging: process.env.NODE_ENV === 'production' ? false : console.log,
@@ -76,8 +76,8 @@ ForumTopic.belongsTo(User, { foreignKey: 'userId' });
 User.hasMany(ForumComment, { foreignKey: 'userId' });
 ForumComment.belongsTo(User, { foreignKey: 'userId' });
 
-ForumTopic.hasMany(ForumComment, { foreignKey: 'topicId' });
-ForumComment.belongsTo(ForumTopic, { foreignKey: 'topicId' });
+ForumTopic.hasMany(ForumComment, { foreignKey: 'Id' });
+ForumComment.belongsTo(ForumTopic, { foreignKey: 'Id' });
 
 
 // Test database connection

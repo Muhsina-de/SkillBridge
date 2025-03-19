@@ -1,4 +1,4 @@
-const UserActivity: React.FC<{ username: string; lastActive: Date }> = ({ username, lastActive }) => {
+export const UserActivity: React.FC<{ username: string; lastActive: Date }> = ({ username, lastActive }) => {
     const getActivityStatus = (lastActive: Date) => {
       const minutesAgo = Math.floor((Date.now() - new Date(lastActive).getTime()) / 60000);
       if (minutesAgo < 1) return 'Just now';

@@ -2,10 +2,11 @@ import React from 'react';
 
 interface CommentCardProps {
   comment: {
-    id: string;
+    id: number;
     content: string;
-    createdAt: string;
-    userId?: string;
+    createdAt: Date;
+    topicId: number;
+    userId?: number;
     User?: {
       username: string;
       profilePicture?: string;

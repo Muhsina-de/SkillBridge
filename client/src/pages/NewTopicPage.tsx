@@ -12,7 +12,7 @@ const NewTopicPage: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
   const navigate = useNavigate();
-
+  console.log("UserID", user);
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -29,17 +29,28 @@ const NewTopicPage: React.FC = () => {
     setIsSubmitting(true);
     
     try {
-      const response = await axios.post<{ id: string }>(`${API_BASE_URL}/api/forum/topics`, {
-        title,
-        content,
-        category,
-        userId: user.id
-      });
+      const token = localStorage.getItem('token');
+      const response = await axios.post<{ id: string }>(
+        `${API_BASE_URL}/api/forum/topics`,
+        {
+          title,
+          content,
+          category,
+          userId: user.id
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
+      
       navigate(`/forum/topics/${response.data.id}`);
     } catch (err) {
       setError('Failed to create topic. Please try again.');
       setIsSubmitting(false);
     }
+    
   };
 
   return (

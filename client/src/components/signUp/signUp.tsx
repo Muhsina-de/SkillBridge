@@ -20,7 +20,7 @@ const SignUp: React.FC = () => {
 
     try {
       // Send JSON instead of FormData
-      const response = await axios.post('http://localhost:3000/api/auth/signup', {
+      const response = await axios.post('http://localhost:3001/api/auth/signup', {
         username,
         email,
         password,
@@ -33,6 +33,7 @@ const SignUp: React.FC = () => {
       // localStorage.setItem('token', response.data.token);
 
       navigate('/signin', { state: { username } }); // Redirect to sign-in page after successful sign-up
+      console.log("User Signed Up!");
     } catch (error) {
       const err = error as any;
       console.error('Error:', err.response?.data || err.message);

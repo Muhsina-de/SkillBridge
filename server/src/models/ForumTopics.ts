@@ -60,7 +60,7 @@
       {
         sequelize,
         modelName: 'ForumTopic',
-        tableName: 'forum_topic',
+        tableName: 'forum_topics',
       }
     );
 

@@ -8,7 +8,7 @@ interface UserAttributes {
   email: string;
   password: string;
   role: string;
-  
+  profilePicture?: string;  // Added optional profilePicture field
 }
 
 interface UserCreationAttributes extends Optional<UserAttributes, 'id'> {}
@@ -18,9 +18,8 @@ export class User extends Model<UserAttributes, UserCreationAttributes> implemen
   public username!: string;
   public email!: string;
   public password!: string;
- 
   public role!: string;
-  
+  public profilePicture?: string;  // Optional property
 
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
@@ -51,12 +50,14 @@ export function UserFactory(sequelize: Sequelize): typeof User {
         type: DataTypes.STRING,
         allowNull: false,
       },
-    
       role: {
         type: DataTypes.ENUM('mentor', 'mentee'),
         allowNull: false,
       },
-    
+      profilePicture: {  // New attribute definition
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
     },
     {
       timestamps: true,

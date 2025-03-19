@@ -6,58 +6,49 @@ import gitRoutes from './routes/github.Routes';
 import authRoutes from './routes/authRoutes';
 import profileRoutes from './routes/profile.Route';
 import forumRoutes from './routes/forums.routes';
-import {UserFactory} from './models/user';
-import { authenticateJWT } from './middleware/authmiddleware'; // Import the authentication middleware
-import { Sequelize } from 'sequelize';
+import { UserFactory } from './models/user';
+import ForumTopic from './models/ForumTopics'; // Import ForumTopic model
+import ForumComment from './models/ForumComments'; // And ForumComment if needed
+import { authenticateJWT } from './middleware/authmiddleware';
+import sequelize from './config/connection'; // Import the centralized Sequelize instance
 
-const sequelize = new Sequelize({
-  dialect: 'postgres',
-  host: process.env.DB_HOST,
-  username: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
-  port: Number(process.env.DB_PORT) || 5432,
-  logging: false, // Disable logging if not needed
-});
-// Initialize the User model
+// Initialize models so they are registered with the sequelize instance
 const User = UserFactory(sequelize);
+
+// Define associations
+ForumTopic.hasMany(ForumComment, { foreignKey: 'topicId' });
+ForumComment.belongsTo(ForumTopic, { foreignKey: 'topicId' });
 
 export function createServer() {
   const app = express();
   
-  // Configure CORS
   const corsOptions = {
-    origin: 'http://localhost:5173', // Adjust this to match your frontend's URL
+    origin: 'http://localhost:5173',
     optionsSuccessStatus: 200
   };
   app.use(cors(corsOptions));
   
   app.use(express.json());
  
-  // API Routes
   app.use('/api/reviews', authenticateJWT, reviewRoutes);
   app.use('/api', gitRoutes);
   app.use('/api/auth', authRoutes);
   app.use('/api/profiles', authenticateJWT, profileRoutes);
   app.use('/api/forum', forumRoutes);
- // app.use(authenticateJWT); // Use the authentication middleware for all routes under /api
-
+  
   app.get('/api/health', (_req: Request, res: Response) => {
     res.json({ message: 'Server is running!' });
   });
-
-  // Serve static files
+  
   app.use(express.static(path.join(__dirname, '../public')));
-
-  // Serve the index.html file for all other routes
   app.get('*', (_req: Request, res: Response) => {
     res.sendFile(path.join(__dirname, '../public/index.html'));
   });
-
+  
   return app;
 }
 
-export function startServer(app: express.Application, port: number = 3000) {
+export function startServer(app: express.Application, port: number = 3001) {
   // Sync Sequelize models and then start the server
   sequelize.sync({ force: false }).then(() => {
     app.listen(port, () => {

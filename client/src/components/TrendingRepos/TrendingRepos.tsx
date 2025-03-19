@@ -25,7 +25,7 @@ const TrendingRepos: React.FC = () => {
  useEffect(() => {
    async function fetchTrendingRepos() {
      try {
-       const response = await axios.get<ApiResponse>('http://localhost:3000/api/github/trending');
+       const response = await axios.get<ApiResponse>('http://localhost:3001/api/github/trending');
       
        // Check if the response contains the expected structure
        if (response.data && Array.isArray(response.data.items)) {

@@ -1,38 +1,66 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { createTopic } from '../../services/forum.service';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import axios from 'axios';
+import { API_BASE_URL } from '../constants/api'; // Adjust the path as needed
+import { useAuth } from '../context/AuthContext';
 
-const CreateTopic: React.FC = () => {
+const EditTopic: React.FC = () => {
+  const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [category, setCategory] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(true);
+const {user} = useAuth();
+  // Fetch topic details on mount
+  useEffect(() => {
+    const fetchTopic = async () => {
+      try {
+        const response = await axios.get(`${API_BASE_URL}/api/forum/topics/${id}`);
+        const data : any = response.data;
+        setTitle(data.title);
+        setContent(data.content);
+        setCategory(data.category);
+      } catch (err) {
+        setError('Failed to fetch topic details.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTopic();
+  }, [id]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
     setError('');
-
     try {
-      const response = await createTopic({ title, content, category });
-
-      if (response.status === 200) {
-        const data = response.data as { topicId: number };
-        navigate(`/forum/topics/${data.topicId}`);
-      } else {
-        const errorMessage = (response.data as { message: string }).message || 'Failed to create topic. Please try again.';
-        setError(errorMessage);
-      }
-    } catch (error) {
-      setError('Failed to create topic. Please try again.');
+      const token = localStorage.getItem('token');
+      console.log("TOKEN<<>>", token);
+      await axios.put(
+        `${API_BASE_URL}/api/forum/topics/${id}?userId=${user?.id}`,
+        { title, content, category },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
+      navigate(`/forum/topics/${id}`);
+    } catch (err) {
+      setError('Failed to update topic. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
   };
 
- 
+  if (loading) {
+    return <div className="text-center py-8">Loading topic details...</div>;
+  }
 
   return (
     <div className="max-w-2xl mx-auto p-6">
@@ -41,7 +69,7 @@ const CreateTopic: React.FC = () => {
           {error}
         </div>
       )}
-      <h1 className="text-2xl font-bold text-center mb-6">Create New Topic</h1>
+      <h1 className="text-2xl font-bold text-center mb-6">Edit Topic</h1>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label className="block text-sm font-semibold text-gray-700">Title</label>
@@ -53,7 +81,6 @@ const CreateTopic: React.FC = () => {
             className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500"
           />
         </div>
-
         <div>
           <label className="block text-sm font-semibold text-gray-700">Category</label>
           <select
@@ -69,7 +96,6 @@ const CreateTopic: React.FC = () => {
             <option value="General Discussion">General Discussion</option>
           </select>
         </div>
-
         <div>
           <label className="block text-sm font-semibold text-gray-700">Content</label>
           <textarea
@@ -80,17 +106,16 @@ const CreateTopic: React.FC = () => {
             className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500"
           />
         </div>
-
         <button
           type="submit"
           disabled={isSubmitting}
           className="w-full py-2 px-4 bg-blue-500 text-white font-semibold rounded-md shadow-sm hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
         >
-          {isSubmitting ? 'Creating...' : 'Create Topic'}
+          {isSubmitting ? 'Updating...' : 'Update Topic'}
         </button>
       </form>
     </div>
   );
 };
 
-export default CreateTopic;
+export default EditTopic;
