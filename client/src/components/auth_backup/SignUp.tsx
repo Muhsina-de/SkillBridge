@@ -11,7 +11,7 @@ const SignUp: React.FC = () => {
   });
   const [error, setError] = useState('');
   const navigate = useNavigate();
-  const { signup } = useAuth();
+  const { register } = useAuth();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -28,14 +28,10 @@ const SignUp: React.FC = () => {
     }
 
     try {
-      await signup({
-        email: formData.email,
-        password: formData.password,
-        username: formData.username
-      });
-      navigate('/mentors');
-    } catch (err) {
-      setError('Failed to create account');
+      await register(formData.username, formData.email, formData.password, 'mentor');
+      navigate('/dashboard');
+    } catch (error) {
+      console.error('Registration error:', error);
     }
   };
 

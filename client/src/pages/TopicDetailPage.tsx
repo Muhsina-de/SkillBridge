@@ -6,27 +6,11 @@ import { format } from 'date-fns';
 import { API_BASE_URL } from '../constants/api';
 import CommentCard from '../components/forums/CommentCard';
 import CommentForm from '../components/forums/CommentForm';
-interface Topic {
-  id: string;
-  title: string;
-  content: string;
-  category: string;
-  userId: string;
-  createdAt: string;
-  User?: {
-    username: string;
-  };
-  Comments?: Array<{
-    id: string;
-    content: string;
-    userId: string;
-    createdAt: string;
-  }>;
-}
+import { ForumTopic, ForumComment } from '../types/forum.types';
 
 const TopicDetailPage: React.FC = () => {
   const { id } = useParams();
-  const [topic, setTopic] = useState<Topic | null>(null);
+  const [topic, setTopic] = useState<ForumTopic | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const { user } = useAuth();
@@ -35,7 +19,7 @@ const TopicDetailPage: React.FC = () => {
   useEffect(() => {
     const fetchTopic = async () => {
       try {
-        const response = await axios.get<Topic>(`${API_BASE_URL}/api/forum/topics/${id}`);
+        const response = await axios.get<ForumTopic>(`${API_BASE_URL}/api/forum/topics/${id}`);
         setTopic(response.data);
         setLoading(false);
       } catch (err) {
@@ -60,13 +44,22 @@ const TopicDetailPage: React.FC = () => {
       setError('Failed to delete topic');
     }
   };
-  
 
-  const handleAddComment = (newComment: { id: string; content: string; userId: string; createdAt: string }) => {
+  const handleAddComment = (newComment: ForumComment) => {
     if (topic) {
+      const comment: ForumComment = {
+        id: parseInt(newComment.id.toString(), 10),
+        content: newComment.content,
+        userId: parseInt(newComment.userId.toString(), 10),
+        topicId: parseInt(newComment.topicId.toString(), 10),
+        createdAt: newComment.createdAt,
+        updatedAt: newComment.updatedAt,
+        User: newComment.User
+      };
+      
       setTopic({
         ...topic,
-        Comments: [...(topic.Comments || []), newComment]
+        Comments: [...(topic.Comments || []), comment]
       });
     }
   };
@@ -81,7 +74,7 @@ const TopicDetailPage: React.FC = () => {
         <div className="mb-4">
           <div className="flex justify-between items-start">
             <h1 className="text-2xl font-bold text-gray-900">{topic.title}</h1>
-            {user && user.id === topic.userId && (
+            {user && parseInt(user.id.toString(), 10) === topic.userId && (
               <div className="flex space-x-2">
                 <button
                   onClick={() => navigate(`/forum/edit-topics/${topic.id}`)}
@@ -133,7 +126,7 @@ const TopicDetailPage: React.FC = () => {
       </div>
    
       {user ? (
-        <CommentForm topicId={parseInt(topic.id, 10)} onCommentAdded={handleAddComment} />
+        <CommentForm topicId={parseInt(topic.id.toString(), 10)} onCommentAdded={handleAddComment} />
       ) : (
         <div className="bg-gray-50 rounded-lg p-4 text-center">
           <p className="text-gray-600 mb-2">You must be logged in to comment</p>

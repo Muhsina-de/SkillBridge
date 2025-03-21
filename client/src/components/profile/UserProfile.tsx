@@ -3,10 +3,11 @@ import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { API_BASE_URL } from '../../constants/api';
 import ReviewList from '../reviews/ReviewList';
+import { Review } from '../../types/reviews';
 
 // Simple User interface matching what we've been using
 interface User {
-  id: string;
+  id: number;
   username: string;
   email?: string;
   profilePicture?: string;
@@ -25,24 +26,20 @@ const UserProfile: React.FC<UserProfileProps> = ({
   user,
   isCurrentUser = false
 }) => {
-  interface Review {
-    id: string;
-    content: string;
-    rating: number;
-    // Add other fields as necessary
-  }
-
   const [reviews, setReviews] = useState<Review[]>([]);
+  const [rating, setRating] = useState<number>(0);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchUserReviews = async () => {
       setIsLoading(true);
       try {
-        const response = await axios.get(`${API_BASE_URL}/api/reviews/user/${user.id}`);
-        setReviews(response.data as Review[]);
+        const response = await axios.get<Review[]>(`${API_BASE_URL}/api/reviews/mentor/${user.id}`);
+        setReviews(response.data);
+        const avgRating = response.data.reduce((acc, review) => acc + review.rating, 0) / response.data.length;
+        setRating(avgRating);
       } catch (error) {
-        console.error('Failed to load reviews:', error);
+        console.error('Error fetching reviews:', error);
       } finally {
         setIsLoading(false);
       }

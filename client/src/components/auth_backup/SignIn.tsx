@@ -12,10 +12,10 @@ const SignIn: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await login({ email, password });
-      navigate('/mentors');
-    } catch (err) {
-      setError('Invalid email or password');
+      await login(email, password);
+      navigate('/dashboard');
+    } catch (error) {
+      console.error('Login error:', error);
     }
   };
 
