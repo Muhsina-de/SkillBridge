@@ -1,9 +1,10 @@
-import { Request, Response } from 'express';
-import { User } from '../models/userprofile';
+import { Response } from 'express';
+import { User } from '../models/user';
 import { generateToken } from '../utils/jwt';
 import bcrypt from 'bcryptjs';
+import { AuthRequest } from '../types/express';
 
-export const signUp = async (req: Request, res: Response) => {        
+export const signUp = async (req: AuthRequest, res: Response) => {        
   try {
     const { username, email, password, role } = req.body;
 
@@ -13,24 +14,13 @@ export const signUp = async (req: Request, res: Response) => {
       return res.status(400).json({ message: 'User already exists' });
     }
 
-    // Hash password
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    // Create user with default values for optional fields
+    // Create user with required fields
     const newUser = await User.create({
       username,
       email,
-      password: hashedPassword,
-      role,
-      skills: [],
-      rating: 0,
-      profilePicture: '',
-      bio: '',
-      availability: [],
-      location: '',
-      linkedin: '',
-      github: '',
-      twitter: ''
+      password,
+      role: role || 'mentee', // Default to mentee if no role specified
+      profilePicture: undefined // Optional field
     });
 
     return res.status(201).json({ message: 'User created successfully' });
@@ -40,7 +30,7 @@ export const signUp = async (req: Request, res: Response) => {
   }
 };
 
-export const login = async (req: Request, res: Response) => {
+export const login = async (req: AuthRequest, res: Response) => {
   try {
     const { email, password } = req.body;
     const user = await User.findOne({ where: { email } });
@@ -62,7 +52,8 @@ export const login = async (req: Request, res: Response) => {
         id: user.id,
         username: user.username,
         email: user.email,
-        role: user.role
+        role: user.role,
+        profilePicture: user.profilePicture
       }
     });
   } catch (error) {

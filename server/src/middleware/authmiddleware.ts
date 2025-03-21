@@ -1,12 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
-
-export interface AuthRequest extends Request {
-  user?: {
-    id: number;
-    email: string;
-  };
-}
+import { AuthRequest } from '../types/express';
 
 export const authenticateJWT = (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
@@ -27,7 +21,13 @@ export const authenticateJWT = (req: AuthRequest, res: Response, next: NextFunct
     const secret = process.env.JWT_SECRET || 'test-secret';
     console.log('Using JWT secret:', secret); // Debug log
 
-    const decoded = jwt.verify(token, secret) as { id: number; email: string };
+    const decoded = jwt.verify(token, secret) as {
+      id: number;
+      username: string;
+      email: string;
+      role: string;
+      profilePicture?: string;
+    };
     console.log('Decoded token:', decoded); // Debug log
 
     req.user = decoded;

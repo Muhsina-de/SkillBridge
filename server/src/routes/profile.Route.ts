@@ -1,12 +1,13 @@
-import express from 'express';
+import express, { Request, Response } from 'express';
 import { User } from '../models';
 import { authenticateJWT } from '../middleware/authmiddleware';
 import bcrypt from 'bcryptjs';       
+import { AuthRequest } from '../types/express';
 
 const router = express.Router();
 
 // Get all profiles
-router.get('/', authenticateJWT, async (req, res) => {
+router.get('/', authenticateJWT, async (req: AuthRequest, res: Response) => {
     try {
         const profiles = await User.findAll({
             attributes: { exclude: ['password'] }
@@ -19,7 +20,7 @@ router.get('/', authenticateJWT, async (req, res) => {
 });
 
 // Get all mentors
-router.get('/mentors', authenticateJWT, async (req, res) => {
+router.get('/mentors', authenticateJWT, async (req: AuthRequest, res: Response) => {
     try {
         console.log('Fetching mentors...');
         const mentors = await User.findAll({
@@ -45,7 +46,7 @@ router.get('/mentors', authenticateJWT, async (req, res) => {
 });
 
 // Get profile by ID
-router.get('/:id', authenticateJWT, async (req, res) => {
+router.get('/:id', authenticateJWT, async (req: AuthRequest, res: Response) => {
     try {
         const profile = await User.findByPk(req.params.id, {
             attributes: { exclude: ['password'] }
@@ -61,7 +62,7 @@ router.get('/:id', authenticateJWT, async (req, res) => {
 });
 
 // Update profile
-router.put('/:id', authenticateJWT, async (req, res) => {
+router.put('/:id', authenticateJWT, async (req: AuthRequest, res: Response) => {
     try {
         const profile = await User.findByPk(req.params.id);
         if (!profile) {
@@ -76,7 +77,7 @@ router.put('/:id', authenticateJWT, async (req, res) => {
 });
 
 // Create new profile
-router.post('/', authenticateJWT, async (req, res) => {
+router.post('/', authenticateJWT, async (req: AuthRequest, res: Response) => {
     try {
         const { username, email, bio, skills, role, rating, profilePicture, availability, location, linkedin, github, twitter } = req.body;
         const hashedPassword = await bcrypt.hash('defaultPassword123', 10);

@@ -1,16 +1,10 @@
-import { Request, Response, NextFunction } from 'express';
+import { Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
-
-export interface AuthRequest extends Request {
-  user?: {
-    id: number;
-    email: string;
-  };
-}
+import { AuthRequest } from '../types/express';
 
 export const auth = (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
-    const token = req.header('Authorization')?.replace('Bearer ', '');
+    const token = req.headers.authorization?.replace('Bearer ', '');
     
     if (!token) {
       return res.status(401).json({ message: 'Authentication required' });
@@ -19,7 +13,10 @@ export const auth = (req: AuthRequest, res: Response, next: NextFunction) => {
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-fallback-secret') as {
       id: number;
+      username: string;
       email: string;
+      role: string;
+      profilePicture?: string;
     };
     
     // Add user info to request object

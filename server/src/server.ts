@@ -51,7 +51,7 @@ export function createServer() {
     res.json({ message: 'Server is running!' });
   });
 
-  app.get('/api/test', (req, res) => {
+  app.get('/api/test', (_req: Request, res: Response) => {
     res.json({ message: 'Server is running!' });
   });
 
@@ -68,6 +68,10 @@ export function createServer() {
   // Catch-all route for SPA (moved after static files)
   app.get('*', (_req: Request, res: Response) => {
     res.sendFile(path.join(__dirname, '../public/index.html'));       
+  });
+
+  app.get('/', (req: Request, res: Response) => {
+    res.send('Welcome to RaveNest API');
   });
 
   return app;

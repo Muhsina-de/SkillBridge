@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { authenticateJWT } from '../middleware/authmiddleware';
 import {
-  getAllTopics,
+  getTopics,
   getTopicById,
   createTopic,
   updateTopic,
@@ -13,7 +13,7 @@ import {
 const router = Router();
 
 // Public routes (no auth required)
-router.get('/topics', getAllTopics);
+router.get('/topics', getTopics);
 router.get('/topics/:id', getTopicById);
 router.get('/topics/:topicId/comments', getComments);
 

@@ -1,6 +1,7 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import { Review, User, Session } from '../models';
-import { authenticateJWT, AuthRequest } from '../middleware/authmiddleware';
+import { authenticateJWT } from '../middleware/authmiddleware';
+import { AuthRequest } from '../types/express';
 
 const router = Router();
 

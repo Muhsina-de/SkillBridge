@@ -1,6 +1,6 @@
-import { Request, Response } from 'express';
+import { Response } from 'express';
 import { Review } from '../models/review';
-import { AuthRequest } from '../middleware/auth';
+import { AuthRequest } from '../types/express';
 
 // Create a new review
 export const createReview = async (req: AuthRequest, res: Response) => {
@@ -27,7 +27,7 @@ export const createReview = async (req: AuthRequest, res: Response) => {
 };
 
 // Get reviews by mentor ID
-export const getMentorReviews = async (req: Request, res: Response) => {
+export const getMentorReviews = async (req: AuthRequest, res: Response) => {
   try {
     const { mentor_id } = req.params;
     
@@ -44,7 +44,7 @@ export const getMentorReviews = async (req: Request, res: Response) => {
 };
 
 // Get review by session ID
-export const getSessionReview = async (req: Request, res: Response) => {
+export const getSessionReview = async (req: AuthRequest, res: Response) => {
   try {
     const { session_id } = req.params;
     
