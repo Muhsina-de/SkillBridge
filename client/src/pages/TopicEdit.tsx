@@ -3,16 +3,18 @@ import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import { API_BASE_URL } from '../constants/api'; // Adjust the path as needed
 import { useAuth } from '../context/AuthContext';
+import { ForumTopic } from '../types/forum.types';
 
 const EditTopic: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const token = localStorage.getItem('token');
-  const [topic, setTopic] = useState<Topic | null>(null);
+  const [topic, setTopic] = useState<ForumTopic | null>(null);
   const [error, setError] = useState<string>('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [loading, setLoading] = useState(true);
-const {user} = useAuth();
+  const { user } = useAuth();
+
   // Fetch topic details on mount
   useEffect(() => {
     const fetchTopic = async () => {
