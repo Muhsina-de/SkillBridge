@@ -47,6 +47,9 @@ const Navbar: React.FC = () => {
               <Link to="/trending" className={`px-3 py-2 rounded-lg transition-colors ${isActive('/trending')}`}>
                 Trending
               </Link>
+              <Link to="/forum" className={`px-3 py-2 rounded-lg transition-colors ${isActive('/forum')}`}>
+                Forum
+              </Link>
             </div>
           </div>
 

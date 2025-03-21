@@ -73,13 +73,13 @@ const MentorsPage: React.FC = () => {
         {/* Mentors Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredMentors.map(mentor => (
-            <div key={mentor.id} className="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-md transition">
-              <div className="p-6">
+            <div key={mentor.id} className="bg-primary/10 rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 border border-primary-light/20 flex flex-col">
+              <div className="p-6 flex-grow">
                 <div className="flex items-center mb-4">
                   <img
                     src={mentor.profilePicture || 'https://api.dicebear.com/7.x/avataaars/svg?seed=default'}
                     alt={mentor.username}
-                    className="w-16 h-16 rounded-full"
+                    className="w-16 h-16 rounded-full ring-2 ring-primary-light/20"
                   />
                   <div className="ml-4">
                     <Link to={`/mentor/${mentor.id}`} className="block">
@@ -108,7 +108,7 @@ const MentorsPage: React.FC = () => {
                   ))}
                 </div>
               </div>
-              <div className="px-6 py-4 bg-gray-50 border-t border-gray-100">
+              <div className="px-6 py-4 bg-white/50 border-t border-primary-light/20 mt-auto">
                 <Link
                   to={`/mentor/${mentor.id}`}
                   className="w-full inline-flex justify-center items-center px-4 py-2 border border-blue-600 text-blue-600 rounded-lg hover:bg-blue-50 transition"

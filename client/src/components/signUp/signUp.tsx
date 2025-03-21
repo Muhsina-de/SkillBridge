@@ -8,9 +8,11 @@ const SignUp: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [role, setRole] = useState('mentor');
+  const [error, setError] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError('');
 
     // Basic validation
     if (!username || !email || !password || !role) {
@@ -29,14 +31,12 @@ const SignUp: React.FC = () => {
 
       console.log(response.data);
 
-      // If you need to save a token:
-      // localStorage.setItem('token', response.data.token);
-
-      navigate('/signin', { state: { username } }); // Redirect to sign-in page after successful sign-up
-      console.log("User Signed Up!");
-    } catch (error) {
-      const err = error as any;
-      console.error('Error:', err.response?.data || err.message);
+      if (response.data.token) {
+        localStorage.setItem('token', response.data.token);
+        navigate('/dashboard');
+      }
+    } catch (err: any) {
+      setError(err.response?.data?.message || 'Registration failed');
     }
   };
 

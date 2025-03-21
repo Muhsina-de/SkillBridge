@@ -1,7 +1,8 @@
 import axios from 'axios';
 
+// Create axios instance with base URL from environment variables
 const axiosInstance = axios.create({
-  baseURL: 'http://localhost:3001',
+  baseURL: import.meta.env.VITE_API_URL,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -11,19 +12,13 @@ const axiosInstance = axios.create({
 axiosInstance.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token');
-    console.log('Token from localStorage:', token); // Debug log
     if (token) {
       config.headers = config.headers || {};
       config.headers.Authorization = `Bearer ${token}`;
-      console.log('Request headers:', config.headers); // Debug log
-    } else {
-      console.log('No token found in localStorage'); // Debug log
     }
-    console.log(`Making ${config.method?.toUpperCase()} request to: ${config.baseURL}${config.url}`);
     return config;
   },
   (error) => {
-    console.error('Request error:', error);
     return Promise.reject(error);
   }
 );

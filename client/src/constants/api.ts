@@ -1,5 +1,4 @@
 export const API_BASE_URL = 'http://localhost:3001';
-<<<<<<< HEAD
 
 export const AUTH_ENDPOINTS = {
   LOGIN: `${API_BASE_URL}/api/auth/login`,
@@ -11,10 +10,13 @@ export const AUTH_ENDPOINTS = {
 export const USER_ENDPOINTS = {
   PROFILE: `${API_BASE_URL}/api/profiles`,
   UPDATE_PROFILE: `${API_BASE_URL}/api/profiles/update`,
+  GET_BY_ID: (userId: number) => `${API_BASE_URL}/api/users/${userId}`,
+  UPDATE_BY_ID: (userId: number) => `${API_BASE_URL}/api/users/${userId}`,
 };
 
 export const REVIEW_ENDPOINTS = {
   GET_MENTOR_REVIEWS: (mentorId: number) => `${API_BASE_URL}/api/reviews/mentor/${mentorId}`,
+  GET_BY_SESSION: (sessionId: number) => `${API_BASE_URL}/api/reviews/session/${sessionId}`,
   CREATE_REVIEW: `${API_BASE_URL}/api/reviews`,
   UPDATE_REVIEW: (reviewId: number) => `${API_BASE_URL}/api/reviews/${reviewId}`,
   DELETE_REVIEW: (reviewId: number) => `${API_BASE_URL}/api/reviews/${reviewId}`,
@@ -30,8 +32,20 @@ export const SESSION_ENDPOINTS = {
   GET_MENTEE_SESSIONS: (menteeId: number) => `${API_BASE_URL}/api/sessions/mentee/${menteeId}`,
   UPDATE_STATUS: (sessionId: number) => `${API_BASE_URL}/api/sessions/${sessionId}/status`,
 };
-=======
->>>>>>> origin/master
+
+export const FORUM_ENDPOINTS = {
+  TOPICS: {
+    GET_ALL: `${API_BASE_URL}/api/forum/topics`,
+    GET_BY_ID: (id: number) => `${API_BASE_URL}/api/forum/topics/${id}`,
+    CREATE: `${API_BASE_URL}/api/forum/topics`,
+    UPDATE: (id: number) => `${API_BASE_URL}/api/forum/topics/${id}`,
+    DELETE: (id: number) => `${API_BASE_URL}/api/forum/topics/${id}`,
+  },
+  COMMENTS: {
+    GET_BY_TOPIC: (topicId: number) => `${API_BASE_URL}/api/forum/topics/${topicId}/comments`,
+    CREATE: (topicId: number) => `${API_BASE_URL}/api/forum/topics/${topicId}/comments`,
+  },
+};
 
 export const API_ENDPOINTS = {
   REVIEWS: {

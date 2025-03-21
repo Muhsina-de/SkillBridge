@@ -5,8 +5,8 @@ import { API_BASE_URL } from '../../constants/api';
 interface Repo {
   id: number;
   name: string;
-  html_url: string;
   description: string;
+  html_url: string;
   stargazers_count: number;
 }
 
@@ -42,19 +42,28 @@ const TrendingRepos: React.FC = () => {
     fetchTrendingRepos();
   }, []);
 
-  if (loading) return <div className="text-center text-lg font-semibold">Loading...</div>;
-  if (error) return <div className="text-center text-red-500">{error}</div>;
+  if (loading) return (
+    <div className="main-container">
+      <div className="text-center text-lg font-semibold">Loading...</div>
+    </div>
+  );
+  
+  if (error) return (
+    <div className="main-container">
+      <div className="text-center text-red-500">{error}</div>
+    </div>
+  );
 
   return (
-    <div className="container mx-auto py-6 space-y-6">
-      <h1 className="text-3xl font-bold text-center text-gray-900">Trending GitHub Repositories</h1>
+    <div className="main-container space-y-6">
+      <h1 className="text-3xl font-bold text-center">Trending GitHub Repositories</h1>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {Array.isArray(repos) && repos.length > 0 ? (
           repos.map((repo) => (
-            <div key={repo.id} className="bg-white border border-gray-300 rounded-lg shadow p-6 hover:bg-gray-50 transition duration-200">   
+            <div key={repo.id} className="glass-card p-6 hover:bg-white/90 transition duration-200">   
               <a href={repo.html_url} target="_blank" rel="noopener noreferrer">
-                <h3 className="text-xl font-semibold text-gray-900 hover:text-blue-500">{repo.name}</h3>
+                <h3 className="text-xl font-semibold hover:text-blue-500">{repo.name}</h3>
               </a>
               <p className="mt-2 text-gray-600">{repo.description}</p> 
               <div className="mt-4 text-sm text-gray-500">

@@ -22,7 +22,11 @@
   }
 
   body {
-    @apply bg-gradient-background text-text-primary min-h-screen;
+    @apply min-h-screen;
+    background: linear-gradient(135deg, #E6EEFF 0%, #FFFFFF 50%, #D1E3FF 100%);
+    background-attachment: fixed;
+    background-size: cover;
+    background-position: center;
     font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   }
 
@@ -42,7 +46,12 @@
 
 @layer components {
   .glass-card {
-    @apply bg-gradient-card backdrop-blur-lg border border-primary-light/20 rounded-xl shadow-lg;
+    @apply bg-white/80 backdrop-blur-lg border border-primary-light/20 rounded-xl shadow-lg;
+  }
+
+  .main-container {
+    @apply max-w-4xl mx-auto p-6 pt-24 min-h-screen;
+    background: transparent;
   }
 
   .btn {
@@ -58,7 +67,7 @@
   }
 
   .input-field {
-    @apply w-full px-4 py-2 bg-white border border-gray-200 rounded-lg text-text-primary placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-light focus:border-primary-light/50;
+    @apply w-full px-4 py-2 bg-white/80 backdrop-blur-sm border border-gray-200 rounded-lg text-text-primary placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-light focus:border-primary-light/50;
   }
 }
 

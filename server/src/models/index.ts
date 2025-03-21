@@ -1,20 +1,13 @@
 import { Sequelize } from 'sequelize';
 import { config } from 'dotenv';
-<<<<<<< HEAD
 import { initUser } from './userprofile';
 import { initSession } from './session';
 import { initReview } from './review';
+import ForumTopic from './ForumTopics';
+import ForumComment from './ForumComments';
 
 // Load environment variables
 config();
-=======
-import { UserFactory } from './userprofile';
-import { SessionFactory } from './session';
-import { ReviewFactory } from './review';
-import ForumTopic from './ForumTopics';
-import ForumComment from './ForumComments';
-// Load environment variablesconfig();
->>>>>>> origin/master
 
 /**
  * Database configuration options
@@ -47,71 +40,69 @@ const User = initUser(sequelize);
 const Session = initSession(sequelize);
 const Review = initReview(sequelize, User);
 
+// Initialize forum models
+ForumTopic.initialize(sequelize);
+ForumComment.initialize(sequelize);
+
 // Define associations
-User.hasMany(Session, { 
-  foreignKey: 'menteeId', 
+User.hasMany(Session, {
+  foreignKey: 'menteeId',
   as: 'menteeSessions',
   onDelete: 'CASCADE'
 });
 
-User.hasMany(Session, { 
-  foreignKey: 'mentorId', 
+User.hasMany(Session, {
+  foreignKey: 'mentorId',
   as: 'mentorSessions',
   onDelete: 'CASCADE'
 });
 
-Session.belongsTo(User, { 
-  foreignKey: 'menteeId', 
+Session.belongsTo(User, {
+  foreignKey: 'menteeId',
   as: 'mentee'
 });
 
-Session.belongsTo(User, { 
-  foreignKey: 'mentorId', 
+Session.belongsTo(User, {
+  foreignKey: 'mentorId',
   as: 'mentor'
 });
 
-User.hasMany(Review, { 
-  foreignKey: 'menteeId', 
+User.hasMany(Review, {
+  foreignKey: 'menteeId',
   as: 'givenReviews',
   onDelete: 'CASCADE'
 });
 
-User.hasMany(Review, { 
-  foreignKey: 'mentorId', 
+User.hasMany(Review, {
+  foreignKey: 'mentorId',
   as: 'receivedReviews',
   onDelete: 'CASCADE'
 });
 
-Review.belongsTo(User, { 
+Review.belongsTo(User, {
   foreignKey: 'menteeId', 
   as: 'mentee'
 });
 
-Review.belongsTo(User, { 
-  foreignKey: 'mentorId', 
+Review.belongsTo(User, {
+  foreignKey: 'mentorId',
   as: 'mentor'
 });
 
-Review.belongsTo(Session, { 
+Review.belongsTo(Session, {
   foreignKey: 'sessionId'
 });
 
-Session.hasOne(Review, { 
+Session.hasOne(Review, {
   foreignKey: 'sessionId',
   onDelete: 'CASCADE'
 });
 
-
-
+// Forum associations
+ForumTopic.associate({ User, ForumComment });
+ForumComment.associate({ User, ForumTopic });
 User.hasMany(ForumTopic, { foreignKey: 'userId' });
-ForumTopic.belongsTo(User, { foreignKey: 'userId' });
-
 User.hasMany(ForumComment, { foreignKey: 'userId' });
-ForumComment.belongsTo(User, { foreignKey: 'userId' });
-
-ForumTopic.hasMany(ForumComment, { foreignKey: 'Id' });
-ForumComment.belongsTo(ForumTopic, { foreignKey: 'Id' });
-
 
 // Test database connection
 sequelize
@@ -120,8 +111,8 @@ sequelize
     console.log('Database connection has been established successfully.');
   })
   .catch((error) => {
-    console.error('Unable to connect to the database:', error);
-    process.exit(1); // Exit if we can't connect to the database
+    console.error('Unable to connect to the database:', error);       
+    process.exit(1); // Exit if we can't connect to the database      
   });
 
 export { sequelize, User, Session, Review, ForumTopic, ForumComment };

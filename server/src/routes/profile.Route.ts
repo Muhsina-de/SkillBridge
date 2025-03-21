@@ -1,7 +1,7 @@
 import express from 'express';
-<<<<<<< HEAD
 import { User } from '../models';
 import { authenticateJWT } from '../middleware/authmiddleware';
+import bcrypt from 'bcryptjs';       
 
 const router = express.Router();
 
@@ -14,7 +14,7 @@ router.get('/', authenticateJWT, async (req, res) => {
         res.json(profiles);
     } catch (error) {
         console.error('Error fetching profiles:', error);
-        res.status(500).json({ message: 'Failed to fetch profiles', error: error instanceof Error ? error.message : 'Unknown error' });
+        res.status(500).json({ message: 'Failed to fetch profiles', error: error instanceof Error ? error.message : 'Unknown error' });     
     }
 });
 
@@ -37,38 +37,13 @@ router.get('/mentors', authenticateJWT, async (req, res) => {
                 name: error.name
             });
         }
-        res.status(500).json({ 
-            message: 'Failed to fetch mentors', 
+        res.status(500).json({
+            message: 'Failed to fetch mentors',
             error: error instanceof Error ? error.message : 'Unknown error'
         });
-=======
-import { User } from '../models/userprofile';
-import { auth } from '../middleware/auth';
-
-const router = express.Router();
-
-//sign in user
-
-router.get('/', auth, async (req, res) => {
-  try {
-    const profiles = await User.findAll();
-    res.json(profiles);
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch profiles' });
-  }
-});
-
-// Get a profile by id
-router.get('/:id', auth, async (req, res) => {
-  try {
-    const profile = await User.findByPk(req.params.id);
-    if (!profile) {
-      return res.status(404).json({ error: 'Profile not found' });
->>>>>>> origin/master
     }
 });
 
-<<<<<<< HEAD
 // Get profile by ID
 router.get('/:id', authenticateJWT, async (req, res) => {
     try {
@@ -81,19 +56,10 @@ router.get('/:id', authenticateJWT, async (req, res) => {
         res.json(profile);
     } catch (error) {
         console.error('Error fetching profile:', error);
-        res.status(500).json({ message: 'Failed to fetch profile', error: error instanceof Error ? error.message : 'Unknown error' });
-=======
-// Update a profile
-router.put('/:id', auth, async (req, res) => {
-  try {
-    const profile = await User.findByPk(req.params.id);
-    if (!profile) {
-      return res.status(404).json({ error: 'Profile not found' });
->>>>>>> origin/master
+        res.status(500).json({ message: 'Failed to fetch profile', error: error instanceof Error ? error.message : 'Unknown error' });      
     }
 });
 
-<<<<<<< HEAD
 // Update profile
 router.put('/:id', authenticateJWT, async (req, res) => {
     try {
@@ -105,42 +71,36 @@ router.put('/:id', authenticateJWT, async (req, res) => {
         res.json(profile);
     } catch (error) {
         console.error('Error updating profile:', error);
-        res.status(500).json({ message: 'Failed to update profile', error: error instanceof Error ? error.message : 'Unknown error' });
+        res.status(500).json({ message: 'Failed to update profile', error: error instanceof Error ? error.message : 'Unknown error' });     
     }
 });
 
 // Create new profile
 router.post('/', authenticateJWT, async (req, res) => {
     try {
-        const profile = await User.create(req.body);
-        res.status(201).json(profile);
+        const { username, email, bio, skills, role, rating, profilePicture, availability, location, linkedin, github, twitter } = req.body;
+        const hashedPassword = await bcrypt.hash('defaultPassword123', 10);
+        
+        const newProfile = await User.create({
+            username,
+            email,
+            password: hashedPassword,
+            bio,
+            skills: skills || [],
+            role: role || 'mentee',
+            rating: rating || 0,
+            profilePicture: profilePicture || '',
+            availability: availability || [],
+            location: location || '',
+            linkedin: linkedin || '',
+            github: github || '',
+            twitter: twitter || ''
+        });
+        res.status(201).json(newProfile);
     } catch (error) {
         console.error('Error creating profile:', error);
-        res.status(500).json({ message: 'Failed to create profile', error: error instanceof Error ? error.message : 'Unknown error' });
+        res.status(500).json({ message: 'Failed to create profile', error: error instanceof Error ? error.message : 'Unknown error' });     
     }
-=======
-// Create a new profile
-router.post('/', auth, async (req, res) => {
-  try {
-    const { username, email, bio } = req.body;
-    const newProfile = await User.create({
-        username, email, bio,
-        password: '',
-        skills: [],
-        role: '',
-        rating: 0,
-        profilePicture: '',
-        availability: [],
-        location: '',
-        linkedin: '',
-        github: '',
-        twitter: ''
-    });
-    res.status(201).json(newProfile);
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to create profile' });
-  }
->>>>>>> origin/master
 });
 
 export default router;

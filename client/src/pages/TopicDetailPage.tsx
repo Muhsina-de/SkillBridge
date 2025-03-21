@@ -47,27 +47,13 @@ const TopicDetailPage: React.FC = () => {
     fetchTopic();
   }, [id]);
 
-
-  console.log("IDHandledleDelete", id);
-
-  // const handleDeleteTopic = async () => {
-  //   if (!window.confirm('Are you sure you want to delete this topic?')) return;
-   
-  //   try {
-  //     await axios.delete(`${API_BASE_URL}/api/forum/topics/${id}`);
-  //     navigate('/forum');
-  //   } catch (err) {
-  //     setError('Failed to delete topic');
-  //   }
-  // };
-
   const handleDeleteTopic = async () => {
     if (!window.confirm('Are you sure you want to delete this topic?')) return;
     try {
       const token = localStorage.getItem('token');
-  await axios.delete(`${API_BASE_URL}/api/forum/topics/${id}?userId=${user?.id}`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+      await axios.delete(`${API_BASE_URL}/api/forum/topics/${id}?userId=${user?.id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
       navigate('/forum');
     } catch (err) {

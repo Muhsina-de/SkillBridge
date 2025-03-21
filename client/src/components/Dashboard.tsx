@@ -7,12 +7,12 @@ const Dashboard: React.FC = () => {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="bg-white shadow rounded-lg p-6">
+      <div className="glass-card p-6">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
           <button
             onClick={logout}
-            className="px-4 py-2 bg-secondary-dark text-text-primary rounded hover:bg-primary-light/10 transition-colors"
+            className="btn btn-secondary"
           >
             Sign Out
           </button>
@@ -25,13 +25,13 @@ const Dashboard: React.FC = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {/* Quick Actions */}
-          <div className="bg-gray-50 p-4 rounded-lg">
-            <h3 className="font-semibold text-gray-700 mb-2">Quick Actions</h3>
+          <div className="bg-primary/10 p-4 rounded-lg border border-primary-light/20">
+            <h3 className="font-semibold text-primary mb-2">Quick Actions</h3>
             <ul className="space-y-2">
               <li>
                 <Link
                   to="/mentors"
-                  className="text-blue-600 hover:text-blue-800 block"
+                  className="text-primary hover:text-primary-dark block transition-colors"
                 >
                   Browse Mentors
                 </Link>
@@ -39,7 +39,7 @@ const Dashboard: React.FC = () => {
               <li>
                 <Link
                   to="/trending"
-                  className="text-blue-600 hover:text-blue-800 block"
+                  className="text-primary hover:text-primary-dark block transition-colors"
                 >
                   Trending Repositories
                 </Link>
@@ -48,7 +48,7 @@ const Dashboard: React.FC = () => {
                 <li>
                   <Link
                     to="/reviews"
-                    className="text-blue-600 hover:text-blue-800 block"
+                    className="text-primary hover:text-primary-dark block transition-colors"
                   >
                     My Reviews
                   </Link>
@@ -58,8 +58,8 @@ const Dashboard: React.FC = () => {
           </div>
 
           {/* Profile Info */}
-          <div className="bg-gray-50 p-4 rounded-lg">
-            <h3 className="font-semibold text-gray-700 mb-2">Profile Information</h3>
+          <div className="bg-primary/10 p-4 rounded-lg border border-primary-light/20">
+            <h3 className="font-semibold text-primary mb-2">Profile Information</h3>
             <ul className="space-y-2 text-gray-600">
               <li><strong>Email:</strong> {user?.email}</li>
               <li><strong>Role:</strong> {user?.role}</li>
@@ -68,8 +68,8 @@ const Dashboard: React.FC = () => {
           </div>
 
           {/* Stats or Additional Info */}
-          <div className="bg-gray-50 p-4 rounded-lg">
-            <h3 className="font-semibold text-gray-700 mb-2">Activity</h3>
+          <div className="bg-primary/10 p-4 rounded-lg border border-primary-light/20">
+            <h3 className="font-semibold text-primary mb-2">Activity</h3>
             <p className="text-gray-600">
               {user?.role === 'mentor' 
                 ? 'Start mentoring by browsing available sessions.'

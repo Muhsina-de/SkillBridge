@@ -1,9 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 
-interface AuthRequest extends Request {
+export interface AuthRequest extends Request {
   user?: {
-    id: string;
+    id: number;
     email: string;
   };
 }
@@ -18,7 +18,7 @@ export const auth = (req: AuthRequest, res: Response, next: NextFunction) => {
     console.log("TOKEnPASSES!")
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-fallback-secret') as {
-      id: string;
+      id: number;
       email: string;
     };
     

@@ -1,12 +1,7 @@
-<<<<<<< HEAD
 import { sequelize, User, Session, Review } from '../models';
-=======
-import sequelize from '../config/connection';
-import { User, Session, Review } from '../models';
 import ForumTopic from '../models/ForumTopics';
 import ForumComment from '../models/ForumComments';
 import { forumSeeds } from './forum.Seeds';
->>>>>>> origin/master
 
 /**
  * Seed all database tables in the correct order
@@ -22,7 +17,7 @@ const seedAll = async () => {
 
     // Import seed functions
     console.log('Loading seed modules...');
-    const { seedUserProfiles } = await import('./userprofile-seeds');
+    const { seedUserProfiles } = await import('./userprofile-seeds'); 
     const { seedSessions } = await import('./session-seeds');
     const { seedReviews } = await import('./review-seeds');
 
@@ -61,7 +56,7 @@ const seedAll = async () => {
     console.log(`Reviews seeded: ${reviewCount}`);
     console.log(`Forum topics seeded: ${topicCount}`);
     console.log(`Forum comments seeded: ${commentCount}`);
-    console.log('\n----- ALL SEEDS COMPLETED SUCCESSFULLY -----\n');
+    console.log('\n----- ALL SEEDS COMPLETED SUCCESSFULLY -----\n');  
 
     // Exit successfully
     process.exit(0);
@@ -73,12 +68,12 @@ const seedAll = async () => {
     } else {
       console.error('Unknown error:', err);
     }
-    
+
     // Try to close database connection before exiting
     try {
       await sequelize.close();
     } catch (closeErr) {
-      console.error('Error closing database connection:', closeErr);
+      console.error('Error closing database connection:', closeErr);  
     }
 
     process.exit(1);

@@ -1,6 +1,6 @@
-import { Model, DataTypes, Optional } from 'sequelize';
-import sequelize from '../config/connection';
-import { User } from './userprofile';
+import { Model, DataTypes, Optional, Sequelize } from 'sequelize';
+import type { User } from './userprofile';
+import type ForumTopic from './ForumTopics';
 
 interface ForumCommentAttributes {
   id: number;
@@ -20,43 +20,49 @@ class ForumComment extends Model<ForumCommentAttributes, ForumCommentCreationAtt
   public topicId!: number;
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
-}
 
-ForumComment.init(
-  {
-    id: {
-      type: DataTypes.INTEGER,
-      autoIncrement: true,
-      primaryKey: true,
-    },
-    content: {
-      type: DataTypes.TEXT,
-      allowNull: false,
-    },
-    userId: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
-    topicId: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
-    createdAt: {
-      type: DataTypes.DATE,
-      allowNull: false,
-    },
-    updatedAt: {
-      type: DataTypes.DATE,
-      allowNull: false,
-    },
-  },
-  {
-    sequelize,
-    modelName: 'ForumComment',
-    tableName: 'forum_comments',
+  // Define associations
+  public static associate(models: { User: typeof User; ForumTopic: typeof ForumTopic }): void {
+    this.belongsTo(models.User, { foreignKey: 'userId' });
+    this.belongsTo(models.ForumTopic, { foreignKey: 'topicId' });
   }
-);
 
-
+  public static initialize(sequelize: Sequelize): void {
+    ForumComment.init(
+      {
+        id: {
+          type: DataTypes.INTEGER,
+          autoIncrement: true,
+          primaryKey: true,
+        },
+        content: {
+          type: DataTypes.TEXT,
+          allowNull: false,
+        },
+        userId: {
+          type: DataTypes.INTEGER,
+          allowNull: false,
+        },
+        topicId: {
+          type: DataTypes.INTEGER,
+          allowNull: false,
+        },
+        createdAt: {
+          type: DataTypes.DATE,
+          allowNull: false,
+        },
+        updatedAt: {
+          type: DataTypes.DATE,
+          allowNull: false,
+        },
+      },
+      {
+        sequelize,
+        modelName: 'ForumComment',
+        tableName: 'forum_comments',
+      }
+    );
+  }
+}
 
 export default ForumComment;

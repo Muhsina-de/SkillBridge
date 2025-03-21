@@ -5,12 +5,13 @@ import Footer from './components/layout/Footer'
 import LandingPage from './pages/LandingPage'
 import MentorsPage from './pages/MentorsPage'
 import MentorProfile from './pages/MentorProfile'
-import Reviews from './components/reviews/ReviewTest'
+import Reviews from './components/reviews/Reviews'
 import SignIn from './components/auth/SignIn'
 import SignUp from './components/auth/SignUp'
 import TrendingRepos from './components/TrendingRepos/TrendingReposPage'
 import HowItWorks from './pages/HowItWorks'
 import WhyChooseUs from './pages/WhyChooseUs'
+import Forums from './components/forums/Forums'
 import { AuthProvider } from './context/AuthContext'
 import ProtectedRoute from './components/auth/ProtectedRoute'
 import Dashboard from './components/Dashboard'
@@ -68,6 +69,14 @@ const App: React.FC = () => {
                 element={
                   <ProtectedRoute>
                     <TrendingRepos />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/forum"
+                element={
+                  <ProtectedRoute>
+                    <Forums />
                   </ProtectedRoute>
                 }
               />

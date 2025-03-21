@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import ForumTopic from '../models/ForumTopics';
 import ForumComment from '../models/ForumComments';
-import { User } from '../models/userprofile';
+import { User } from '../models';
 
 // Add custom type for authenticated requests
 interface AuthenticatedRequest extends Request {

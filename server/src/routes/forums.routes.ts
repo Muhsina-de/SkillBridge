@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { auth } from '../middleware/auth';
+import { authenticateJWT } from '../middleware/authmiddleware';
 import {
   getAllTopics,
   getTopicById,
@@ -12,15 +12,15 @@ import {
 
 const router = Router();
 
-// Topic routes
+// Public routes (no auth required)
 router.get('/topics', getAllTopics);
 router.get('/topics/:id', getTopicById);
-router.post('/topics', auth, createTopic);
-router.put('/topics/:id', auth, updateTopic);
-router.delete('/topics/:id', auth, deleteTopic);
-
-// Comment routes
 router.get('/topics/:topicId/comments', getComments);
-router.post('/topics/:topicId/comments', auth, createComment);
+
+// Protected routes (auth required)
+router.post('/topics', authenticateJWT, createTopic);
+router.put('/topics/:id', authenticateJWT, updateTopic);
+router.delete('/topics/:id', authenticateJWT, deleteTopic);
+router.post('/topics/:topicId/comments', authenticateJWT, createComment);
 
 export default router;

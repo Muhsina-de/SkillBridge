@@ -5,14 +5,14 @@ import { useAuth } from '../context/AuthContext';
 import { API_BASE_URL } from '../constants/api';
 
 const NewTopicPage: React.FC = () => {
+  const navigate = useNavigate();
   const { user } = useAuth();
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [category, setCategory] = useState('General Discussion');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
-  const navigate = useNavigate();
-  console.log("UserID", user);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     

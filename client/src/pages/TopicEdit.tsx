@@ -7,12 +7,10 @@ import { useAuth } from '../context/AuthContext';
 const EditTopic: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  
-  const [title, setTitle] = useState('');
-  const [content, setContent] = useState('');
-  const [category, setCategory] = useState('');
+  const token = localStorage.getItem('token');
+  const [topic, setTopic] = useState<Topic | null>(null);
+  const [error, setError] = useState<string>('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
 const {user} = useAuth();
   // Fetch topic details on mount
@@ -21,9 +19,7 @@ const {user} = useAuth();
       try {
         const response = await axios.get(`${API_BASE_URL}/api/forum/topics/${id}`);
         const data : any = response.data;
-        setTitle(data.title);
-        setContent(data.content);
-        setCategory(data.category);
+        setTopic(data);
       } catch (err) {
         setError('Failed to fetch topic details.');
       } finally {
@@ -39,11 +35,9 @@ const {user} = useAuth();
     setIsSubmitting(true);
     setError('');
     try {
-      const token = localStorage.getItem('token');
-      console.log("TOKEN<<>>", token);
       await axios.put(
         `${API_BASE_URL}/api/forum/topics/${id}?userId=${user?.id}`,
-        { title, content, category },
+        { title: topic?.title, content: topic?.content, category: topic?.category },
         {
           headers: {
             Authorization: `Bearer ${token}`
@@ -75,8 +69,8 @@ const {user} = useAuth();
           <label className="block text-sm font-semibold text-gray-700">Title</label>
           <input
             type="text"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
+            value={topic?.title}
+            onChange={(e) => setTopic({ ...topic, title: e.target.value })}
             required
             className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500"
           />
@@ -84,8 +78,8 @@ const {user} = useAuth();
         <div>
           <label className="block text-sm font-semibold text-gray-700">Category</label>
           <select
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
+            value={topic?.category}
+            onChange={(e) => setTopic({ ...topic, category: e.target.value })}
             required
             className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500"
           >
@@ -99,8 +93,8 @@ const {user} = useAuth();
         <div>
           <label className="block text-sm font-semibold text-gray-700">Content</label>
           <textarea
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
+            value={topic?.content}
+            onChange={(e) => setTopic({ ...topic, content: e.target.value })}
             required
             rows={6}
             className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500"
