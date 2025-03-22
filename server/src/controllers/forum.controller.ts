@@ -1,139 +1,117 @@
-import { Request, Response } from 'express';
+import { Response } from 'express';
+import { AuthRequest } from '../types/express';
 import ForumTopic from '../models/ForumTopics';
 import ForumComment from '../models/ForumComments';
-import { User } from '../models/userprofile';
+import { User } from '../models';
 
-// Add custom type for authenticated requests
-interface AuthenticatedRequest extends Request {
-  user?: {
-    id: number;
-    username: string;
-  };
-}
-
-export const getAllTopics = async (req: Request, res: Response) => {
+export const getTopics = async (req: AuthRequest, res: Response) => {
   try {
     const topics = await ForumTopic.findAll({
       include: [
-        { model: User, attributes: ['username', 'profilePicture'] },
-        { model: ForumComment,  attributes: ['id'] }
-      ],
-      order: [['createdAt', 'DESC']]
+        {
+          model: ForumComment,
+          as: 'Comments',
+          include: ['User']
+        }
+      ]
     });
     res.json(topics);
   } catch (error) {
-    console.error('Error fetching topics:', error);
     res.status(500).json({ message: 'Error fetching topics' });
   }
 };
 
-export const getTopicById = async (req: Request, res: Response) => {
+export const getTopicById = async (req: AuthRequest, res: Response) => {
   try {
-    const topic = await ForumTopic.findByPk(req.params.id, {
+    const { id } = req.params;
+    const topic = await ForumTopic.findByPk(id, {
       include: [
-        { model: User, attributes: ['username', 'profilePicture'] },
         {
           model: ForumComment,
-          include: [{ model: User, attributes: ['username', 'profilePicture'] }]
+          as: 'Comments',
+          include: ['User']
         }
       ]
     });
+
     if (!topic) {
       return res.status(404).json({ message: 'Topic not found' });
     }
+
     res.json(topic);
   } catch (error) {
-    console.error('Error fetching topic:', error);
     res.status(500).json({ message: 'Error fetching topic' });
   }
 };
 
-export const createTopic = async (req: AuthenticatedRequest, res: Response) => {
-
+export const createTopic = async (req: AuthRequest, res: Response) => {
   try {
-    if (!req.user) {
-      return res.status(401).json({ message: 'Not authenticated' });
+    const { title, content, category } = req.body;
+    const userId = req.user?.id;
+
+    if (!userId) {
+      return res.status(401).json({ message: 'User not authenticated' });
     }
 
-    const authHeader = req.headers.authorization;
-    if (!authHeader) {
-      return res.status(401).json({ message: 'No authorization header' });
-    }
-    
-    const { title, content, category, userId } = req.body;
     const topic = await ForumTopic.create({
       title,
       content,
       category,
       userId
     });
+
     res.status(201).json(topic);
   } catch (error) {
-    console.error('Error creating topic:', error);
     res.status(500).json({ message: 'Error creating topic' });
   }
 };
 
-export const updateTopic = async (req: AuthenticatedRequest, res: Response) => {
-  console.log("REQupdate", req);
+export const updateTopic = async (req: AuthRequest, res: Response) => {
   try {
-
-    if (!req.user) {
-      return res.status(401).json({ message: 'Not authenticated' });
-    }
-
-    
-    const authHeader = req.headers.authorization;
-    if (!authHeader) {
-      return res.status(401).json({ message: 'No authorization header' });
-    }
-    
+    const { id } = req.params;
     const { title, content, category } = req.body;
-    const topic = await ForumTopic.findByPk(req.params.id);
-   
+    const userId = req.user?.id;
+
+    const topic = await ForumTopic.findByPk(id);
+
     if (!topic) {
       return res.status(404).json({ message: 'Topic not found' });
     }
-   
-   
-   console.log("TUPDATETOPIC", topic); 
-   console.log("IDUPDATE", req.query.userId); 
-   
+
+    if (topic.userId !== userId) {
+      return res.status(403).json({ message: 'Not authorized to update this topic' });
+    }
+
     await topic.update({ title, content, category });
     res.json(topic);
   } catch (error) {
-    console.error('Error updating topic:', error);
     res.status(500).json({ message: 'Error updating topic' });
   }
 };
 
-export const deleteTopic = async (req: AuthenticatedRequest, res: Response) => {
+export const deleteTopic = async (req: AuthRequest, res: Response) => {
   try {
-    if (!req.user) {
-      return res.status(401).json({ message: 'Not authenticated' });
-    }
-    
-    const topic = await ForumTopic.findByPk(req.params.id);
-    console.log("TOPIC", topic?.userId);
-    console.log("UserID", req.query.userId);
+    const { id } = req.params;
+    const userId = req.user?.id;
+
+    const topic = await ForumTopic.findByPk(id);
+
     if (!topic) {
       return res.status(404).json({ message: 'Topic not found' });
     }
-   
-    if (topic.userId !== Number(req.query.userId)) {
-      return res.status(403).json({ message: 'Not authorized' });
+
+    if (topic.userId !== userId) {
+      return res.status(403).json({ message: 'Not authorized to delete this topic' });
     }
-    
-   
+
     await topic.destroy();
-    res.status(204).send();
+    res.json({ message: 'Topic deleted successfully' });
   } catch (error) {
-    console.error('Error deleting topic:', error);
     res.status(500).json({ message: 'Error deleting topic' });
   }
 };
 
-export const getComments = async (req: Request, res: Response) => {
+export const getComments = async (req: AuthRequest, res: Response) => {
   try {
     const { topicId } = req.params;
     const comments = await ForumComment.findAll({
@@ -148,33 +126,24 @@ export const getComments = async (req: Request, res: Response) => {
   }
 };
 
-export const createComment = async (req: AuthenticatedRequest, res: Response) => {
+export const createComment = async (req: AuthRequest, res: Response) => {
   try {
-    if (!req.user) {
-      return res.status(401).json({ message: 'Not authenticated' });
-    }
-    
-    const { content } = req.body;
     const { topicId } = req.params;
-   
-    const topic = await ForumTopic.findByPk(topicId);
-    if (!topic) {
-      return res.status(404).json({ message: 'Topic not found' });
+    const { content } = req.body;
+    const userId = req.user?.id;
+
+    if (!userId) {
+      return res.status(401).json({ message: 'User not authenticated' });
     }
-   
+
     const comment = await ForumComment.create({
       content,
       topicId: parseInt(topicId),
-      userId: req.user.id
+      userId
     });
-   
-    const commentWithUser = await ForumComment.findByPk(comment.id, {
-      include: [{ model: User, attributes: ['username', 'profilePicture'] }]
-    });
-   
-    res.status(201).json(commentWithUser);
+
+    res.status(201).json(comment);
   } catch (error) {
-    console.error('Error creating comment:', error);
     res.status(500).json({ message: 'Error creating comment' });
   }
 };

@@ -1,5 +1,7 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import { Review, User, Session } from '../models';
+import { authenticateJWT } from '../middleware/authmiddleware';
+import { AuthRequest } from '../types/express';
 
 const router = Router();
 
@@ -11,12 +13,12 @@ const validateReviewInput = (
   res: Response,
   next: NextFunction
 ): Response | void => {
-  const { sessionId, menteeId, mentorId, rating, comment } = req.body;
+  const { session_id, mentor_id, rating, comment } = req.body;
   
-  if (!sessionId || !menteeId || !mentorId || !rating || !comment) {
+  if (!session_id || !mentor_id || !rating || !comment) {
     return res.status(400).json({ 
       error: 'Missing required fields',
-      received: { sessionId, menteeId, mentorId, rating, comment }
+      received: { session_id, mentor_id, rating, comment }
     });
   }
 
@@ -41,10 +43,13 @@ const validateReviewInput = (
  * Get reviews for a mentor
  * @route GET /mentor/:mentorId
  */
-router.get('/mentor/:mentorId', async (req: Request, res: Response) => {
+router.get('/mentor/:mentorId', async (req: AuthRequest, res: Response) => {
   try {
+    const mentorId = parseInt(req.params.mentorId, 10);
+    console.log('Fetching reviews for mentor:', mentorId);
+
     const reviews = await Review.findAll({
-      where: { mentorId: req.params.mentorId },
+      where: { mentor_id: mentorId },
       include: [{
         model: User,
         as: 'mentee',
@@ -52,9 +57,10 @@ router.get('/mentor/:mentorId', async (req: Request, res: Response) => {
       }],
       order: [['createdAt', 'DESC']]
     });
+
     res.json(reviews);
   } catch (error) {
-    console.error('Error fetching reviews:', error);
+    console.error('Detailed error in GET /mentor/:mentorId:', error);
     res.status(500).json({ error: 'Failed to fetch reviews' });
   }
 });
@@ -66,7 +72,7 @@ router.get('/mentor/:mentorId', async (req: Request, res: Response) => {
 router.get('/session/:sessionId', async (req: Request, res: Response) => {
   try {
     const review = await Review.findOne({
-      where: { sessionId: req.params.sessionId },
+      where: { session_id: req.params.sessionId },
       include: [{
         model: User,
         as: 'mentee',
@@ -91,15 +97,16 @@ router.get('/session/:sessionId', async (req: Request, res: Response) => {
  */
 router.get('/mentor/:mentorId/summary', async (req: Request, res: Response) => {
   try {
+    const mentorId = parseInt(req.params.mentorId, 10);
     const reviews = await Review.findAll({
-      where: { mentorId: req.params.mentorId },
+      where: { mentor_id: mentorId },
       attributes: ['rating']
     });
 
     const summary = {
       totalReviews: reviews.length,
       averageRating: reviews.length > 0
-        ? Number((reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length).toFixed(1))
+        ? Number((reviews.reduce((sum: number, r: { rating: number }) => sum + r.rating, 0) / reviews.length).toFixed(1))
         : 0
     };
 
@@ -114,78 +121,27 @@ router.get('/mentor/:mentorId/summary', async (req: Request, res: Response) => {
  * Submit a review
  * @route POST /
  */
-router.post('/', validateReviewInput, async (req: Request, res: Response) => {
+router.post('/', authenticateJWT, validateReviewInput, async (req: AuthRequest, res: Response) => {
   try {
-    console.log('Received review submission:', req.body);
-    
-    const { sessionId, menteeId, mentorId, rating, comment } = req.body;
+    const { session_id, mentor_id, rating, comment } = req.body;
+    const mentee_id = req.user?.id;
 
-    // Verify the session exists and belongs to these users
-    const session = await Session.findOne({
-      where: {
-        id: sessionId,
-        menteeId,
-        mentorId,
-        status: 'accepted' // Only allow reviews for completed sessions
-      }
-    });
-
-    console.log('Found session:', session);
-
-    if (!session) {
-      return res.status(403).json({ 
-        error: 'Session not found or not eligible for review',
-        sessionId,
-        menteeId,
-        mentorId
-      });
+    if (!mentee_id) {
+      return res.status(401).json({ error: 'User not authenticated' });
     }
-
-    // Check if a review already exists for this session
-    const existingReview = await Review.findOne({
-      where: { sessionId }
-    });
-
-    console.log('Existing review check:', existingReview);
-
-    if (existingReview) {
-      return res.status(400).json({ error: 'A review already exists for this session' });
-    }
-
-    console.log('Creating review with data:', {
-      sessionId,
-      menteeId,
-      mentorId,
-      rating,
-      comment
-    });
 
     const review = await Review.create({
-      sessionId,
-      menteeId,
-      mentorId,
+      session_id,
+      mentee_id,
+      mentor_id,
       rating,
       comment
     });
 
-    console.log('Review created successfully:', review);
-
-    // Fetch the complete review with mentee information
-    const completeReview = await Review.findByPk(review.id, {
-      include: [{
-        model: User,
-        as: 'mentee',
-        attributes: ['id', 'username', 'profilePicture']
-      }]
-    });
-
-    res.status(201).json(completeReview);
+    res.status(201).json(review);
   } catch (error) {
-    console.error('Error in review submission:', error);
-    res.status(500).json({ 
-      error: 'Failed to process review submission',
-      details: error instanceof Error ? error.message : 'Unknown error'
-    });
+    console.error('Error creating review:', error);
+    res.status(500).json({ error: 'Failed to create review' });
   }
 });
 
@@ -193,7 +149,7 @@ router.post('/', validateReviewInput, async (req: Request, res: Response) => {
  * Update a review
  * @route PUT /:id
  */
-router.put('/:id', validateReviewInput, async (req: Request, res: Response) => {
+router.put('/:id', authenticateJWT, validateReviewInput, async (req: Request, res: Response) => {
   try {
     const { rating, comment } = req.body;
     const review = await Review.findByPk(req.params.id);
@@ -223,7 +179,7 @@ router.put('/:id', validateReviewInput, async (req: Request, res: Response) => {
  * Delete a review
  * @route DELETE /:id
  */
-router.delete('/:id', async (req: Request, res: Response) => {
+router.delete('/:id', authenticateJWT, async (req: Request, res: Response) => {
   try {
     const review = await Review.findByPk(req.params.id);
 

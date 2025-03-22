@@ -1,17 +1,8 @@
 import React from 'react';
+import { ForumComment } from '../../types/forum.types';
 
 interface CommentCardProps {
-  comment: {
-    id: number;
-    content: string;
-    createdAt: Date;
-    topicId: number;
-    userId?: number;
-    User?: {
-      username: string;
-      profilePicture?: string;
-    };
-  };
+  comment: ForumComment;
 }
 
 const CommentCard: React.FC<CommentCardProps> = ({ comment }) => {

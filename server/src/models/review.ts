@@ -1,15 +1,13 @@
-import { DataTypes, Model, Optional, Sequelize } from 'sequelize';
-import { User } from './userprofile';
-import sequelize from '../config/connection';
+import { DataTypes, Model, Optional, Sequelize, ModelStatic } from 'sequelize';
 
 /**
  * Interface representing a Review's attributes
  */
 interface ReviewAttributes {
   id: number;
-  sessionId: number;
-  menteeId: number;
-  mentorId: number;
+  session_id: number;
+  mentee_id: number;
+  mentor_id: number;
   rating: number;
   comment: string;
   createdAt?: Date;
@@ -28,9 +26,9 @@ interface ReviewCreationAttributes extends Optional<ReviewAttributes, 'id'> {}
  */
 export class Review extends Model<ReviewAttributes, ReviewCreationAttributes> implements ReviewAttributes {
   public id!: number;
-  public sessionId!: number;
-  public menteeId!: number;
-  public mentorId!: number;
+  public session_id!: number;
+  public mentee_id!: number;
+  public mentor_id!: number;
   public rating!: number;
   public comment!: string;
 
@@ -39,13 +37,13 @@ export class Review extends Model<ReviewAttributes, ReviewCreationAttributes> im
 
   /**
    * Updates the mentor's average rating based on all their reviews
-   * @param mentorId - ID of the mentor to update
+   * @param mentor_id - ID of the mentor to update
    * @throws Error if the update fails
    */
-  public static async updateMentorRating(mentorId: number): Promise<void> {
+  public static async updateMentorRating(mentor_id: number, User: ModelStatic<Model>): Promise<void> {
     try {
       const reviews = await Review.findAll({
-        where: { mentorId }
+        where: { mentor_id }
       });
       
       const averageRating = reviews.length > 0
@@ -54,7 +52,7 @@ export class Review extends Model<ReviewAttributes, ReviewCreationAttributes> im
       
       await User.update(
         { rating: Number(averageRating.toFixed(1)) },
-        { where: { id: mentorId } }
+        { where: { id: mentor_id } }
       );
     } catch (error) {
       console.error('Error updating mentor rating:', error);
@@ -63,12 +61,7 @@ export class Review extends Model<ReviewAttributes, ReviewCreationAttributes> im
   }
 }
 
-/**
- * Factory function to initialize the Review model
- * @param sequelize - Sequelize instance
- * @returns Review model
- */
-export function ReviewFactory(sequelize: Sequelize): typeof Review {
+export function initReview(sequelize: Sequelize, User: ModelStatic<Model>): typeof Review {
   Review.init(
     {
       id: {
@@ -76,7 +69,7 @@ export function ReviewFactory(sequelize: Sequelize): typeof Review {
         autoIncrement: true,
         primaryKey: true,
       },
-      sessionId: {
+      session_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
@@ -84,7 +77,7 @@ export function ReviewFactory(sequelize: Sequelize): typeof Review {
           key: 'id',
         },
       },
-      menteeId: {
+      mentee_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
@@ -92,7 +85,7 @@ export function ReviewFactory(sequelize: Sequelize): typeof Review {
           key: 'id',
         },
       },
-      mentorId: {
+      mentor_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
@@ -118,17 +111,19 @@ export function ReviewFactory(sequelize: Sequelize): typeof Review {
     },
     {
       sequelize,
+      modelName: 'Review',
       tableName: 'reviews',
+      underscored: true,
       timestamps: true,
       hooks: {
         afterCreate: async (review: Review) => {
-          await Review.updateMentorRating(review.mentorId);
+          await Review.updateMentorRating(review.mentor_id, User);
         },
         afterUpdate: async (review: Review) => {
-          await Review.updateMentorRating(review.mentorId);
+          await Review.updateMentorRating(review.mentor_id, User);
         },
         afterDestroy: async (review: Review) => {
-          await Review.updateMentorRating(review.mentorId);
+          await Review.updateMentorRating(review.mentor_id, User);
         }
       }
     }

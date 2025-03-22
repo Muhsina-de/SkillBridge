@@ -4,7 +4,7 @@ import { ForumTopic } from '../../types/forum.types';
 
 const TopicCard: React.FC<{ topic: ForumTopic }> = ({ topic }) => {
   return (
-    <div className="border p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow">
+    <div className="border p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow bg-white">
       <div className="flex justify-between items-start">
         <div>
           <Link

@@ -1,5 +1,6 @@
-import express from 'express';
+import express, { Request, Response } from 'express';
 import https from 'https';
+import { AuthRequest } from '../types/express';
 
 
 const router = express.Router();
@@ -23,7 +24,7 @@ interface RepositoryResponse {
 // GET /api/github/trending
 // Fetches the trending repositories from GitHub
 // Returns an array of RepositoryItem objects
-router.get('/github/trending', async function (req, res) {
+router.get('/trending', async function (req: Request, res: Response) {
  const token = process.env.GITHUB_TOKEN;
  if (!token) {
    return res.status(400).json({ error: 'GitHub token is missing from environment variables' });
@@ -34,7 +35,7 @@ router.get('/github/trending', async function (req, res) {
    hostname: 'api.github.com',
    path: '/search/repositories?q=stars:>1000&sort=stars&order=desc', // Repositories with more than 1000 stars
    headers: {
-     'User-Agent': 'SkillBridge-App',
+     'User-Agent': 'RaveNest-App',
      'Accept': 'application/vnd.github.v3+json',
      'Authorization': `Bearer ${process.env.GITHUB_TOKEN}` // GitHub token
    }
