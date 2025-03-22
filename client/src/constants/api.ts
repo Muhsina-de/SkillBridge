@@ -1,4 +1,6 @@
-export const API_BASE_URL = 'http://localhost:3001';
+export const API_BASE_URL = process.env.NODE_ENV === 'production' 
+  ? 'https://ravenest-api.onrender.com'  // Your Render API URL
+  : 'http://localhost:3001';
 
 export const AUTH_ENDPOINTS = {
   LOGIN: `${API_BASE_URL}/api/auth/login`,

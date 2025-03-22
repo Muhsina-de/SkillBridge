@@ -79,45 +79,9 @@ export function createServer() {
 }
 
 export function startServer(app: express.Application, port: number = process.env.PORT ? parseInt(process.env.PORT) : 3001) {
-  // Run migrations first, then sync models and start the server
+  // Run migrations first, then start the server
   runMigrations().then(async () => {
     try {
-      // Drop all tables and recreate them
-      await sequelize.query('DROP TABLE IF EXISTS "users" CASCADE;');
-      await sequelize.query('DROP TABLE IF EXISTS "sessions" CASCADE;');
-      await sequelize.query('DROP TABLE IF EXISTS "reviews" CASCADE;');
-      await sequelize.query('DROP TABLE IF EXISTS "forum_topics" CASCADE;');
-      await sequelize.query('DROP TABLE IF EXISTS "forum_replies" CASCADE;');
-      
-      // Run migrations again to create tables
-      await runMigrations();
-      
-      // Wait a moment to ensure the database is ready
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      // First, ensure demo user exists
-      let demoUser = await User.findOne({ where: { email: 'john@example.com' } });
-      if (!demoUser) {
-        console.log('Creating demo user...');
-        await seedDemoUser();
-        demoUser = await User.findOne({ where: { email: 'john@example.com' } });
-        if (!demoUser) {
-          throw new Error('Failed to create demo user');
-        }
-        console.log('Demo user created successfully');
-      }
-      
-      // Then seed mentors
-      console.log('Seeding mentors...');
-      await seedMentors();
-      console.log('Mentors seeded successfully');
-      
-      // Finally, seed forum data
-      console.log('Seeding forum data...');
-      await clearForumData();
-      await seedForumTopics();
-      console.log('Forum data seeded successfully');
-      
       app.listen(port, () => {
         console.log(`Server running on port ${port}`);
         if (process.env.NODE_ENV === 'production') {

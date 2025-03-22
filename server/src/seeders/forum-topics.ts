@@ -18,15 +18,17 @@ export async function seedForumTopics() {
     // Get or create the demo user
     let demoUser = await User.findOne({ where: { email: 'john@example.com' } });
     if (!demoUser) {
+      console.log('Demo user not found, attempting to create...');
       await seedDemoUser();
       demoUser = await User.findOne({ where: { email: 'john@example.com' } });
-    }
-
-    if (!demoUser) {
-      throw new Error('Failed to find or create demo user');
+      if (!demoUser) {
+        throw new Error('Failed to create or find demo user for forum seeding');
+      }
+      console.log('Demo user created successfully for forum seeding');
     }
 
     // Create some initial topics
+    console.log('Creating forum topics...');
     const topics = await Promise.all([
       ForumTopic.create({
         title: 'Welcome to the Community!',
@@ -61,6 +63,7 @@ export async function seedForumTopics() {
     ]);
 
     // Add some comments to the first topic
+    console.log('Creating forum comments...');
     await Promise.all([
       ForumComment.create({
         content: 'Great to be here! Looking forward to learning from everyone.',
@@ -82,5 +85,6 @@ export async function seedForumTopics() {
     console.log('Forum topics and comments seeded successfully');
   } catch (error) {
     console.error('Error seeding forum topics:', error);
+    throw error; // Re-throw to handle in server startup
   }
 } 
