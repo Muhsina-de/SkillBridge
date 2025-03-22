@@ -82,8 +82,15 @@ export function startServer(app: express.Application, port: number = process.env
   // Run migrations first, then sync models and start the server
   runMigrations().then(async () => {
     try {
-      // Force sync the database to ensure tables are created with correct schema
-      await sequelize.sync({ force: true });
+      // Drop all tables and recreate them
+      await sequelize.query('DROP TABLE IF EXISTS "users" CASCADE;');
+      await sequelize.query('DROP TABLE IF EXISTS "sessions" CASCADE;');
+      await sequelize.query('DROP TABLE IF EXISTS "reviews" CASCADE;');
+      await sequelize.query('DROP TABLE IF EXISTS "forum_topics" CASCADE;');
+      await sequelize.query('DROP TABLE IF EXISTS "forum_replies" CASCADE;');
+      
+      // Run migrations again to create tables
+      await runMigrations();
       
       // Wait a moment to ensure the database is ready
       await new Promise(resolve => setTimeout(resolve, 1000));
