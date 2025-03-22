@@ -82,8 +82,8 @@ export function startServer(app: express.Application, port: number = process.env
   // Run migrations first, then sync models and start the server
   runMigrations().then(async () => {
     try {
-      // Sync Sequelize models
-      await sequelize.sync({ force: false });
+      // Force sync the database to ensure tables are created with correct schema
+      await sequelize.sync({ force: true });
       
       // First, ensure demo user exists
       const demoUser = await User.findOne({ where: { email: 'john@example.com' } });
