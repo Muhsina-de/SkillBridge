@@ -9,11 +9,7 @@ const config = {
   NODE_ENV: process.env.NODE_ENV || 'development',
   
   // Database configuration
-  DB_NAME: process.env.DB_NAME || 'ravenest',
-  DB_USER: process.env.DB_USER || 'postgres',
-  DB_PASSWORD: process.env.DB_PASSWORD,
-  DB_HOST: process.env.DB_HOST || 'localhost',
-  DB_PORT: parseInt(process.env.DB_PORT || '5432'),
+  DATABASE_URL: process.env.DATABASE_URL,
   
   // JWT configuration
   JWT_SECRET: process.env.JWT_SECRET || 'your-default-secret-key',
@@ -31,7 +27,7 @@ const config = {
 };
 
 // Validate required environment variables
-const requiredEnvVars = ['DB_PASSWORD', 'JWT_SECRET'];
+const requiredEnvVars = ['DATABASE_URL', 'JWT_SECRET'];
 const missingEnvVars = requiredEnvVars.filter(envVar => !process.env[envVar]);
 
 if (missingEnvVars.length > 0) {

@@ -10,30 +10,19 @@ import ForumComment from './ForumComments';
 config();
 
 /**
- * Database configuration options
- */
-const dbConfig = {
-  name: process.env.DB_NAME || 'ravenest',
-  user: process.env.DB_USER || 'postgres',
-  password: process.env.DB_PASSWORD || 'SNH123!@im',
-  host: process.env.DB_HOST || 'localhost',
-  dialect: 'postgres' as const,
-  logging: process.env.NODE_ENV === 'production' ? false : console.log,
-};
-
-/**
  * Initialize Sequelize instance with database configuration
  */
-const sequelize = new Sequelize(
-  dbConfig.name,
-  dbConfig.user,
-  dbConfig.password,
-  {
-    host: dbConfig.host,
-    dialect: dbConfig.dialect,
-    logging: dbConfig.logging,
-  }
-);
+const sequelize = new Sequelize(process.env.DATABASE_URL || '', {
+  dialect: 'postgres',
+  dialectOptions: {
+    decimalNumbers: true,
+    ssl: process.env.NODE_ENV === 'production' ? {
+      require: true,
+      rejectUnauthorized: false
+    } : false
+  },
+  logging: process.env.NODE_ENV === 'production' ? false : console.log,
+});
 
 // Initialize models
 const User = initUser(sequelize);
