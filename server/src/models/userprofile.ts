@@ -129,17 +129,6 @@ export function initUser(sequelize: Sequelize): typeof User {
             modelName: 'User',
             tableName: 'users',
             timestamps: true,
-            hooks: {
-                beforeSave: (user: User) => {
-                    // Ensure JSON fields are properly formatted
-                    if (user.skills && !Array.isArray(user.skills)) {
-                        user.skills = [];
-                    }
-                    if (user.availability && !Array.isArray(user.availability)) {
-                        user.availability = [];
-                    }
-                }
-            }
         }
     );
 

@@ -85,18 +85,36 @@ export function startServer(app: express.Application, port: number = process.env
       // Force sync the database to ensure tables are created with correct schema
       await sequelize.sync({ force: true });
       
+      // Wait a moment to ensure the database is ready
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
       // First, ensure demo user exists
       const demoUser = await User.findOne({ where: { email: 'john@example.com' } });
       if (!demoUser) {
-        await seedDemoUser();
+        try {
+          await seedDemoUser();
+        } catch (error) {
+          console.error('Error creating demo user:', error);
+          // Continue with server startup even if demo user creation fails
+        }
       }
       
       // Then seed mentors
-      await seedMentors();
+      try {
+        await seedMentors();
+      } catch (error) {
+        console.error('Error seeding mentors:', error);
+        // Continue with server startup even if mentor seeding fails
+      }
       
-      // Finally, seed forum data (this will handle the demo user check internally)
-      await clearForumData();
-      await seedForumTopics();
+      // Finally, seed forum data
+      try {
+        await clearForumData();
+        await seedForumTopics();
+      } catch (error) {
+        console.error('Error seeding forum data:', error);
+        // Continue with server startup even if forum seeding fails
+      }
       
       app.listen(port, () => {
         console.log(`Server running on port ${port}`);
