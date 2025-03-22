@@ -93,35 +93,30 @@ export function startServer(app: express.Application, port: number = process.env
       await runMigrations();
       
       // Wait a moment to ensure the database is ready
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise(resolve => setTimeout(resolve, 2000));
       
       // First, ensure demo user exists
-      const demoUser = await User.findOne({ where: { email: 'john@example.com' } });
+      let demoUser = await User.findOne({ where: { email: 'john@example.com' } });
       if (!demoUser) {
-        try {
-          await seedDemoUser();
-        } catch (error) {
-          console.error('Error creating demo user:', error);
-          // Continue with server startup even if demo user creation fails
+        console.log('Creating demo user...');
+        await seedDemoUser();
+        demoUser = await User.findOne({ where: { email: 'john@example.com' } });
+        if (!demoUser) {
+          throw new Error('Failed to create demo user');
         }
+        console.log('Demo user created successfully');
       }
       
       // Then seed mentors
-      try {
-        await seedMentors();
-      } catch (error) {
-        console.error('Error seeding mentors:', error);
-        // Continue with server startup even if mentor seeding fails
-      }
+      console.log('Seeding mentors...');
+      await seedMentors();
+      console.log('Mentors seeded successfully');
       
       // Finally, seed forum data
-      try {
-        await clearForumData();
-        await seedForumTopics();
-      } catch (error) {
-        console.error('Error seeding forum data:', error);
-        // Continue with server startup even if forum seeding fails
-      }
+      console.log('Seeding forum data...');
+      await clearForumData();
+      await seedForumTopics();
+      console.log('Forum data seeded successfully');
       
       app.listen(port, () => {
         console.log(`Server running on port ${port}`);
