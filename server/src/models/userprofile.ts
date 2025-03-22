@@ -90,6 +90,7 @@ export function initUser(sequelize: Sequelize): typeof User {
             profilePicture: {
                 type: DataTypes.STRING,
                 allowNull: true,
+                field: 'profilePicture'
             },
             bio: {
                 type: DataTypes.TEXT,
