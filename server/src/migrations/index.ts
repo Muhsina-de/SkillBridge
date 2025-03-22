@@ -1,7 +1,7 @@
 import { Sequelize, DataTypes } from 'sequelize';
 import sequelize from '../config/connection';
 
-async function up() {
+export async function up() {
     try {
         await sequelize.query('CREATE EXTENSION IF NOT EXISTS "uuid-ossp";');
         
@@ -62,7 +62,7 @@ async function up() {
     }
 }
 
-async function down() {
+export async function down() {
     try {
         await sequelize.query('DROP TABLE IF EXISTS sessions CASCADE;');
         await sequelize.query('DROP TABLE IF EXISTS reviews CASCADE;');
@@ -74,4 +74,7 @@ async function down() {
     }
 }
 
-up().catch(console.error); 
+// Only run migrations if this file is run directly
+if (require.main === module) {
+    up().catch(console.error);
+} 
