@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import axios from 'axios';
 import { useAuth } from '../../context/AuthContext';
 
 const SignIn: React.FC = () => {
@@ -11,7 +10,7 @@ const SignIn: React.FC = () => {
   const location = useLocation();
   const username = location.state?.username;
 
-  const { login, setUser } = useAuth();
+  const { login } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

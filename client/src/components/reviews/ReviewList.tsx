@@ -2,7 +2,7 @@ import React from 'react';
 import { ReviewListProps } from '../../types/reviews';
 import ReviewCard from './ReviewCard';
 
-const ReviewList: React.FC<ReviewListProps> = ({ reviews, mentorId }) => {
+const ReviewList: React.FC<ReviewListProps> = ({ reviews }) => {
   return (
     <div className="space-y-4">
       {reviews.map((review) => (

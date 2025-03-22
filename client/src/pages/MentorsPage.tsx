@@ -6,7 +6,7 @@ import { User } from '../types/user.types';
 
 const MentorsPage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
+  const [selectedSkills] = useState<string[]>([]);
   const [mentors, setMentors] = useState<Mentor[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

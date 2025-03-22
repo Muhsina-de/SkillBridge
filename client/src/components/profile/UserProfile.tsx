@@ -27,7 +27,6 @@ const UserProfile: React.FC<UserProfileProps> = ({
   isCurrentUser = false
 }) => {
   const [reviews, setReviews] = useState<Review[]>([]);
-  const [rating, setRating] = useState<number>(0);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -36,8 +35,6 @@ const UserProfile: React.FC<UserProfileProps> = ({
       try {
         const response = await axios.get<Review[]>(`${API_BASE_URL}/api/reviews/mentor/${user.id}`);
         setReviews(response.data);
-        const avgRating = response.data.reduce((acc, review) => acc + review.rating, 0) / response.data.length;
-        setRating(avgRating);
       } catch (error) {
         console.error('Error fetching reviews:', error);
       } finally {
