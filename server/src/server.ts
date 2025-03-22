@@ -16,6 +16,7 @@ import { seedForumTopics, clearForumData } from './seeders/forum-topics';
 import { seedMentors } from './seeders/mentor-seeders';
 import config from './config';
 import { limiter, authLimiter } from './middleware/rateLimiter';
+import { up as runMigrations } from './migrations';
 
 // Initialize models so they are registered with the sequelize instance
 const User = UserFactory(sequelize);
@@ -78,9 +79,12 @@ export function createServer() {
 }
 
 export function startServer(app: express.Application, port: number = process.env.PORT ? parseInt(process.env.PORT) : 3001) {
-  // Sync Sequelize models and then start the server
-  sequelize.sync({ force: false }).then(async () => {
+  // Run migrations first, then sync models and start the server
+  runMigrations().then(async () => {
     try {
+      // Sync Sequelize models
+      await sequelize.sync({ force: false });
+      
       // First, ensure demo user exists
       const demoUser = await User.findOne({ where: { email: 'john@example.com' } });
       if (!demoUser) {
@@ -109,7 +113,7 @@ export function startServer(app: express.Application, port: number = process.env
       process.exit(1);
     }
   }).catch((err) => {
-    console.error('Unable to connect to the database:', err);
+    console.error('Error during migration:', err);
     process.exit(1);
   });
 }
