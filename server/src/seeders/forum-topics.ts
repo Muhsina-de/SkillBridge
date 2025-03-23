@@ -32,31 +32,31 @@ export async function seedForumTopics() {
         title: 'Welcome to the Community!',
         content: 'This is a place to discuss coding, share experiences, and help each other grow.',
         category: 'General Discussion',
-        userId: demoUser.id
+        authorId: demoUser.id
       }),
       ForumTopic.create({
         title: 'Best Practices for Code Review',
         content: 'What are your tips for conducting effective code reviews? Share your experiences and learn from others.',
         category: 'Backend Development',
-        userId: demoUser.id
+        authorId: demoUser.id
       }),
       ForumTopic.create({
         title: 'Learning Resources',
         content: 'Share your favorite coding tutorials, books, and online courses! Let\'s help each other find the best learning materials.',
         category: 'General Discussion',
-        userId: demoUser.id
+        authorId: demoUser.id
       }),
       ForumTopic.create({
         title: 'React vs Vue: Which to Choose?',
         content: 'I\'m starting a new project and can\'t decide between React and Vue. What are your thoughts and experiences?',
         category: 'Frontend Development',
-        userId: demoUser.id
+        authorId: demoUser.id
       }),
       ForumTopic.create({
         title: 'Career Transition Tips',
         content: 'I\'m looking to transition into software development from a different field. Any advice or success stories to share?',
         category: 'Career Advice',
-        userId: demoUser.id
+        authorId: demoUser.id
       })
     ]);
 
@@ -65,17 +65,17 @@ export async function seedForumTopics() {
       ForumComment.create({
         content: 'Great to be here! Looking forward to learning from everyone.',
         topicId: topics[0].id,
-        userId: demoUser.id
+        authorId: demoUser.id
       }),
       ForumComment.create({
         content: 'This community is amazing! I\'ve already learned so much.',
         topicId: topics[0].id,
-        userId: demoUser.id
+        authorId: demoUser.id
       }),
       ForumComment.create({
         content: 'I\'m new to coding and this place seems perfect for learning!',
         topicId: topics[0].id,
-        userId: demoUser.id
+        authorId: demoUser.id
       })
     ]);
 

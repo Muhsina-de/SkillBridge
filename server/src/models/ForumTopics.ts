@@ -7,7 +7,7 @@ interface ForumTopicAttributes {
   title: string;
   content: string;
   category: string;
-  userId: number;
+  authorId: number;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -19,14 +19,14 @@ class ForumTopic extends Model<ForumTopicAttributes, ForumTopicCreationAttribute
   public title!: string;
   public content!: string;
   public category!: string;
-  public userId!: number;
+  public authorId!: number;
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
 
   // Define associations
   public static associate(models: { User: typeof User; ForumComment: typeof ForumComment }): void {
-    this.belongsTo(models.User, { foreignKey: 'userId' });
-    this.hasMany(models.ForumComment, { foreignKey: 'topicId' });
+    this.belongsTo(models.User, { foreignKey: 'authorId', as: 'Author' });
+    this.hasMany(models.ForumComment, { foreignKey: 'topicId', as: 'Comments' });
   }
 
   public static initialize(sequelize: Sequelize): void {
@@ -49,7 +49,7 @@ class ForumTopic extends Model<ForumTopicAttributes, ForumTopicCreationAttribute
           type: DataTypes.STRING,
           allowNull: false,
         },
-        userId: {
+        authorId: {
           type: DataTypes.INTEGER,
           allowNull: false,
         },

@@ -61,6 +61,7 @@ export async function up() {
                 id SERIAL PRIMARY KEY,
                 title VARCHAR(255) NOT NULL,
                 content TEXT NOT NULL,
+                category VARCHAR(255) NOT NULL DEFAULT 'General Discussion',
                 "authorId" INTEGER REFERENCES users(id),
                 "createdAt" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
                 "updatedAt" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP

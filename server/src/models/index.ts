@@ -5,6 +5,7 @@ import { initSession } from './session';
 import { initReview } from './review';
 import ForumTopic from './ForumTopics';
 import ForumComment from './ForumComments';
+import appConfig from '../config';
 
 // Load environment variables
 config();
@@ -12,16 +13,21 @@ config();
 /**
  * Initialize Sequelize instance with database configuration
  */
-const sequelize = new Sequelize(process.env.DATABASE_URL || '', {
+const sequelize = new Sequelize({
+  database: appConfig.DB_NAME,
+  username: appConfig.DB_USER,
+  password: appConfig.DB_PASSWORD,
+  host: appConfig.DB_HOST,
+  port: appConfig.DB_PORT,
   dialect: 'postgres',
   dialectOptions: {
     decimalNumbers: true,
-    ssl: process.env.NODE_ENV === 'production' ? {
+    ssl: appConfig.NODE_ENV === 'production' ? {
       require: true,
       rejectUnauthorized: false
     } : false
   },
-  logging: process.env.NODE_ENV === 'production' ? false : console.log,
+  logging: appConfig.NODE_ENV === 'production' ? false : console.log,
 });
 
 // Initialize models
@@ -90,8 +96,8 @@ Session.hasOne(Review, {
 // Forum associations
 ForumTopic.associate({ User, ForumComment });
 ForumComment.associate({ User, ForumTopic });
-User.hasMany(ForumTopic, { foreignKey: 'userId' });
-User.hasMany(ForumComment, { foreignKey: 'userId' });
+User.hasMany(ForumTopic, { foreignKey: 'authorId' });
+User.hasMany(ForumComment, { foreignKey: 'authorId' });
 
 // Test database connection
 sequelize

@@ -5,7 +5,7 @@ import type ForumTopic from './ForumTopics';
 interface ForumCommentAttributes {
   id: number;
   content: string;
-  userId: number;
+  authorId: number;
   topicId: number;
   createdAt: Date;
   updatedAt: Date;
@@ -16,15 +16,15 @@ interface ForumCommentCreationAttributes extends Optional<ForumCommentAttributes
 class ForumComment extends Model<ForumCommentAttributes, ForumCommentCreationAttributes> implements ForumCommentAttributes {
   public id!: number;
   public content!: string;
-  public userId!: number;
+  public authorId!: number;
   public topicId!: number;
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
 
   // Define associations
   public static associate(models: { User: typeof User; ForumTopic: typeof ForumTopic }): void {
-    this.belongsTo(models.User, { foreignKey: 'userId' });
-    this.belongsTo(models.ForumTopic, { foreignKey: 'topicId' });
+    this.belongsTo(models.User, { foreignKey: 'authorId', as: 'Author' });
+    this.belongsTo(models.ForumTopic, { foreignKey: 'topicId', as: 'Topic' });
   }
 
   public static initialize(sequelize: Sequelize): void {
@@ -39,7 +39,7 @@ class ForumComment extends Model<ForumCommentAttributes, ForumCommentCreationAtt
           type: DataTypes.TEXT,
           allowNull: false,
         },
-        userId: {
+        authorId: {
           type: DataTypes.INTEGER,
           allowNull: false,
         },
@@ -59,7 +59,7 @@ class ForumComment extends Model<ForumCommentAttributes, ForumCommentCreationAtt
       {
         sequelize,
         modelName: 'ForumComment',
-        tableName: 'forum_comments',
+        tableName: 'forum_replies',
       }
     );
   }

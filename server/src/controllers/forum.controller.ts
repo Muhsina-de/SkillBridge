@@ -9,14 +9,24 @@ export const getTopics = async (req: AuthRequest, res: Response) => {
     const topics = await ForumTopic.findAll({
       include: [
         {
+          model: User,
+          as: 'Author',
+          attributes: ['username', 'profilePicture']
+        },
+        {
           model: ForumComment,
           as: 'Comments',
-          include: ['User']
+          include: [{
+            model: User,
+            as: 'Author',
+            attributes: ['username', 'profilePicture']
+          }]
         }
       ]
     });
     res.json(topics);
   } catch (error) {
+    console.error('Error fetching topics:', error);
     res.status(500).json({ message: 'Error fetching topics' });
   }
 };
@@ -57,7 +67,7 @@ export const createTopic = async (req: AuthRequest, res: Response) => {
       title,
       content,
       category,
-      userId
+      authorId: userId
     });
 
     res.status(201).json(topic);
@@ -78,7 +88,7 @@ export const updateTopic = async (req: AuthRequest, res: Response) => {
       return res.status(404).json({ message: 'Topic not found' });
     }
 
-    if (topic.userId !== userId) {
+    if (topic.authorId !== userId) {
       return res.status(403).json({ message: 'Not authorized to update this topic' });
     }
 
@@ -100,7 +110,7 @@ export const deleteTopic = async (req: AuthRequest, res: Response) => {
       return res.status(404).json({ message: 'Topic not found' });
     }
 
-    if (topic.userId !== userId) {
+    if (topic.authorId !== userId) {
       return res.status(403).json({ message: 'Not authorized to delete this topic' });
     }
 
@@ -139,7 +149,7 @@ export const createComment = async (req: AuthRequest, res: Response) => {
     const comment = await ForumComment.create({
       content,
       topicId: parseInt(topicId),
-      userId
+      authorId: userId
     });
 
     res.status(201).json(comment);

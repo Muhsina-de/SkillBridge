@@ -1,7 +1,9 @@
 import dotenv from 'dotenv';
+import path from 'path';
 
-// Load environment variables from .env file
-dotenv.config();
+// Load environment variables based on NODE_ENV
+const envFile = process.env.NODE_ENV === 'production' ? '.env.production' : '.env';
+dotenv.config({ path: path.resolve(__dirname, '../../', envFile) });
 
 const config = {
   // Server configuration
@@ -9,7 +11,11 @@ const config = {
   NODE_ENV: process.env.NODE_ENV || 'development',
   
   // Database configuration
-  DATABASE_URL: process.env.DATABASE_URL,
+  DB_NAME: process.env.DB_NAME,
+  DB_USER: process.env.DB_USER,
+  DB_PASSWORD: process.env.DB_PASSWORD,
+  DB_HOST: process.env.DB_HOST,
+  DB_PORT: parseInt(process.env.DB_PORT || '5432'),
   
   // JWT configuration
   JWT_SECRET: process.env.JWT_SECRET || 'your-default-secret-key',
@@ -27,7 +33,7 @@ const config = {
 };
 
 // Validate required environment variables
-const requiredEnvVars = ['DATABASE_URL', 'JWT_SECRET'];
+const requiredEnvVars = ['DB_NAME', 'DB_USER', 'DB_PASSWORD', 'DB_HOST', 'JWT_SECRET'];
 const missingEnvVars = requiredEnvVars.filter(envVar => !process.env[envVar]);
 
 if (missingEnvVars.length > 0) {
