@@ -122,7 +122,7 @@ export function startServer(app: express.Application, port: number = process.env
         console.log(`Server running on port ${port}`);
         if (process.env.NODE_ENV === 'production') {
           console.log('Running in production mode');
-          console.log(`CORS enabled for: ${process.env.CORS_ORIGIN}`);
+          console.log('CORS enabled for:', ['https://ravenest.onrender.com', 'https://ravenest-kma6.onrender.com']);
         } else {
           console.log('Running in development mode');
           console.log('CORS enabled for:', ['http://localhost:5173', 'http://localhost:3000']);
