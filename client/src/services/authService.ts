@@ -25,7 +25,7 @@ interface AuthResponse {
 class AuthService {
   async login(credentials: LoginCredentials): Promise<AuthResponse> { 
     try {
-      const response = await axiosInstance.post<AuthResponse>('/api/auth/login', credentials);
+      const response = await axiosInstance.post<AuthResponse>('/auth/login', credentials);
       if (response.data.token) {
         localStorage.setItem('token', response.data.token);
         localStorage.setItem('user', JSON.stringify(response.data.user));
@@ -38,7 +38,7 @@ class AuthService {
 
   async register(data: RegisterData): Promise<AuthResponse> {
     try {
-      const response = await axiosInstance.post<AuthResponse>('/api/auth/register', data);
+      const response = await axiosInstance.post<AuthResponse>('/auth/register', data);
       if (response.data.token) {
         localStorage.setItem('token', response.data.token);
         localStorage.setItem('user', JSON.stringify(response.data.user));

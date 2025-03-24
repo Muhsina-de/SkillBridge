@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import axiosInstance from '../../utils/axios';
-import { FORUM_ENDPOINTS } from '../../constants/api';
+import { getTopics } from '../../services/forum.service';
 import TopicCard from './TopicCard';
 import { ForumTopic } from '../../types/forum.types';
 
@@ -20,7 +19,7 @@ const Forums: React.FC = () => {
     const fetchTopics = async () => {
       try {
         setLoading(true);
-        const response = await axiosInstance.get<ForumTopic[]>(FORUM_ENDPOINTS.TOPICS.GET_ALL);
+        const response = await getTopics();
         setTopics(response.data);
         setError('');
       } catch (err) {

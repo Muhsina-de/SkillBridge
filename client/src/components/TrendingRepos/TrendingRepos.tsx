@@ -4,14 +4,11 @@ import { getApiUrl } from '../../config/api';
 
 interface Repo {
   id: number;
-  name: string;
-  description: string;
+  full_name: string;
+  description: string | null;
   html_url: string;
   stargazers_count: number;
-}
-
-interface ApiResponse {
-  items: Repo[];
+  language: string | null;
 }
 
 const TrendingRepos: React.FC = () => {
@@ -22,18 +19,11 @@ const TrendingRepos: React.FC = () => {
   useEffect(() => {
     async function fetchTrendingRepos() {
       try {
-        const response = await axios.get<ApiResponse>(getApiUrl('/api/github/trending'));
-
-        // Check if the response contains the expected structure       
-        if (response.data && Array.isArray(response.data.items)) {     
-          setRepos(response.data.items);
-        } else {
-          setError('Unexpected response format');
-        }
-
+        const response = await axios.get<Repo[]>(getApiUrl('/api/github/trending'));
+        setRepos(response.data);
         setLoading(false);
       } catch (err) {
-        console.error(err); // Log the error to the console for debugging
+        console.error('Error fetching trending repositories:', err);
         setError('Failed to fetch trending repositories');
         setLoading(false);
       }
@@ -63,11 +53,16 @@ const TrendingRepos: React.FC = () => {
           repos.map((repo) => (
             <div key={repo.id} className="glass-card p-6 hover:bg-white/90 transition duration-200">   
               <a href={repo.html_url} target="_blank" rel="noopener noreferrer">
-                <h3 className="text-xl font-semibold hover:text-blue-500">{repo.name}</h3>
+                <h3 className="text-xl font-semibold hover:text-blue-500">{repo.full_name}</h3>
               </a>
-              <p className="mt-2 text-gray-600">{repo.description}</p> 
-              <div className="mt-4 text-sm text-gray-500">
-                <span>{repo.stargazers_count} stars</span>
+              <p className="mt-2 text-gray-600">{repo.description || 'No description available'}</p> 
+              <div className="mt-4 flex justify-between items-center text-sm text-gray-500">
+                <span>{repo.stargazers_count.toLocaleString()} stars</span>
+                {repo.language && (
+                  <span className="px-2 py-1 bg-gray-100 rounded-full text-gray-700">
+                    {repo.language}
+                  </span>
+                )}
               </div>
             </div>
           ))

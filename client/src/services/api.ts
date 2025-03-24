@@ -24,6 +24,25 @@ api.interceptors.request.use(
   }
 );
 
+// Add response interceptor for error handling
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    console.error('Response error:', {
+      message: error.message,
+      status: error.response?.status,
+      data: error.response?.data,
+      headers: error.response?.headers,
+      config: {
+        url: error.config?.url,
+        method: error.config?.method,
+        headers: error.config?.headers,
+      }
+    });
+    return Promise.reject(error);
+  }
+);
+
 // User-related API calls
 export const fetchUserReviews = async (userId: string) => {
   try {
@@ -37,7 +56,7 @@ export const fetchUserReviews = async (userId: string) => {
 
 export const fetchUserSessions = async (userId: string) => {
   try {
-    const response = await api.get(`/api/sessions/user/${userId}`);
+    const response = await api.get(`/sessions/user/${userId}`);
     return response.data;
   } catch (error) {
     console.error('Error fetching user sessions:', error);

@@ -31,7 +31,7 @@ const NewTopicPage: React.FC = () => {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.post<{ id: string }>(
-        `${API_BASE_URL}/api/forum/topics`,
+        `${API_BASE_URL}/forum/topics`,
         {
           title,
           content,
@@ -96,7 +96,7 @@ const NewTopicPage: React.FC = () => {
           </select>
         </div>
         
-        <div className="mb-6">
+        <div className="mb-4">
           <label htmlFor="content" className="block text-sm font-medium text-gray-700 mb-1">
             Content *
           </label>

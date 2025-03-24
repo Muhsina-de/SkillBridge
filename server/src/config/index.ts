@@ -7,7 +7,7 @@ dotenv.config({ path: path.resolve(__dirname, '../../', envFile) });
 
 const config = {
   // Server configuration
-  PORT: process.env.PORT || 5173,
+  PORT: process.env.PORT || 3001,
   NODE_ENV: process.env.NODE_ENV || 'development',
   
   // Database configuration

@@ -20,11 +20,16 @@ const seedAll = async () => {
     const { seedUserProfiles } = await import('./userprofile-seeds'); 
     const { seedSessions } = await import('./session-seeds');
     const { seedReviews } = await import('./review-seeds');
+    const { seedMentees } = await import('./mentee-seeds');
 
-    // Seed in order: Users -> Sessions -> Reviews
+    // Seed in order: Users -> Mentees -> Sessions -> Reviews
     console.log('Seeding users...');
     await seedUserProfiles();
     console.log('\n----- USERS SEEDED -----\n');
+
+    console.log('Seeding mentees...');
+    await seedMentees();
+    console.log('\n----- MENTEES SEEDED -----\n');
 
     console.log('Seeding sessions...');
     await seedSessions();

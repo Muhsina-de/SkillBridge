@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
-import { format } from 'date-fns';
+import { format, parseISO } from 'date-fns';
 import { API_BASE_URL } from '../constants/api';
 import CommentCard from '../components/forums/CommentCard';
 import CommentForm from '../components/forums/CommentForm';
@@ -20,7 +20,7 @@ const TopicDetailPage: React.FC = () => {
     const fetchTopic = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.get<ForumTopic>(`${API_BASE_URL}/api/forum/topics/${id}`, {
+        const response = await axios.get<ForumTopic>(`${API_BASE_URL}/forum/topics/${id}`, {
           headers: {
             Authorization: `Bearer ${token}`
           }
@@ -40,7 +40,7 @@ const TopicDetailPage: React.FC = () => {
     if (!window.confirm('Are you sure you want to delete this topic?')) return;
     try {
       const token = localStorage.getItem('token');
-      await axios.delete(`${API_BASE_URL}/api/forum/topics/${id}?userId=${user?.id}`, {
+      await axios.delete(`${API_BASE_URL}/forum/topics/${id}?userId=${user?.id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -102,7 +102,7 @@ const TopicDetailPage: React.FC = () => {
               {topic.category}
             </span>
             <span className="flex items-center mr-3">
-              By {topic.Author?.username || 'Anonymous'} • {format(new Date(topic.createdAt), 'MMM d, yyyy')}
+              By {topic.Author?.username || 'Anonymous'} • {topic.createdAt && topic.createdAt.length > 0 ? format(parseISO(topic.createdAt), 'MMM d, yyyy') : 'Unknown date'}
             </span>
           </div>
         </div>
