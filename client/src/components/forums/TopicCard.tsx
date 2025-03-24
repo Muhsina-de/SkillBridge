@@ -20,7 +20,7 @@ const TopicCard: React.FC<{ topic: ForumTopic }> = ({ topic }) => {
         </span>
       </div>
       <div className="mt-4 flex items-center text-sm text-gray-500">
-        <span>Posted by {topic.User?.username || 'Anonymous'}</span>
+        <span>Posted by {topic.Author?.username || 'Anonymous'}</span>
         <span className="mx-2">•</span>
         <span>{new Date(topic.createdAt).toLocaleDateString()}</span>
         <span className="mx-2">•</span>

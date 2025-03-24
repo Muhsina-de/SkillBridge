@@ -4,19 +4,10 @@ import axios from 'axios';
 import { useAuth } from '../context/AuthContext'; 
 import TopicCard from '../components/forums/TopicCard';
 import { getApiUrl } from '../config/api';
+import { ForumTopic } from '../types/forum.types';
 
 const ForumPage: React.FC = () => {
-  interface Topic {
-    id: number;
-    title: string;
-    content: string;
-    category: string;
-    userId: number;
-    createdAt: string;
-    updatedAt: string;
-  }
-
-  const [topics, setTopics] = useState<Topic[]>([]);
+  const [topics, setTopics] = useState<ForumTopic[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const { user } = useAuth();
@@ -25,9 +16,7 @@ const ForumPage: React.FC = () => {
     const fetchTopics = async () => {
       try {
         const response = await axios.get(getApiUrl('/api/forum/topics'));
-        
-        const data = response.data as Topic[];
-        setTopics(data);
+        setTopics(response.data);
       } catch (err: any) {
         setError(err.response?.data?.message || 'Failed to load topics');
       } finally {

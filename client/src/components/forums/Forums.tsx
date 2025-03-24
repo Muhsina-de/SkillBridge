@@ -20,7 +20,7 @@ const Forums: React.FC = () => {
       try {
         setLoading(true);
         const response = await getTopics();
-        setTopics(response.data);
+        setTopics(response.data as ForumTopic[]);
         setError('');
       } catch (err) {
         console.error('Error fetching topics:', err);
