@@ -1,13 +1,17 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { User } from '../../types/user.types';
+import { useAuth } from '../../context/AuthContext';
 
 interface UserProfileCardProps {
   user: User;
 }
 
 const UserProfileCard: React.FC<UserProfileCardProps> = ({ user }) => {
+  const { user: currentUser } = useAuth();
+
   return (
-    <div className="bg-white rounded-lg shadow-sm p-6">
+    <div className="bg-primary/10 rounded-lg border border-primary-light/20 p-6 h-full flex flex-col">
       <div className="flex items-center space-x-4">
         <img
           src={user.profilePicture || 'https://via.placeholder.com/100'}
@@ -40,15 +44,25 @@ const UserProfileCard: React.FC<UserProfileCardProps> = ({ user }) => {
           </div>
         </div>
       )}
-      {user.rating !== undefined && (
-        <div className="mt-4">
-          <h3 className="text-lg font-medium">Rating</h3>
-          <div className="flex items-center">
-            <span className="text-2xl font-bold text-yellow-500">{user.rating.toFixed(1)}</span>
-            <span className="text-gray-600 ml-2">/ 5.0</span>
+      <div className="mt-auto pt-4">
+        {user.rating !== undefined && (
+          <div className="flex items-center justify-between">
+            <Link to={`/reviews?mentorId=${user.id}`} className="flex items-center hover:opacity-80 transition-opacity">
+              <span className="text-yellow-500 mr-1">★</span>
+              <span className="text-2xl font-bold text-yellow-500">{user.rating.toFixed(1)}</span>
+              <span className="text-gray-600 ml-2">/ 5.0</span>
+            </Link>
+            {currentUser && currentUser.role === 'mentee' && (
+              <Link
+                to={`/mentor/${user.id}`}
+                className="px-4 py-1 bg-gradient-primary text-white rounded-md hover:bg-gradient-light transition-all text-sm"
+              >
+                Book Session
+              </Link>
+            )}
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };

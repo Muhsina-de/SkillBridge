@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import axios from 'axios';
+import ReviewForm from './ReviewForm';
+import { useAuth } from '../../context/AuthContext';
 
 interface Review {
   id: number;
@@ -14,18 +16,33 @@ interface Review {
   };
 }
 
+interface ReviewFormData {
+  mentorId: number;
+  menteeId: number;
+  sessionId: number;
+  rating: number;
+  comment: string;
+}
+
 const Reviews: React.FC = () => {
   const [searchParams] = useSearchParams();
   const mentorId = searchParams.get('mentorId');
+  const { user } = useAuth();
   const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [sortBy, setSortBy] = useState<'rating' | 'date'>('date');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
 
   useEffect(() => {
     const fetchReviews = async () => {
       try {
         setLoading(true);
-        const response = await axios.get<Review[]>(`/api/reviews/mentor/${mentorId}`);
+        const response = await axios.get<Review[]>(`/api/reviews/mentor/${mentorId}`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`
+          }
+        });
         setReviews(response.data);
       } catch (err) {
         setError('Failed to load reviews');
@@ -39,6 +56,30 @@ const Reviews: React.FC = () => {
       fetchReviews();
     }
   }, [mentorId]);
+
+  const handleReviewSubmit = async (formData: ReviewFormData) => {
+    try {
+      const response = await axios.post<Review>('/api/reviews', formData, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+      setReviews([response.data, ...reviews]);
+    } catch (err) {
+      console.error('Error submitting review:', err);
+      throw err;
+    }
+  };
+
+  const sortedReviews = [...reviews].sort((a, b) => {
+    if (sortBy === 'rating') {
+      return sortOrder === 'desc' ? b.rating - a.rating : a.rating - b.rating;
+    } else {
+      return sortOrder === 'desc' 
+        ? new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        : new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+    }
+  });
 
   if (loading) {
     return (
@@ -57,10 +98,40 @@ const Reviews: React.FC = () => {
   }
 
   return (
-    <div className="max-w-4xl mx-auto py-8 px-4">
-      <h1 className="text-3xl font-bold mb-8">Mentor Reviews</h1>
+    <div className="max-w-4xl mx-auto py-8 px-4 mt-16">
+      <div className="flex justify-between items-center mb-8">
+        <h1 className="text-3xl font-bold">Mentor Reviews</h1>
+        <div className="flex space-x-4">
+          <select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value as 'rating' | 'date')}
+            className="px-3 py-1 border rounded-md"
+          >
+            <option value="date">Sort by Date</option>
+            <option value="rating">Sort by Rating</option>
+          </select>
+          <button
+            onClick={() => setSortOrder(sortOrder === 'desc' ? 'asc' : 'desc')}
+            className="px-3 py-1 border rounded-md hover:bg-gray-50"
+          >
+            {sortOrder === 'desc' ? '↓' : '↑'}
+          </button>
+        </div>
+      </div>
+
+      {user && user.role === 'mentee' && mentorId && (
+        <div className="mb-8">
+          <ReviewForm
+            mentorId={parseInt(mentorId)}
+            menteeId={user.id}
+            sessionId={1} // This should come from the completed session
+            onSubmit={handleReviewSubmit}
+          />
+        </div>
+      )}
+
       <div className="space-y-6">
-        {reviews.map((review) => (
+        {sortedReviews.map((review) => (
           <div key={review.id} className="bg-white rounded-lg shadow p-6">
             <div className="flex items-start space-x-4">
               <img

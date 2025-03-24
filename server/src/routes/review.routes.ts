@@ -1,5 +1,5 @@
 import { Router, Request, Response, NextFunction } from 'express';
-import { Review, User, Session } from '../models';
+import { Review, User } from '../models';
 import { authenticateJWT } from '../middleware/authmiddleware';
 import { AuthRequest } from '../types/express';
 
@@ -13,12 +13,12 @@ const validateReviewInput = (
   res: Response,
   next: NextFunction
 ): Response | void => {
-  const { session_id, mentor_id, rating, comment } = req.body;
+  const { mentor_id, rating, comment } = req.body;
   
-  if (!session_id || !mentor_id || !rating || !comment) {
+  if (!mentor_id || !rating || !comment) {
     return res.status(400).json({ 
       error: 'Missing required fields',
-      received: { session_id, mentor_id, rating, comment }
+      received: { mentor_id, rating, comment }
     });
   }
 
@@ -66,32 +66,6 @@ router.get('/mentor/:mentorId', async (req: AuthRequest, res: Response) => {
 });
 
 /**
- * Get review by session ID
- * @route GET /session/:sessionId
- */
-router.get('/session/:sessionId', async (req: Request, res: Response) => {
-  try {
-    const review = await Review.findOne({
-      where: { session_id: req.params.sessionId },
-      include: [{
-        model: User,
-        as: 'mentee',
-        attributes: ['id', 'username', 'profilePicture']
-      }]
-    });
-
-    if (!review) {
-      return res.status(404).json({ error: 'Review not found' });
-    }
-
-    res.json(review);
-  } catch (error) {
-    console.error('Error fetching review:', error);
-    res.status(500).json({ error: 'Failed to fetch review' });
-  }
-});
-
-/**
  * Get review summary for a mentor
  * @route GET /mentor/:mentorId/summary
  */
@@ -123,7 +97,7 @@ router.get('/mentor/:mentorId/summary', async (req: Request, res: Response) => {
  */
 router.post('/', authenticateJWT, validateReviewInput, async (req: AuthRequest, res: Response) => {
   try {
-    const { session_id, mentor_id, rating, comment } = req.body;
+    const { mentor_id, rating, comment } = req.body;
     const mentee_id = req.user?.id;
 
     if (!mentee_id) {
@@ -131,12 +105,14 @@ router.post('/', authenticateJWT, validateReviewInput, async (req: AuthRequest, 
     }
 
     const review = await Review.create({
-      session_id,
       mentee_id,
       mentor_id,
       rating,
       comment
     });
+
+    // Update mentor's rating
+    await Review.updateMentorRating(mentor_id, User);
 
     res.status(201).json(review);
   } catch (error) {
@@ -149,26 +125,27 @@ router.post('/', authenticateJWT, validateReviewInput, async (req: AuthRequest, 
  * Update a review
  * @route PUT /:id
  */
-router.put('/:id', authenticateJWT, validateReviewInput, async (req: Request, res: Response) => {
+router.put('/:id', authenticateJWT, async (req: AuthRequest, res: Response) => {
   try {
+    const reviewId = parseInt(req.params.id, 10);
     const { rating, comment } = req.body;
-    const review = await Review.findByPk(req.params.id);
+    const userId = req.user?.id;
 
+    const review = await Review.findByPk(reviewId);
     if (!review) {
       return res.status(404).json({ error: 'Review not found' });
     }
 
+    if (review.mentee_id !== userId) {
+      return res.status(403).json({ error: 'Not authorized to update this review' });
+    }
+
     await review.update({ rating, comment });
+    
+    // Update mentor's rating
+    await Review.updateMentorRating(review.mentor_id, User);
 
-    const updatedReview = await Review.findByPk(review.id, {
-      include: [{
-        model: User,
-        as: 'mentee',
-        attributes: ['id', 'username', 'profilePicture']
-      }]
-    });
-
-    res.json(updatedReview);
+    res.json(review);
   } catch (error) {
     console.error('Error updating review:', error);
     res.status(500).json({ error: 'Failed to update review' });
@@ -179,16 +156,27 @@ router.put('/:id', authenticateJWT, validateReviewInput, async (req: Request, re
  * Delete a review
  * @route DELETE /:id
  */
-router.delete('/:id', authenticateJWT, async (req: Request, res: Response) => {
+router.delete('/:id', authenticateJWT, async (req: AuthRequest, res: Response) => {
   try {
-    const review = await Review.findByPk(req.params.id);
+    const reviewId = parseInt(req.params.id, 10);
+    const userId = req.user?.id;
 
+    const review = await Review.findByPk(reviewId);
     if (!review) {
       return res.status(404).json({ error: 'Review not found' });
     }
 
+    if (review.mentee_id !== userId) {
+      return res.status(403).json({ error: 'Not authorized to delete this review' });
+    }
+
+    const mentorId = review.mentor_id;
     await review.destroy();
-    res.status(204).send();
+    
+    // Update mentor's rating
+    await Review.updateMentorRating(mentorId, User);
+
+    res.json({ message: 'Review deleted successfully' });
   } catch (error) {
     console.error('Error deleting review:', error);
     res.status(500).json({ error: 'Failed to delete review' });

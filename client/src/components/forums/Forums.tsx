@@ -90,8 +90,8 @@ const Forums: React.FC = () => {
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold">Discussion Forums</h1>
         <Link
-          to="/forum/create"
-          className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+          to="/forum/new"
+          className="px-4 py-2 bg-gradient-primary text-white rounded-md hover:bg-gradient-light"
         >
           Create Topic
         </Link>

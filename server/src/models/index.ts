@@ -2,7 +2,7 @@ import { Sequelize } from 'sequelize';
 import { config } from 'dotenv';
 import { initUser } from './userprofile';
 import { initSession } from './session';
-import { initReview } from './review';
+import { initializeReview } from './review';
 import ForumTopic from './ForumTopics';
 import ForumComment from './ForumComments';
 import appConfig from '../config';
@@ -33,7 +33,7 @@ const sequelize = new Sequelize({
 // Initialize models
 const User = initUser(sequelize);
 const Session = initSession(sequelize);
-const Review = initReview(sequelize, User);
+const Review = initializeReview(sequelize);
 
 // Initialize forum models
 ForumTopic.initialize(sequelize);
@@ -63,34 +63,25 @@ Session.belongsTo(User, {
 });
 
 User.hasMany(Review, {
-  foreignKey: 'menteeId',
+  foreignKey: 'mentee_id',
   as: 'givenReviews',
   onDelete: 'CASCADE'
 });
 
 User.hasMany(Review, {
-  foreignKey: 'mentorId',
+  foreignKey: 'mentor_id',
   as: 'receivedReviews',
   onDelete: 'CASCADE'
 });
 
 Review.belongsTo(User, {
-  foreignKey: 'menteeId', 
+  foreignKey: 'mentee_id', 
   as: 'mentee'
 });
 
 Review.belongsTo(User, {
-  foreignKey: 'mentorId',
+  foreignKey: 'mentor_id',
   as: 'mentor'
-});
-
-Review.belongsTo(Session, {
-  foreignKey: 'sessionId'
-});
-
-Session.hasOne(Review, {
-  foreignKey: 'sessionId',
-  onDelete: 'CASCADE'
 });
 
 // Forum associations

@@ -3,7 +3,7 @@ export interface ForumTopic {
     title: string;
     content: string;
     category: string;
-    userId: number;
+    authorId: number;
     createdAt: string;
     updatedAt: string;
     User?: {

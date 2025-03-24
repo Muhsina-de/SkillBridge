@@ -15,6 +15,8 @@ import Forums from './components/forums/Forums'
 import { AuthProvider } from './context/AuthContext'
 import ProtectedRoute from './components/auth/ProtectedRoute'
 import Dashboard from './components/Dashboard'
+import NewTopicPage from './pages/NewTopicPage'
+import TopicDetailPage from './pages/TopicDetailPage'
 
 const App: React.FC = () => {
   return (
@@ -77,6 +79,22 @@ const App: React.FC = () => {
                 element={
                   <ProtectedRoute>
                     <Forums />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/forum/new"
+                element={
+                  <ProtectedRoute>
+                    <NewTopicPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/forum/topics/:id"
+                element={
+                  <ProtectedRoute>
+                    <TopicDetailPage />
                   </ProtectedRoute>
                 }
               />

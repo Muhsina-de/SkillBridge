@@ -7,7 +7,7 @@ dotenv.config({ path: path.resolve(__dirname, '../../', envFile) });
 
 const config = {
   // Server configuration
-  PORT: process.env.PORT || 3001,
+  PORT: process.env.PORT || 5173,
   NODE_ENV: process.env.NODE_ENV || 'development',
   
   // Database configuration
@@ -22,14 +22,14 @@ const config = {
   JWT_EXPIRATION: process.env.JWT_EXPIRATION || '24h',
   
   // CORS configuration
-  CORS_ORIGIN: process.env.CORS_ORIGIN || 'http://localhost:5173',
+  CORS_ORIGIN: process.env.CORS_ORIGIN || 'http://localhost:3001',
   
   // API Rate Limiting
   RATE_LIMIT_WINDOW_MS: parseInt(process.env.RATE_LIMIT_WINDOW_MS || '900000'), // 15 minutes
   RATE_LIMIT_MAX_REQUESTS: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS || '100'),
   
   // Client URL (for CORS and redirects)
-  CLIENT_URL: process.env.CLIENT_URL || 'http://localhost:5173',
+  CLIENT_URL: process.env.CLIENT_URL || 'http://localhost:3001',
 };
 
 // Validate required environment variables

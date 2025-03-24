@@ -5,7 +5,6 @@ import { DataTypes, Model, Optional, Sequelize, ModelStatic } from 'sequelize';
  */
 interface ReviewAttributes {
   id: number;
-  session_id: number;
   mentee_id: number;
   mentor_id: number;
   rating: number;
@@ -22,16 +21,14 @@ interface ReviewCreationAttributes extends Optional<ReviewAttributes, 'id'> {}
 
 /**
  * Review model class
- * Represents a review given by a mentee to a mentor for a specific session
+ * Represents a review given by a mentee to a mentor
  */
 export class Review extends Model<ReviewAttributes, ReviewCreationAttributes> implements ReviewAttributes {
   public id!: number;
-  public session_id!: number;
   public mentee_id!: number;
   public mentor_id!: number;
   public rating!: number;
   public comment!: string;
-
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
 
@@ -51,7 +48,7 @@ export class Review extends Model<ReviewAttributes, ReviewCreationAttributes> im
         : 0;
       
       await User.update(
-        { rating: Number(averageRating.toFixed(1)) },
+        { rating: averageRating },
         { where: { id: mentor_id } }
       );
     } catch (error) {
@@ -59,9 +56,22 @@ export class Review extends Model<ReviewAttributes, ReviewCreationAttributes> im
       throw new Error('Failed to update mentor rating');
     }
   }
+
+  /**
+   * Define associations with other models
+   */
+  public static associate(models: { User: ModelStatic<Model> }): void {
+    this.belongsTo(models.User, { foreignKey: 'mentee_id', as: 'mentee' });
+    this.belongsTo(models.User, { foreignKey: 'mentor_id', as: 'mentor' });
+  }
 }
 
-export function initReview(sequelize: Sequelize, User: ModelStatic<Model>): typeof Review {
+/**
+ * Initialize the Review model
+ * @param sequelize - Sequelize instance
+ * @returns Review model
+ */
+export function initializeReview(sequelize: Sequelize): typeof Review {
   Review.init(
     {
       id: {
@@ -69,63 +79,44 @@ export function initReview(sequelize: Sequelize, User: ModelStatic<Model>): type
         autoIncrement: true,
         primaryKey: true,
       },
-      session_id: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        references: {
-          model: 'sessions',
-          key: 'id',
-        },
-      },
       mentee_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
           model: 'users',
-          key: 'id',
-        },
+          key: 'id'
+        }
       },
       mentor_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
           model: 'users',
-          key: 'id',
-        },
+          key: 'id'
+        }
       },
       rating: {
         type: DataTypes.INTEGER,
         allowNull: false,
         validate: {
           min: 1,
-          max: 5,
-        },
+          max: 5
+        }
       },
       comment: {
         type: DataTypes.TEXT,
         allowNull: false,
         validate: {
-          len: [10, 1000], // Minimum 10 characters, maximum 1000
-        },
-      },
+          len: [10, 1000]
+        }
+      }
     },
     {
       sequelize,
       modelName: 'Review',
       tableName: 'reviews',
-      underscored: true,
       timestamps: true,
-      hooks: {
-        afterCreate: async (review: Review) => {
-          await Review.updateMentorRating(review.mentor_id, User);
-        },
-        afterUpdate: async (review: Review) => {
-          await Review.updateMentorRating(review.mentor_id, User);
-        },
-        afterDestroy: async (review: Review) => {
-          await Review.updateMentorRating(review.mentor_id, User);
-        }
-      }
+      underscored: false // This ensures we use camelCase for column names
     }
   );
 

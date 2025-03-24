@@ -37,9 +37,18 @@ export const getTopicById = async (req: AuthRequest, res: Response) => {
     const topic = await ForumTopic.findByPk(id, {
       include: [
         {
+          model: User,
+          as: 'Author',
+          attributes: ['username', 'profilePicture']
+        },
+        {
           model: ForumComment,
           as: 'Comments',
-          include: ['User']
+          include: [{
+            model: User,
+            as: 'Author',
+            attributes: ['username', 'profilePicture']
+          }]
         }
       ]
     });
@@ -50,6 +59,7 @@ export const getTopicById = async (req: AuthRequest, res: Response) => {
 
     res.json(topic);
   } catch (error) {
+    console.error('Error fetching topic:', error);
     res.status(500).json({ message: 'Error fetching topic' });
   }
 };

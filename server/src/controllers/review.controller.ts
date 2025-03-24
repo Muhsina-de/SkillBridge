@@ -1,115 +1,105 @@
-import { Response } from 'express';
-import { Review } from '../models/review';
+import { Request, Response } from 'express';
+import { Review, User } from '../models';
 import { AuthRequest } from '../types/express';
 
 // Create a new review
 export const createReview = async (req: AuthRequest, res: Response) => {
   try {
-    const { rating, comment, session_id, mentor_id } = req.body;
-    
-    if (!req.user?.id) {
-      return res.status(401).json({ message: 'User ID not found in token' });
+    const { rating, comment, mentor_id } = req.body;
+    const mentee_id = req.user?.id;
+
+    if (!mentee_id) {
+      return res.status(401).json({ error: 'User not authenticated' });
     }
 
     const review = await Review.create({
-      rating,
-      comment,
-      session_id,
+      mentee_id,
       mentor_id,
-      mentee_id: req.user.id
+      rating,
+      comment
     });
+
+    // Update mentor's average rating
+    await Review.updateMentorRating(mentor_id, User);
 
     res.status(201).json(review);
   } catch (error) {
     console.error('Error creating review:', error);
-    res.status(500).json({ message: 'Error creating review' });
+    res.status(500).json({ error: 'Failed to create review' });
   }
 };
 
 // Get reviews by mentor ID
-export const getMentorReviews = async (req: AuthRequest, res: Response) => {
+export const getMentorReviews = async (req: Request, res: Response) => {
   try {
-    const { mentor_id } = req.params;
-    
+    const mentorId = parseInt(req.params.mentorId, 10);
+    console.log('Fetching reviews for mentor:', mentorId);
+
     const reviews = await Review.findAll({
-      where: { mentor_id: parseInt(mentor_id, 10) },
+      where: { mentor_id: mentorId },
+      include: [{
+        model: User,
+        as: 'mentee',
+        attributes: ['id', 'username', 'profilePicture']
+      }],
       order: [['createdAt', 'DESC']]
     });
 
     res.json(reviews);
   } catch (error) {
-    console.error('Error fetching mentor reviews:', error);
-    res.status(500).json({ message: 'Error fetching reviews' });
-  }
-};
-
-// Get review by session ID
-export const getSessionReview = async (req: AuthRequest, res: Response) => {
-  try {
-    const { session_id } = req.params;
-    
-    const review = await Review.findOne({
-      where: { session_id: parseInt(session_id, 10) }
-    });
-
-    if (!review) {
-      return res.status(404).json({ message: 'Review not found' });
-    }
-
-    res.json(review);
-  } catch (error) {
-    console.error('Error fetching session review:', error);
-    res.status(500).json({ message: 'Error fetching review' });
+    console.error('Error fetching reviews:', error);
+    res.status(500).json({ error: 'Failed to fetch reviews' });
   }
 };
 
 // Update a review
-export const updateReview = async (req: AuthRequest, res: Response) => {
+export const updateReview = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
     const { rating, comment } = req.body;
-
-    const review = await Review.findByPk(id);
+    const review = await Review.findByPk(req.params.id);
 
     if (!review) {
-      return res.status(404).json({ message: 'Review not found' });
-    }
-
-    // Check if the user is the owner of the review
-    if (!req.user?.id || review.mentee_id !== req.user.id) {
-      return res.status(403).json({ message: 'Not authorized to update this review' });
+      return res.status(404).json({ error: 'Review not found' });
     }
 
     await review.update({ rating, comment });
 
-    res.json(review);
+    // Update mentor's average rating
+    await Review.updateMentorRating(review.mentor_id, User);
+
+    const updatedReview = await Review.findByPk(review.id, {
+      include: [{
+        model: User,
+        as: 'mentee',
+        attributes: ['id', 'username', 'profilePicture']
+      }]
+    });
+
+    res.json(updatedReview);
   } catch (error) {
     console.error('Error updating review:', error);
-    res.status(500).json({ message: 'Error updating review' });
+    res.status(500).json({ error: 'Failed to update review' });
   }
 };
 
 // Delete a review
-export const deleteReview = async (req: AuthRequest, res: Response) => {
+export const deleteReview = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
-
-    const review = await Review.findByPk(id);
+    const review = await Review.findByPk(req.params.id);
 
     if (!review) {
-      return res.status(404).json({ message: 'Review not found' });
+      return res.status(404).json({ error: 'Review not found' });
     }
 
-    // Check if the user is the owner of the review
-    if (!req.user?.id || review.mentee_id !== req.user.id) {
-      return res.status(403).json({ message: 'Not authorized to delete this review' });
-    }
-
+    const mentorId = review.mentor_id;
     await review.destroy();
 
-    res.json({ message: 'Review deleted successfully' });
+    // Update mentor's average rating
+    await Review.updateMentorRating(mentorId, User);
+
+    res.status(204).send();
   } catch (error) {
     console.error('Error deleting review:', error);
-    res.status(500).json({ message: 'Error deleting review' });
+    res.status(500).json({ error: 'Failed to delete review' });
   }
 }; 

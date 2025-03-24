@@ -19,7 +19,12 @@ const TopicDetailPage: React.FC = () => {
   useEffect(() => {
     const fetchTopic = async () => {
       try {
-        const response = await axios.get<ForumTopic>(`${API_BASE_URL}/api/forum/topics/${id}`);
+        const token = localStorage.getItem('token');
+        const response = await axios.get<ForumTopic>(`${API_BASE_URL}/api/forum/topics/${id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
         setTopic(response.data);
         setLoading(false);
       } catch (err) {
@@ -74,7 +79,7 @@ const TopicDetailPage: React.FC = () => {
         <div className="mb-4">
           <div className="flex justify-between items-start">
             <h1 className="text-2xl font-bold text-gray-900">{topic.title}</h1>
-            {user && parseInt(user.id.toString(), 10) === topic.userId && (
+            {user && parseInt(user.id.toString(), 10) === topic.authorId && (
               <div className="flex space-x-2">
                 <button
                   onClick={() => navigate(`/forum/edit-topics/${topic.id}`)}

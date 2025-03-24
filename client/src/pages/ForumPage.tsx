@@ -58,7 +58,7 @@ const ForumPage: React.FC = () => {
           {user && (
             <Link
               to="/forum/new"
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+              className="px-4 py-2 bg-gradient-primary text-white rounded-lg hover:bg-gradient-light transition"
             >
               New Topic
             </Link>

@@ -1,42 +1,37 @@
-import { Review } from "../models/review";
-import { User } from "../models/userprofile";
-import { Session } from "../models/session";
+import { Review, User } from '../models';
 
-export const seedReviews = async () => {
+export async function seedReviews() {
     try {
-        // Find some existing users and sessions to reference
-        const mentors = await User.findAll({ where: { role: 'mentor' }, limit: 3 });
-        const mentees = await User.findAll({ where: { role: 'mentee' }, limit: 3 });
-        const sessions = await Session.findAll({ where: { status: 'accepted' }, limit: 3 });
+        // Get all mentors and mentees
+        const mentors = await User.findAll({ where: { role: 'mentor' } });
+        const mentees = await User.findAll({ where: { role: 'mentee' } });
 
-        console.log('Found sessions:', sessions.length);
-        console.log('Found mentors:', mentors.length);
-        console.log('Found mentees:', mentees.length);
-
-        if (mentors.length === 0 || mentees.length === 0 || sessions.length === 0) {
-            console.log('Skipping review seeds: Required users or sessions not found');
+        if (mentors.length === 0 || mentees.length === 0) {
+            console.log('No mentors or mentees found for seeding reviews');
             return;
         }
 
-        // Clear existing reviews
-        await Review.destroy({ where: {} });
+        // Create reviews for each mentor
+        for (const mentor of mentors) {
+            // Get 1-3 random mentees to review this mentor
+            const numReviews = Math.floor(Math.random() * 3) + 1;
+            const randomMentees = mentees
+                .sort(() => 0.5 - Math.random())
+                .slice(0, numReviews);
 
-        // Create reviews only for accepted sessions
-        for (const session of sessions) {
-            if (session.status === 'accepted') {
+            for (const mentee of randomMentees) {
                 await Review.create({
-                    session_id: session.id,
-                    mentee_id: session.menteeId,
-                    mentor_id: session.mentorId,
+                    mentor_id: mentor.id,
+                    mentee_id: mentee.id,
                     rating: Math.floor(Math.random() * 2) + 4, // Random rating between 4-5
-                    comment: "Great session! The mentor was very helpful and knowledgeable."
+                    comment: `Great mentoring experience with ${mentor.username}! They were very helpful and knowledgeable.`
                 });
             }
         }
 
-        console.log('Review seeds created successfully');
+        console.log('Reviews seeded successfully');
     } catch (error) {
         console.error('Error seeding reviews:', error);
         throw error;
     }
-}; 
+} 

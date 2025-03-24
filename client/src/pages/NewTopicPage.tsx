@@ -36,7 +36,7 @@ const NewTopicPage: React.FC = () => {
           title,
           content,
           category,
-          userId: user.id
+          authorId: user.id
         },
         {
           headers: {
@@ -54,7 +54,7 @@ const NewTopicPage: React.FC = () => {
   };
 
   return (
-    <div className="max-w-3xl mx-auto px-4 py-8">
+    <div className="max-w-3xl mx-auto px-4 pt-16 pb-8">
       <h1 className="text-2xl font-bold mb-6">Create New Topic</h1>
       
       <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow-sm p-6">
@@ -121,7 +121,7 @@ const NewTopicPage: React.FC = () => {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+            className="px-4 py-2 bg-gradient-primary text-white rounded-lg hover:bg-gradient-light disabled:opacity-50"
           >
             {isSubmitting ? 'Creating...' : 'Create Topic'}
           </button>
