@@ -1,21 +1,36 @@
 import dotenv from 'dotenv';
 import path from 'path';
 
+// Define interface for database configuration
+interface DatabaseConfig {
+  DB_NAME?: string;
+  DB_USER?: string;
+  DB_PASSWORD?: string;
+  DB_HOST?: string;
+  DB_PORT?: number;
+}
+
 // Load environment variables based on NODE_ENV
 const envFile = process.env.NODE_ENV === 'production' ? '.env.production' : '.env';
 dotenv.config({ path: path.resolve(__dirname, '../../', envFile) });
 
+// Initialize dbConfig with default values
+const dbConfig: DatabaseConfig = {
+  DB_NAME: undefined,
+  DB_USER: undefined,
+  DB_PASSWORD: undefined,
+  DB_HOST: undefined,
+  DB_PORT: undefined
+};
+
 // Parse DATABASE_URL if it exists (Render provides this)
-let dbConfig = {};
 if (process.env.DATABASE_URL) {
   const url = new URL(process.env.DATABASE_URL);
-  dbConfig = {
-    DB_NAME: url.pathname.slice(1),
-    DB_USER: url.username,
-    DB_PASSWORD: url.password,
-    DB_HOST: url.hostname,
-    DB_PORT: parseInt(url.port || '5432'),
-  };
+  dbConfig.DB_NAME = url.pathname.slice(1);
+  dbConfig.DB_USER = url.username;
+  dbConfig.DB_PASSWORD = url.password;
+  dbConfig.DB_HOST = url.hostname;
+  dbConfig.DB_PORT = parseInt(url.port || '5432');
 }
 
 const config = {
