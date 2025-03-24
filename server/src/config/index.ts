@@ -5,17 +5,30 @@ import path from 'path';
 const envFile = process.env.NODE_ENV === 'production' ? '.env.production' : '.env';
 dotenv.config({ path: path.resolve(__dirname, '../../', envFile) });
 
+// Parse DATABASE_URL if it exists (Render provides this)
+let dbConfig = {};
+if (process.env.DATABASE_URL) {
+  const url = new URL(process.env.DATABASE_URL);
+  dbConfig = {
+    DB_NAME: url.pathname.slice(1),
+    DB_USER: url.username,
+    DB_PASSWORD: url.password,
+    DB_HOST: url.hostname,
+    DB_PORT: parseInt(url.port || '5432'),
+  };
+}
+
 const config = {
   // Server configuration
   PORT: process.env.PORT || 3001,
   NODE_ENV: process.env.NODE_ENV || 'development',
   
-  // Database configuration
-  DB_NAME: process.env.DB_NAME,
-  DB_USER: process.env.DB_USER,
-  DB_PASSWORD: process.env.DB_PASSWORD,
-  DB_HOST: process.env.DB_HOST,
-  DB_PORT: parseInt(process.env.DB_PORT || '5432'),
+  // Database configuration (use DATABASE_URL values if available)
+  DB_NAME: dbConfig.DB_NAME || process.env.DB_NAME,
+  DB_USER: dbConfig.DB_USER || process.env.DB_USER,
+  DB_PASSWORD: dbConfig.DB_PASSWORD || process.env.DB_PASSWORD,
+  DB_HOST: dbConfig.DB_HOST || process.env.DB_HOST,
+  DB_PORT: dbConfig.DB_PORT || parseInt(process.env.DB_PORT || '5432'),
   
   // JWT configuration
   JWT_SECRET: process.env.JWT_SECRET || 'your-default-secret-key',
@@ -34,7 +47,7 @@ const config = {
 
 // Validate required environment variables
 const requiredEnvVars = ['DB_NAME', 'DB_USER', 'DB_PASSWORD', 'DB_HOST', 'JWT_SECRET'];
-const missingEnvVars = requiredEnvVars.filter(envVar => !process.env[envVar]);
+const missingEnvVars = requiredEnvVars.filter(envVar => !config[envVar]);
 
 if (missingEnvVars.length > 0) {
   throw new Error(
