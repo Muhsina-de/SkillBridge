@@ -9,7 +9,7 @@ export const API_CONFIG = {
   ENDPOINTS: {
     AUTH: {
       LOGIN: '/api/auth/login',
-      SIGNUP: '/api/auth/signup',
+      SIGNUP: '/api/auth/register',  // Changed from signup to register to match backend
     }
   }
 };
