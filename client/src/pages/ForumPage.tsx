@@ -15,7 +15,7 @@ const ForumPage: React.FC = () => {
   useEffect(() => {
     const fetchTopics = async () => {
       try {
-        const response = await axios.get(getApiUrl('/api/forum/topics'));
+        const response = await axios.get<ForumTopic[]>(getApiUrl('/api/forum/topics'));
         setTopics(response.data);
       } catch (err: any) {
         setError(err.response?.data?.message || 'Failed to load topics');
