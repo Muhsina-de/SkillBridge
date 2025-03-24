@@ -12,7 +12,7 @@ export async function seedDemoUser() {
       role: 'mentor',
       skills: ['JavaScript', 'React', 'Node.js'],
       rating: 4.5,
-      profilePicture: '',
+      profilePicture: 'https://api.dicebear.com/7.x/avataaars/svg?seed=john',
       bio: 'Experienced software developer and mentor',
       availability: ['Monday', 'Wednesday', 'Friday'],
       location: 'New York',

@@ -156,14 +156,41 @@ export const createComment = async (req: AuthRequest, res: Response) => {
       return res.status(401).json({ message: 'User not authenticated' });
     }
 
+    // Check if user exists
+    const user = await User.findByPk(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Check if topic exists
+    const topic = await ForumTopic.findByPk(topicId);
+    if (!topic) {
+      return res.status(404).json({ message: 'Topic not found' });
+    }
+
+    console.log('Creating comment with:', { content, topicId, authorId: userId });
+
     const comment = await ForumComment.create({
       content,
       topicId: parseInt(topicId),
       authorId: userId
     });
 
-    res.status(201).json(comment);
+    // Fetch the created comment with user information
+    const commentWithUser = await ForumComment.findByPk(comment.id, {
+      include: [{
+        model: User,
+        as: 'Author',
+        attributes: ['username', 'profilePicture']
+      }]
+    });
+
+    res.status(201).json(commentWithUser);
   } catch (error) {
-    res.status(500).json({ message: 'Error creating comment' });
+    console.error('Error creating comment:', error);
+    res.status(500).json({ 
+      message: 'Error creating comment',
+      error: error instanceof Error ? error.message : 'Unknown error'
+    });
   }
 };

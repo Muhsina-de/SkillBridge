@@ -53,13 +53,13 @@ const TopicDetailPage: React.FC = () => {
   const handleAddComment = (newComment: ForumComment) => {
     if (topic) {
       const comment: ForumComment = {
-        id: parseInt(newComment.id.toString(), 10),
+        id: newComment.id,
         content: newComment.content,
-        userId: parseInt(newComment.userId.toString(), 10),
-        topicId: parseInt(newComment.topicId.toString(), 10),
+        authorId: newComment.authorId,
+        topicId: newComment.topicId,
         createdAt: newComment.createdAt,
         updatedAt: newComment.updatedAt,
-        User: newComment.User
+        Author: newComment.Author
       };
       
       setTopic({
@@ -102,7 +102,7 @@ const TopicDetailPage: React.FC = () => {
               {topic.category}
             </span>
             <span className="flex items-center mr-3">
-              By {topic.User?.username || 'Anonymous'} • {format(new Date(topic.createdAt), 'MMM d, yyyy')}
+              By {topic.Author?.username || 'Anonymous'} • {format(new Date(topic.createdAt), 'MMM d, yyyy')}
             </span>
           </div>
         </div>

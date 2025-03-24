@@ -43,6 +43,7 @@ Coming soon! Our app is getting ready for its world tour - stay tuned for the bi
 
 ### APIs
 - 🔄 GitHub Trending API (Our tech charts)
+- 🎨 DiceBear API (Avatar generation)
 - 🌐 RESTful API endpoints for:
   - 👥 User Authentication
   - 🤝 Mentor Matching
