@@ -1,8 +1,9 @@
 import axios from 'axios';
+import { getApiUrl } from '../config/api';
 
-// Create axios instance with proxy configuration
+// Create axios instance with base URL
 const axiosInstance = axios.create({
-  baseURL: '/api', // Using Vite's proxy
+  baseURL: getApiUrl(''),
   headers: {
     'Content-Type': 'application/json',
   },

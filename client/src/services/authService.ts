@@ -1,4 +1,5 @@
 import axiosInstance from '../utils/axios';
+import { API_CONFIG } from '../config/api';
 
 interface LoginCredentials {
   email: string;
@@ -25,7 +26,7 @@ interface AuthResponse {
 class AuthService {
   async login(credentials: LoginCredentials): Promise<AuthResponse> { 
     try {
-      const response = await axiosInstance.post<AuthResponse>('/auth/login', credentials);
+      const response = await axiosInstance.post<AuthResponse>(API_CONFIG.ENDPOINTS.AUTH.LOGIN, credentials);
       if (response.data.token) {
         localStorage.setItem('token', response.data.token);
         localStorage.setItem('user', JSON.stringify(response.data.user));
@@ -38,7 +39,7 @@ class AuthService {
 
   async register(data: RegisterData): Promise<AuthResponse> {
     try {
-      const response = await axiosInstance.post<AuthResponse>('/auth/register', data);
+      const response = await axiosInstance.post<AuthResponse>(API_CONFIG.ENDPOINTS.AUTH.SIGNUP, data);
       if (response.data.token) {
         localStorage.setItem('token', response.data.token);
         localStorage.setItem('user', JSON.stringify(response.data.user));
