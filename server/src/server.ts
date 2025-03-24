@@ -30,7 +30,7 @@ export function createServer() {
 
   const corsOptions = {
     origin: process.env.NODE_ENV === 'production' 
-      ? process.env.CORS_ORIGIN 
+      ? ['https://ravenest.onrender.com', 'https://ravenest-kma6.onrender.com']
       : ['http://localhost:5173', 'http://localhost:3000', 'http://localhost:3001'],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
