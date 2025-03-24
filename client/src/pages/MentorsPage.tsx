@@ -14,11 +14,13 @@ const MentorsPage: React.FC = () => {
   useEffect(() => {
     const fetchMentors = async () => {
       try {
+        console.log('Fetching mentors...');
         const data = await mentorService.getAllMentors();
+        console.log('Received mentors data:', data);
         setMentors(data);
       } catch (err) {
-        setError('Failed to load mentors');
         console.error('Error loading mentors:', err);
+        setError('Failed to load mentors');
       } finally {
         setLoading(false);
       }
