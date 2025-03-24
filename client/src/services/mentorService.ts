@@ -19,21 +19,21 @@ export interface Mentor {
 const mentorService = {
   getAllMentors: async (): Promise<Mentor[]> => {
     try {
-      const response = await axiosInstance.get<Mentor[]>('/profiles/mentors');
-      return response.data;
+      const response = await axiosInstance.get<Mentor[]>('/api/profiles/mentors');
+      return Array.isArray(response.data) ? response.data : [];
     } catch (error) {
       console.error('Error fetching mentors:', error);
-      throw error;
+      return [];
     }
   },
 
-  getMentorById: async (id: number): Promise<Mentor> => {
+  getMentorById: async (id: number): Promise<Mentor | null> => {
     try {
-      const response = await axiosInstance.get<Mentor>(`/profiles/${id}`);
+      const response = await axiosInstance.get<Mentor>(`/api/profiles/${id}`);
       return response.data;
     } catch (error) {
       console.error('Error fetching mentor:', error);
-      throw error;
+      return null;
     }
   }
 };
