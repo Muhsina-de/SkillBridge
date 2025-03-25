@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { getApiUrl } from '../config/api';
+import { authService } from '../services/authService';
 
 // Create axios instance with base URL
 const axiosInstance = axios.create({
@@ -28,6 +29,11 @@ axiosInstance.interceptors.request.use(
 axiosInstance.interceptors.response.use(
   (response) => response,
   (error) => {
+    // Handle token expiration
+    if (error.response?.status === 401) {
+      authService.handleTokenExpiration();
+    }
+
     console.error('Response error:', {
       message: error.message,
       status: error.response?.status,

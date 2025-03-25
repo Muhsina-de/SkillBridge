@@ -33,6 +33,9 @@ class AuthService {
       }
       return response.data;
     } catch (error: any) {
+      if (error.response?.status === 400) {
+        throw new Error(error.response.data.message || 'Invalid credentials');
+      }
       throw error;
     }
   }
@@ -46,6 +49,9 @@ class AuthService {
       }
       return response.data;
     } catch (error: any) {
+      if (error.response?.status === 400) {
+        throw new Error(error.response.data.message || 'Registration failed');
+      }
       throw error;
     }
   }
@@ -53,6 +59,7 @@ class AuthService {
   logout(): void {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
+    window.location.href = '/login';
   }
 
   getCurrentUser() {
@@ -68,7 +75,20 @@ class AuthService {
   }
 
   isAuthenticated(): boolean {
-    return !!this.getToken();
+    const token = this.getToken();
+    if (!token) return false;
+    
+    // Check if token is expired
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      return payload.exp * 1000 > Date.now();
+    } catch {
+      return false;
+    }
+  }
+
+  handleTokenExpiration(): void {
+    this.logout();
   }
 }
 
