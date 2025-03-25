@@ -1,5 +1,5 @@
-import axios from 'axios';
-import { API_BASE_URL, API_ENDPOINTS } from '../constants/api';
+import axiosInstance from '../utils/axios';
+import { REVIEW_ENDPOINTS } from '../constants/api';
 import { Review, ReviewSubmission } from '../types/reviews';
 import { validateReviews } from '../utils/validation';
 
@@ -10,8 +10,8 @@ const reviewService = {
   getReviewsByMentor: async (mentorId: number): Promise<Review[]> => {
     try {
       const token = getAuthToken();
-      const response = await axios.get<unknown>(
-        `${API_BASE_URL}${API_ENDPOINTS.REVIEWS.GET_BY_MENTOR(mentorId)}`,
+      const response = await axiosInstance.get<unknown>(
+        REVIEW_ENDPOINTS.GET_MENTOR_REVIEWS(mentorId),
         {
           headers: {
             'Authorization': `Bearer ${token}`
@@ -28,8 +28,8 @@ const reviewService = {
   getReviewBySession: async (sessionId: number): Promise<Review | null> => {
     try {
       const token = getAuthToken();
-      const response = await axios.get<unknown>(
-        `${API_BASE_URL}${API_ENDPOINTS.REVIEWS.GET_BY_SESSION(sessionId)}`,
+      const response = await axiosInstance.get<unknown>(
+        REVIEW_ENDPOINTS.GET_BY_SESSION(sessionId),
         {
           headers: {
             'Authorization': `Bearer ${token}`
@@ -47,8 +47,8 @@ const reviewService = {
   submitReview: async (reviewData: ReviewSubmission): Promise<Review> => {
     try {
       const token = getAuthToken();
-      const response = await axios.post<Review>(
-        `${API_BASE_URL}${API_ENDPOINTS.REVIEWS.SUBMIT}`,
+      const response = await axiosInstance.post<Review>(
+        REVIEW_ENDPOINTS.CREATE_REVIEW,
         reviewData,
         {
           headers: {
@@ -66,8 +66,8 @@ const reviewService = {
   updateReview: async (reviewId: number, data: Partial<ReviewSubmission>): Promise<Review> => {
     try {
       const token = getAuthToken();
-      const response = await axios.put<Review>(
-        `${API_BASE_URL}${API_ENDPOINTS.REVIEWS.UPDATE(reviewId)}`,
+      const response = await axiosInstance.put<Review>(
+        REVIEW_ENDPOINTS.UPDATE_REVIEW(reviewId),
         data,
         {
           headers: {
@@ -85,8 +85,8 @@ const reviewService = {
   deleteReview: async (reviewId: number): Promise<void> => {
     try {
       const token = getAuthToken();
-      await axios.delete(
-        `${API_BASE_URL}${API_ENDPOINTS.REVIEWS.DELETE(reviewId)}`,
+      await axiosInstance.delete(
+        REVIEW_ENDPOINTS.DELETE_REVIEW(reviewId),
         {
           headers: {
             'Authorization': `Bearer ${token}`
