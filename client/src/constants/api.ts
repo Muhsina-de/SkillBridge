@@ -45,23 +45,4 @@ export const FORUM_ENDPOINTS = {
     GET_BY_TOPIC: (topicId: number) => `${API_BASE_URL}/forum/topics/${topicId}/comments`,
     CREATE: (topicId: number) => `${API_BASE_URL}/forum/topics/${topicId}/comments`,
   },
-};
-
-export const API_ENDPOINTS = {
-  REVIEWS: {
-    GET_BY_MENTOR: (mentorId: number) => `/reviews/mentor/${mentorId}`,
-    GET_BY_SESSION: (sessionId: number) => `/reviews/session/${sessionId}`,
-    SUBMIT: '/reviews',
-    UPDATE: (reviewId: number) => `/reviews/${reviewId}`,
-    DELETE: (reviewId: number) => `/reviews/${reviewId}`,
-  },
-  SESSIONS: {
-    CREATE: '/sessions',
-    GET_BY_MENTOR: (mentorId: number) => `/sessions/mentor/${mentorId}`,
-    GET_BY_MENTEE: (menteeId: number) => `/sessions/mentee/${menteeId}`,
-  },
-  USERS: {
-    PROFILE: (userId: number) => `/users/${userId}`,
-    UPDATE_PROFILE: (userId: number) => `/users/${userId}`,
-  },
-} as const; 
+}; 
