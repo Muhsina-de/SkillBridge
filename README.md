@@ -10,7 +10,7 @@ RaveNest is where coding dreams come true! We're not just another mentorship pla
 
 ## 🎬 Live Demo
 
-![RaveNest](https://ravenest-kma6.onrender.com/)
+Checkout the live application here: [RaveNest](https://ravenest-kma6.onrender.com/)
 
 ![RaveNest Landing Page](assets/images/RaveNest-LandingPage.png)
 *Welcome to where the magic happens - our sleek and intuitive landing page!*
