@@ -62,27 +62,8 @@ Session.belongsTo(User, {
   as: 'mentor'
 });
 
-User.hasMany(Review, {
-  foreignKey: 'mentee_id',
-  as: 'givenReviews',
-  onDelete: 'CASCADE'
-});
-
-User.hasMany(Review, {
-  foreignKey: 'mentor_id',
-  as: 'receivedReviews',
-  onDelete: 'CASCADE'
-});
-
-Review.belongsTo(User, {
-  foreignKey: 'mentee_id', 
-  as: 'mentee'
-});
-
-Review.belongsTo(User, {
-  foreignKey: 'mentor_id',
-  as: 'mentor'
-});
+// Call Review's associate method
+Review.associate({ User });
 
 // Forum associations
 ForumTopic.associate({ User, ForumComment });

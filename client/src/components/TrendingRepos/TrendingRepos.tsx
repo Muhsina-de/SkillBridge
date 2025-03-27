@@ -52,8 +52,8 @@ const TrendingRepos: React.FC = () => {
         {Array.isArray(repos) && repos.length > 0 ? (
           repos.map((repo) => (
             <div key={repo.id} className="glass-card p-6 hover:bg-white/90 transition duration-200">   
-              <a href={repo.html_url} target="_blank" rel="noopener noreferrer">
-                <h3 className="text-xl font-semibold hover:text-blue-500">{repo.full_name}</h3>
+              <a href={repo.html_url} target="_blank" rel="noopener noreferrer" className="block">
+                <h3 className="text-xl font-semibold hover:text-blue-500 truncate" title={repo.full_name}>{repo.full_name}</h3>
               </a>
               <p className="mt-2 text-gray-600">{repo.description || 'No description available'}</p> 
               <div className="mt-4 flex justify-between items-center text-sm text-gray-500">

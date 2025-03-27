@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
 import UserProfileCard from '../components/profile/UserProfileCard';
 import mentorService, { Mentor } from '../services/mentorService';
 import { User } from '../types/user.types';
@@ -59,7 +58,7 @@ const MentorsPage: React.FC = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredMentors.map((mentor) => (
-          <Link key={mentor.id} to={`/mentors/${mentor.id}`}>
+          <div key={mentor.id}>
             <UserProfileCard user={{
               id: String(mentor.id),
               username: mentor.username,
@@ -70,7 +69,7 @@ const MentorsPage: React.FC = () => {
               skills: mentor.skills || [],
               rating: mentor.rating
             } as User} />
-          </Link>
+          </div>
         ))}
       </div>
 

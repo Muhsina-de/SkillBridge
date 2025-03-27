@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import { format, parseISO } from 'date-fns';
-import { API_BASE_URL } from '../constants/api';
+import { FORUM_ENDPOINTS } from '../constants/api';
 import CommentCard from '../components/forums/CommentCard';
 import CommentForm from '../components/forums/CommentForm';
 import { ForumTopic, ForumComment } from '../types/forum.types';
@@ -20,7 +20,7 @@ const TopicDetailPage: React.FC = () => {
     const fetchTopic = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.get<ForumTopic>(`${API_BASE_URL}/forum/topics/${id}`, {
+        const response = await axios.get<ForumTopic>(FORUM_ENDPOINTS.TOPICS.GET_BY_ID(Number(id)), {
           headers: {
             Authorization: `Bearer ${token}`
           }
@@ -28,6 +28,7 @@ const TopicDetailPage: React.FC = () => {
         setTopic(response.data);
         setLoading(false);
       } catch (err) {
+        console.error('Error fetching topic:', err);
         setError('Failed to load topic');
         setLoading(false);
       }
@@ -40,12 +41,13 @@ const TopicDetailPage: React.FC = () => {
     if (!window.confirm('Are you sure you want to delete this topic?')) return;
     try {
       const token = localStorage.getItem('token');
-      await axios.delete(`${API_BASE_URL}/forum/topics/${id}?userId=${user?.id}`, {
+      await axios.delete(FORUM_ENDPOINTS.TOPICS.DELETE(Number(id)), {
         headers: { Authorization: `Bearer ${token}` },
       });
 
       navigate('/forum');
     } catch (err) {
+      console.error('Error deleting topic:', err);
       setError('Failed to delete topic');
     }
   };
@@ -98,51 +100,35 @@ const TopicDetailPage: React.FC = () => {
           </div>
        
           <div className="flex items-center text-sm text-gray-500 mt-2">
-            <span className="bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full text-xs mr-3">
-              {topic.category}
-            </span>
-            <span className="flex items-center mr-3">
-              By {topic.Author?.username || 'Anonymous'} • {topic.createdAt && topic.createdAt.length > 0 ? format(parseISO(topic.createdAt), 'MMM d, yyyy') : 'Unknown date'}
-            </span>
+            <span>Posted by {topic.Author?.username}</span>
+            <span className="mx-2">•</span>
+            <span>{format(parseISO(topic.createdAt), 'MMM d, yyyy')}</span>
           </div>
         </div>
-     
+
         <div className="prose max-w-none mt-4">
-          {topic.content}
+          <p>{topic.content}</p>
         </div>
       </div>
-   
-      <div className="mb-6">
-        <h2 className="text-xl font-semibold mb-4">
-          Comments ({topic.Comments?.length || 0})
-        </h2>
-     
+
+      <div className="bg-white rounded-lg shadow-sm p-6">
+        <h2 className="text-xl font-semibold mb-4">Comments</h2>
         {topic.Comments && topic.Comments.length > 0 ? (
           <div className="space-y-4">
-            {topic.Comments.map(comment => (
+            {topic.Comments.map((comment) => (
               <CommentCard key={comment.id} comment={comment} />
             ))}
           </div>
         ) : (
-          <div className="bg-gray-50 rounded-lg p-4 text-center text-gray-500">
-            No comments yet. Be the first to share your thoughts!
+          <p className="text-gray-500">No comments yet. Be the first to comment!</p>
+        )}
+        
+        {user && (
+          <div className="mt-6">
+            <CommentForm topicId={topic.id} onCommentAdded={handleAddComment} />
           </div>
         )}
       </div>
-   
-      {user ? (
-        <CommentForm topicId={parseInt(topic.id.toString(), 10)} onCommentAdded={handleAddComment} />
-      ) : (
-        <div className="bg-gray-50 rounded-lg p-4 text-center">
-          <p className="text-gray-600 mb-2">You must be logged in to comment</p>
-          <button
-            onClick={() => navigate('/login')}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
-          >
-            Log In
-          </button>
-        </div>
-      )}
     </div>
   );
 };

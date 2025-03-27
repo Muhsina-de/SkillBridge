@@ -5,6 +5,7 @@ import Footer from './components/layout/Footer'
 import LandingPage from './pages/LandingPage'
 import MentorsPage from './pages/MentorsPage'
 import MentorProfile from './pages/MentorProfile'
+import MentorReviewsPage from './pages/MentorReviewsPage'
 import Reviews from './components/reviews/Reviews'
 import SignIn from './components/auth/SignIn'
 import SignUp from './components/auth/SignUp'
@@ -55,6 +56,14 @@ const App: React.FC = () => {
                 element={
                   <ProtectedRoute>
                     <MentorProfile />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/mentor/:id/reviews"
+                element={
+                  <ProtectedRoute>
+                    <MentorReviewsPage />
                   </ProtectedRoute>
                 }
               />
