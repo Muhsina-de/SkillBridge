@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction, Router, Application } from 'express';
+import express from 'express';
 
 declare global {
   namespace Express {
@@ -19,7 +19,7 @@ declare global {
   }
 }
 
-export interface AuthRequest extends Request {
+export interface AuthRequest extends express.Request {
   user?: {
     id: number;
     username: string;
@@ -34,4 +34,8 @@ export interface AuthRequest extends Request {
   query: any;
 }
 
-export { Request, Response, NextFunction, Router, Application };
+export type Request = express.Request;
+export type Response = express.Response;
+export type NextFunction = express.NextFunction;
+export type Router = express.Router;
+export type Application = express.Application;
