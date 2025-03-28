@@ -35,7 +35,7 @@ if (process.env.DATABASE_URL) {
 
 const config = {
   // Server configuration
-  PORT: process.env.PORT ? parseInt(process.env.PORT) : 3001,
+  PORT: process.env.PORT ? parseInt(process.env.PORT) : undefined,
   NODE_ENV: process.env.NODE_ENV || 'development',
   
   // Database configuration (use DATABASE_URL values if available)
