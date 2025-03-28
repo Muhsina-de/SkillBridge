@@ -4,7 +4,7 @@ import dotenv from 'dotenv';
 // Load environment variables
 dotenv.config();
 
-const sequelize = new Sequelize(
+export const sequelize = new Sequelize(
   process.env.DB_NAME || 'ravenest',
   process.env.DB_USER || 'postgres',
   process.env.DB_PASSWORD || 'postgres',
@@ -23,5 +23,3 @@ const sequelize = new Sequelize(
 );
 
 console.log('Sequelize instance created');
-
-export default sequelize;

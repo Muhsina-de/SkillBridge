@@ -1,95 +1,84 @@
 import { Sequelize } from 'sequelize';
-import config from '../config/database';
-import UserModel from './user';
-import ProfileModel from './profile';
-import TopicModel from './topic';
-import CommentModel from './comment';
-import CategoryModel from './category';
-import ReviewModel from './review';
+import { sequelize } from '../config/connection';
+import User from './user';
+import { Session, initSession } from './session';
+import { Review, initializeReview } from './review';
+import ForumTopic from './ForumTopics';
+import ForumComment from './ForumComments';
+import { User as UserProfile, initUser } from './userprofile';
 
-const sequelize = new Sequelize(config.database, config.username, config.password, {
-  host: config.host,
-  dialect: 'postgres',
-  logging: false,
-});
+// Initialize models
+const initializedSession = initSession(sequelize);
+const initializedReview = initializeReview(sequelize);
+const initializedUserProfile = initUser(sequelize);
 
 // Define associations
-UserModel.hasOne(ProfileModel, {
+User.hasOne(initializedUserProfile, {
   foreignKey: 'userId',
   as: 'profile'
 });
 
-ProfileModel.belongsTo(UserModel, {
+initializedUserProfile.belongsTo(User, {
   foreignKey: 'userId',
   as: 'user'
 });
 
-UserModel.hasMany(TopicModel, {
+User.hasMany(ForumTopic, {
   foreignKey: 'userId',
   as: 'topics'
 });
 
-TopicModel.belongsTo(UserModel, {
+ForumTopic.belongsTo(User, {
   foreignKey: 'userId',
   as: 'user'
 });
 
-CategoryModel.hasMany(TopicModel, {
-  foreignKey: 'categoryId',
-  as: 'topics'
-});
-
-TopicModel.belongsTo(CategoryModel, {
-  foreignKey: 'categoryId',
-  as: 'category'
-});
-
-TopicModel.hasMany(CommentModel, {
+ForumTopic.hasMany(ForumComment, {
   foreignKey: 'topicId',
   as: 'comments'
 });
 
-CommentModel.belongsTo(TopicModel, {
+ForumComment.belongsTo(ForumTopic, {
   foreignKey: 'topicId',
   as: 'topic'
 });
 
-UserModel.hasMany(CommentModel, {
+User.hasMany(ForumComment, {
   foreignKey: 'userId',
   as: 'comments'
 });
 
-CommentModel.belongsTo(UserModel, {
+ForumComment.belongsTo(User, {
   foreignKey: 'userId',
   as: 'user'
 });
 
-UserModel.hasMany(ReviewModel, {
+User.hasMany(initializedReview, {
   foreignKey: 'userId',
   as: 'reviews'
 });
 
-ReviewModel.belongsTo(UserModel, {
+initializedReview.belongsTo(User, {
   foreignKey: 'userId',
   as: 'user'
 });
 
-ProfileModel.hasMany(ReviewModel, {
+initializedUserProfile.hasMany(initializedReview, {
   foreignKey: 'profileId',
   as: 'reviews'
 });
 
-ReviewModel.belongsTo(ProfileModel, {
+initializedReview.belongsTo(initializedUserProfile, {
   foreignKey: 'profileId',
   as: 'profile'
 });
 
 export {
   sequelize,
-  UserModel,
-  ProfileModel,
-  TopicModel,
-  CommentModel,
-  CategoryModel,
-  ReviewModel
+  User,
+  initializedSession as Session,
+  initializedReview as Review,
+  ForumTopic,
+  ForumComment,
+  initializedUserProfile as UserProfile
 };
