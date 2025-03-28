@@ -11,6 +11,8 @@ import { User as UserProfile, initUser } from './userprofile';
 const initializedSession = initSession(sequelize);
 const initializedReview = initializeReview(sequelize);
 const initializedUserProfile = initUser(sequelize);
+ForumTopic.initialize(sequelize);
+ForumComment.initialize(sequelize);
 
 // Define associations
 User.hasOne(initializedUserProfile, {
@@ -24,33 +26,33 @@ initializedUserProfile.belongsTo(User, {
 });
 
 User.hasMany(ForumTopic, {
-  foreignKey: 'userId',
+  foreignKey: 'authorId',
   as: 'topics'
 });
 
 ForumTopic.belongsTo(User, {
-  foreignKey: 'userId',
-  as: 'user'
+  foreignKey: 'authorId',
+  as: 'Author'
 });
 
 ForumTopic.hasMany(ForumComment, {
   foreignKey: 'topicId',
-  as: 'comments'
+  as: 'Comments'
 });
 
 ForumComment.belongsTo(ForumTopic, {
   foreignKey: 'topicId',
-  as: 'topic'
+  as: 'Topic'
 });
 
 User.hasMany(ForumComment, {
-  foreignKey: 'userId',
+  foreignKey: 'authorId',
   as: 'comments'
 });
 
 ForumComment.belongsTo(User, {
-  foreignKey: 'userId',
-  as: 'user'
+  foreignKey: 'authorId',
+  as: 'Author'
 });
 
 User.hasMany(initializedReview, {
