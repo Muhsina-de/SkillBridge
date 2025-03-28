@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction, Router, Application } from 'express';
 
 declare global {
   namespace Express {
@@ -6,17 +6,8 @@ declare global {
       user?: {
         id: number;
         username: string;
-        email: string;
         role: string;
-        profilePicture?: string;
       };
-      headers: {
-        authorization?: string;
-        [key: string]: string | string[] | undefined;
-      };
-      body: any;
-      params: any;
-      query: any;
     }
   }
 }
@@ -25,18 +16,8 @@ export interface AuthRequest extends Request {
   user?: {
     id: number;
     username: string;
-    email: string;
     role: string;
-    profilePicture?: string;
   };
 }
 
-export interface AuthenticatedRequest extends AuthRequest {
-  user: {
-    id: number;
-    username: string;
-    email: string;
-    role: string;
-    profilePicture?: string;
-  };
-} 
+export { Request, Response, NextFunction, Router, Application }; 
