@@ -10,9 +10,9 @@ const seedAll = async () => {
   try {
     console.log('\n----- STARTING DATABASE SEEDING -----\n');
 
-    // Initialize models with force sync
+    // Initialize models without force sync
     console.log('Syncing database models...');
-    await sequelize.sync({ force: true });
+    await sequelize.sync({ force: false });
     console.log('\n----- DATABASE SYNCED -----\n');
 
     // Import seed functions
