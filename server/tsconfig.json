@@ -31,7 +31,8 @@
       "./src/types",
       "../shared/types"
     ],
-    "types": ["node", "express"]
+    "types": ["node", "express"],
+    "rootDir": "src"
   },
   "exclude": ["node_modules"],
   "include": [
