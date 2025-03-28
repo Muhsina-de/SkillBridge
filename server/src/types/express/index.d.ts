@@ -1,13 +1,10 @@
 import express from 'express';
+import { User } from '../../models';
 
 declare global {
   namespace Express {
     interface Request {
-      user?: {
-        id: number;
-        username: string;
-        role: string;
-      };
+      user?: User;
       headers: {
         authorization?: string;
         [key: string]: string | string[] | undefined;
@@ -20,11 +17,7 @@ declare global {
 }
 
 export interface AuthRequest extends express.Request {
-  user?: {
-    id: number;
-    username: string;
-    role: string;
-  };
+  user?: User;
   headers: {
     authorization?: string;
     [key: string]: string | string[] | undefined;

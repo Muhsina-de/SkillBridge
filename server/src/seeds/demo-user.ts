@@ -9,7 +9,7 @@ export async function seedDemoUser() {
       username: 'John Doe',
       email: 'john@example.com',
       password: hashedPassword,
-      role: 'mentor',
+      role: 'mentor' as const,
       skills: ['JavaScript', 'React', 'Node.js'],
       rating: 4.5,
       profilePicture: 'https://api.dicebear.com/7.x/avataaars/svg?seed=john',

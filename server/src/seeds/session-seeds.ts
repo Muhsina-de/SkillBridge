@@ -1,5 +1,4 @@
-import { Session } from '../models/session';
-import { User } from '../models/user';
+import { Session, User } from '../models';
 
 export async function seedSessions() {
   try {
