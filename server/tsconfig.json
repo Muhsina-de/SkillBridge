@@ -30,7 +30,8 @@
       "./node_modules/@types",
       "./src/types",
       "../shared/types"
-    ]
+    ],
+    "types": ["node", "express"]
   },
   "exclude": ["node_modules"],
   "include": [
