@@ -5,13 +5,9 @@ interface SessionAttributes {
     menteeId: number;
     mentorId: number;
     status: string;
-    date: Date;
-    time: string;
-    skill: string;
-    price: number;
-    sessionNotes: string;
-    duration: number;
-    message: string;
+    startTime: Date;
+    endTime: Date;
+    notes: string;
 }
 
 interface SessionCreationAttributes extends Optional<SessionAttributes, 'id'> {}
@@ -21,13 +17,9 @@ export class Session extends Model<SessionAttributes, SessionCreationAttributes>
     public menteeId!: number;
     public mentorId!: number;
     public status!: string;
-    public date!: Date;
-    public time!: string;
-    public skill!: string;
-    public price!: number;
-    public sessionNotes!: string;
-    public duration!: number;
-    public message!: string;
+    public startTime!: Date;
+    public endTime!: Date;
+    public notes!: string;
     public readonly createdAt!: Date;
     public readonly updatedAt!: Date;
 }
@@ -49,33 +41,18 @@ export function initSession(sequelize: Sequelize): typeof Session {
                 allowNull: false,
             },
             status: {
-                type: DataTypes.ENUM('pending', 'accepted', 'rejected', 'cancelled'),
-                defaultValue: 'pending',
+                type: DataTypes.ENUM('scheduled', 'completed', 'cancelled'),
+                defaultValue: 'scheduled',
             },
-            date: {
+            startTime: {
                 type: DataTypes.DATE,
                 allowNull: false,
             },
-            time: {
-                type: DataTypes.TIME,
+            endTime: {
+                type: DataTypes.DATE,
                 allowNull: false,
             },
-            skill: {
-                type: DataTypes.STRING,
-                allowNull: false,
-            },
-            price: {
-                type: DataTypes.INTEGER,
-                allowNull: false,
-            },
-            sessionNotes: {
-                type: DataTypes.TEXT,
-            },
-            duration: {
-                type: DataTypes.INTEGER,
-                allowNull: false,
-            },
-            message: {
+            notes: {
                 type: DataTypes.TEXT,
             },
         },

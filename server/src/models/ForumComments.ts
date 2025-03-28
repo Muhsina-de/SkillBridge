@@ -1,6 +1,7 @@
 import { Model, DataTypes, Optional, Sequelize } from 'sequelize';
 import type { User } from './userprofile';
 import type ForumTopic from './ForumTopics';
+import { ForumComment as SharedForumComment } from '../../../shared/types';
 
 interface ForumCommentAttributes {
   id: number;
@@ -20,6 +21,20 @@ class ForumComment extends Model<ForumCommentAttributes, ForumCommentCreationAtt
   public topicId!: number;
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
+
+  /**
+   * Convert the model instance to the shared ForumComment type
+   */
+  public toSharedForumComment(): SharedForumComment {
+    return {
+      id: this.id,
+      content: this.content,
+      authorId: this.authorId,
+      topicId: this.topicId,
+      createdAt: this.createdAt.toISOString(),
+      updatedAt: this.updatedAt.toISOString()
+    };
+  }
 
   // Define associations
   public static associate(models: { User: typeof User; ForumTopic: typeof ForumTopic }): void {

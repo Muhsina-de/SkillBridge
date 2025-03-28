@@ -1,42 +1,48 @@
-import { Session } from "../models/session";
+import { Session } from '../models/session';
+import { User } from '../models/user';
 
-export const seedSessions = async () => {
-    await Session.bulkCreate([
-        {
-            menteeId: 4, // Alex Rivera
-            mentorId: 1, // JohnDoe
-            status: 'accepted',
-            date: new Date('2024-03-20'),
-            time: '14:00',
-            skill: 'React',
-            price: 50,
-            duration: 60,
-            sessionNotes: 'Introduction to React Hooks',
-            message: 'Looking forward to learning React!'
-        },
-        {
-            menteeId: 5, // Sophie Chen
-            mentorId: 3, // BobJohnson
-            status: 'accepted',
-            date: new Date('2024-03-21'),
-            time: '15:00',
-            skill: 'PostgreSQL',
-            price: 60,
-            duration: 90,
-            sessionNotes: 'Database design fundamentals',
-            message: 'Need help with database concepts'
-        },
-        {
-            menteeId: 6, // Marcus Johnson
-            mentorId: 1, // JohnDoe
-            status: 'pending',
-            date: new Date('2024-03-25'),
-            time: '16:00',
-            skill: 'Node.js',
-            price: 55,
-            duration: 60,
-            sessionNotes: 'Building REST APIs',
-            message: 'Want to learn backend development'
-        }
-    ], { individualHooks: true });
-};
+export async function seedSessions() {
+  try {
+    // Get mentor and mentee IDs
+    const mentor = await User.findOne({ where: { role: 'mentor' } });
+    const mentee = await User.findOne({ where: { role: 'mentee' } });
+
+    if (!mentor || !mentee) {
+      console.log('Mentor or mentee not found. Skipping session seeding.');
+      return;
+    }
+
+    // Create sample sessions
+    await Session.create({
+      mentorId: mentor.id,
+      menteeId: mentee.id,
+      status: 'scheduled',
+      startTime: new Date('2024-03-20T10:00:00Z'),
+      endTime: new Date('2024-03-20T11:00:00Z'),
+      notes: 'JavaScript Fundamentals - Learn the basics of JavaScript programming',
+    });
+
+    await Session.create({
+      mentorId: mentor.id,
+      menteeId: mentee.id,
+      status: 'completed',
+      startTime: new Date('2024-03-21T14:00:00Z'),
+      endTime: new Date('2024-03-21T15:30:00Z'),
+      notes: 'React Hooks - Deep dive into React Hooks and their use cases',
+    });
+
+    await Session.create({
+      mentorId: mentor.id,
+      menteeId: mentee.id,
+      status: 'scheduled',
+      startTime: new Date('2024-03-25T09:00:00Z'),
+      endTime: new Date('2024-03-25T10:00:00Z'),
+      notes: 'TypeScript Best Practices - Learn TypeScript best practices and patterns',
+    });
+
+    console.log('Sessions seeded successfully');
+  } catch (error) {
+    console.error('Error seeding sessions:', error);
+    throw error;
+  }
+}

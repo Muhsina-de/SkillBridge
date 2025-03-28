@@ -41,17 +41,14 @@ router.get('/mentor/:mentorId', authenticateJWT, async (req, res) => {
 // Create a new session
 router.post('/', authenticateJWT, async (req, res) => {
   try {
-    const { mentorId, menteeId, date, time, skill, price, duration, message } = req.body;
+    const { mentorId, menteeId, startTime, endTime, notes } = req.body;
     const session = await Session.create({
       mentorId,
       menteeId,
-      date,
-      time,
-      skill,
-      price,
-      duration,
-      message,
-      status: 'pending'
+      status: 'scheduled',
+      startTime,
+      endTime,
+      notes,
     });
     res.status(201).json(session);
   } catch (error) {

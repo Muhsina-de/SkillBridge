@@ -1,41 +1,18 @@
-export interface Review {
-  id: number;
-  sessionId: number;
-  menteeId: number;
-  mentorId: number;
-  rating: number;
-  comment: string;
-  createdAt: string;
-  updatedAt: string;
-  mentee?: {
-    id: number;
-    username: string;
-    profilePicture: string;
-  };
-}
+import { 
+  Review, 
+  ReviewSubmission, 
+  ReviewFormData, 
+  ReviewSummaryProps, 
+  ReviewListProps, 
+  ReviewCardProps 
+} from '../../../shared/types';
 
-export interface ReviewSubmission {
-  sessionId: number;
-  menteeId: number;
-  mentorId: number;
-  rating: number;
-  comment: string;
-}
-
-export interface ReviewFormData {
-  rating: number;
-  comment: string;
-}
-
-export interface ReviewSummaryProps {
-  reviews: Array<Review>;
-}
-
-export interface ReviewListProps {
-  reviews: Array<Review>;
-  mentorId?: number;
-}
-
-export interface ReviewCardProps {
-  review: Review;
-} 
+// Re-export the shared review types
+export type {
+  Review,
+  ReviewSubmission,
+  ReviewFormData,
+  ReviewSummaryProps,
+  ReviewListProps,
+  ReviewCardProps
+}; 

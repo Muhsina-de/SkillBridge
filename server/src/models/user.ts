@@ -1,22 +1,10 @@
 import { DataTypes, Sequelize, Model, Optional } from 'sequelize';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import sequelize from '../config/connection';
+import { User as SharedUser } from '../../../shared/types';
 
-interface UserAttributes {
-  id: number;
-  username: string;
-  email: string;
+interface UserAttributes extends Omit<SharedUser, 'createdAt' | 'updatedAt'> {
   password: string;
-  role: string;
-  profilePicture?: string;
-  bio?: string;
-  skills?: string[];
-  rating?: number;
-  availability?: string[];
-  location?: string;
-  linkedin?: string;
-  github?: string;
-  twitter?: string;
 }
 
 interface UserCreationAttributes extends Optional<UserAttributes, 'id'> {}
@@ -26,7 +14,7 @@ export class User extends Model<UserAttributes, UserCreationAttributes> implemen
   public username!: string;
   public email!: string;
   public password!: string;
-  public role!: string;
+  public role!: 'mentor' | 'mentee';
   public profilePicture?: string;
   public bio?: string;
   public skills?: string[];
@@ -36,6 +24,8 @@ export class User extends Model<UserAttributes, UserCreationAttributes> implemen
   public linkedin?: string;
   public github?: string;
   public twitter?: string;
+  public reviewCount?: number;
+  public activityCount?: number;
 
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;

@@ -2,18 +2,19 @@ import express, { Request, Response } from 'express';
 import cors from 'cors';
 import path from 'path';
 import reviewRoutes from './routes/review.routes';
-import gitRoutes from './routes/github.Routes';
-import authRoutes from './routes/authRoutes';
-import profileRoutes from './routes/profile.Route';
+import gitRoutes from './routes/github.routes';
+import authRoutes from './routes/auth.routes';
+import profileRoutes from './routes/profile.routes';
 import forumRoutes from './routes/forums.routes';
+import dashboardRoutes from './routes/dashboard.routes';
 import { UserFactory } from './models/user';
 import ForumTopic from './models/ForumTopics';
 import ForumComment from './models/ForumComments';
 import { authenticateJWT } from './middleware/authmiddleware';
 import { sequelize } from './models';
-import { seedDemoUser } from './seeders/demo-user';
-import { seedForumTopics, clearForumData } from './seeders/forum-topics';
-import { seedMentors } from './seeders/mentor-seeders';
+import { seedDemoUser } from './seeds/demo-user';
+import { seedForumTopics, clearForumData } from './seeds/forum-topics';
+import { seedMentors } from './seeds/mentor-seeds';
 import config from './config';
 import { limiter, authLimiter } from './middleware/rateLimiter';
 import { up as runMigrations } from './migrations';
@@ -30,12 +31,11 @@ export function createServer() {
 
   const corsOptions = {
     origin: process.env.NODE_ENV === 'production' 
-      ? ['https://ravenest.onrender.com', 'https://ravenest-kma6.onrender.com']
-      : ['http://localhost:5173', 'http://localhost:3000', 'http://localhost:3001'],
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
+      ? process.env.CLIENT_URL 
+      : 'http://localhost:5173',
     credentials: true,
-    optionsSuccessStatus: 200
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
   };
   app.use(cors(corsOptions));
 
@@ -49,7 +49,7 @@ export function createServer() {
 
   // Health check and test endpoints
   app.get('/api/health', (_req: Request, res: Response) => {
-    res.json({ message: 'Server is running!' });
+    res.json({ status: 'ok', timestamp: new Date().toISOString() });
   });
 
   app.get('/api/test', (_req: Request, res: Response) => {
@@ -62,9 +62,17 @@ export function createServer() {
   app.use('/api/auth', authRoutes);
   app.use('/api/profiles', authenticateJWT, profileRoutes);
   app.use('/api/forum', forumRoutes);
+  app.use('/api/dashboard', authenticateJWT, dashboardRoutes);
 
   // Serve static files (moved after API routes)
-  app.use(express.static(path.join(__dirname, '../public')));
+  if (process.env.NODE_ENV === 'production') {
+    app.use(express.static(path.join(__dirname, '../../client/dist')));
+    
+    // Handle client-side routing
+    app.get('*', (req: Request, res: Response) => {
+      res.sendFile(path.join(__dirname, '../../client/dist/index.html'));
+    });
+  }
   
   // Catch-all route for SPA (moved after static files)
   app.get('*', (_req: Request, res: Response) => {
@@ -122,10 +130,10 @@ export function startServer(app: express.Application, port: number = process.env
         console.log(`Server running on port ${port}`);
         if (process.env.NODE_ENV === 'production') {
           console.log('Running in production mode');
-          console.log('CORS enabled for:', ['https://ravenest.onrender.com', 'https://ravenest-kma6.onrender.com']);
+          console.log('CORS enabled for:', process.env.CLIENT_URL);
         } else {
           console.log('Running in development mode');
-          console.log('CORS enabled for:', ['http://localhost:5173', 'http://localhost:3000']);
+          console.log('CORS enabled for:', 'http://localhost:5173');
         }
       });
     } catch (error) {

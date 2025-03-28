@@ -1,14 +1,21 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { User } from '../../types/user.types';
+import { Mentor } from '../../services/mentorService';
 import { useAuth } from '../../context/AuthContext';
 
 interface UserProfileCardProps {
-  user: User;
+  user: User | Mentor;
+  showBookingButton?: boolean;
 }
 
-const UserProfileCard: React.FC<UserProfileCardProps> = ({ user }) => {
+const UserProfileCard: React.FC<UserProfileCardProps> = ({ user, showBookingButton = true }) => {
   const { user: currentUser } = useAuth();
+  const navigate = useNavigate();
+
+  const handleRatingClick = () => {
+    navigate(`/mentor/${user.id}/reviews`);
+  };
 
   return (
     <div className="bg-primary/10 rounded-lg border border-primary-light/20 p-6 h-full flex flex-col">
@@ -20,7 +27,7 @@ const UserProfileCard: React.FC<UserProfileCardProps> = ({ user }) => {
         />
         <div>
           <h2 className="text-xl font-semibold">{user.username}</h2>
-          <p className="text-gray-600">{user.email}</p>
+          <p className="text-gray-600 truncate max-w-[200px]" title={user.email}>{user.email}</p>
         </div>
       </div>
       {user.bio && (
@@ -47,12 +54,15 @@ const UserProfileCard: React.FC<UserProfileCardProps> = ({ user }) => {
       <div className="mt-auto pt-4">
         {user.rating !== undefined && (
           <div className="flex items-center justify-between">
-            <Link to={`/reviews?mentorId=${user.id}`} className="flex items-center hover:opacity-80 transition-opacity">
+            <button 
+              className="flex items-center cursor-pointer hover:opacity-80 transition-opacity bg-transparent border-none p-0"
+              onClick={handleRatingClick}
+            >
               <span className="text-yellow-500 mr-1">★</span>
               <span className="text-2xl font-bold text-yellow-500">{user.rating.toFixed(1)}</span>
               <span className="text-gray-600 ml-2">/ 5.0</span>
-            </Link>
-            {currentUser && currentUser.role === 'mentee' && (
+            </button>
+            {showBookingButton && currentUser && currentUser.role === 'mentee' && (
               <Link
                 to={`/mentor/${user.id}`}
                 className="px-4 py-1 bg-gradient-primary text-white rounded-md hover:bg-gradient-light transition-all text-sm"
