@@ -35,7 +35,7 @@ if (process.env.DATABASE_URL) {
 
 const config = {
   // Server configuration
-  PORT: process.env.PORT || 3001,
+  PORT: process.env.PORT ? parseInt(process.env.PORT) : 3001,
   NODE_ENV: process.env.NODE_ENV || 'development',
   
   // Database configuration (use DATABASE_URL values if available)
@@ -50,14 +50,14 @@ const config = {
   JWT_EXPIRATION: process.env.JWT_EXPIRATION || '24h',
   
   // CORS configuration
-  CORS_ORIGIN: process.env.CORS_ORIGIN || 'http://localhost:3001',
+  CORS_ORIGIN: process.env.CORS_ORIGIN || 'http://localhost:5173',
   
   // API Rate Limiting
   RATE_LIMIT_WINDOW_MS: parseInt(process.env.RATE_LIMIT_WINDOW_MS || '900000'), // 15 minutes
   RATE_LIMIT_MAX_REQUESTS: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS || '100'),
   
   // Client URL (for CORS and redirects)
-  CLIENT_URL: process.env.CLIENT_URL || 'http://localhost:3001',
+  CLIENT_URL: process.env.CLIENT_URL || 'http://localhost:5173',
 };
 
 // Validate required environment variables
