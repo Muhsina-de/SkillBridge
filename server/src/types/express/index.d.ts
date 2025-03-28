@@ -8,6 +8,13 @@ declare global {
         username: string;
         role: string;
       };
+      headers: {
+        authorization?: string;
+        [key: string]: string | string[] | undefined;
+      };
+      body: any;
+      params: any;
+      query: any;
     }
   }
 }
@@ -18,6 +25,13 @@ export interface AuthRequest extends Request {
     username: string;
     role: string;
   };
+  headers: {
+    authorization?: string;
+    [key: string]: string | string[] | undefined;
+  };
+  body: any;
+  params: any;
+  query: any;
 }
 
-export { Request, Response, NextFunction, Router, Application }; 
+export { Request, Response, NextFunction, Router, Application };
