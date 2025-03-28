@@ -8,7 +8,7 @@
     "dev": "nodemon src/index.ts",
     "build": "tsc --project tsconfig.json",
     "postinstall": "npm run build",
-    "seed": "ts-node src/seeds/index.ts",
+    "seed": "node dist/server/src/seeds/index.js",
     "migrate": "ts-node src/migrations/index.ts",
     "migrate:undo": "ts-node src/migrations/undo.ts",
     "test": "jest",
