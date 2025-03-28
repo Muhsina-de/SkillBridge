@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { AuthRequest } from '../types/express';
 import config from '../config';
+import { User } from '../models';
 
 export const authenticateJWT = (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
@@ -26,12 +27,31 @@ export const authenticateJWT = (req: AuthRequest, res: Response, next: NextFunct
       id: number;
       username: string;
       email: string;
-      role: string;
+      role: 'user' | 'admin' | 'mentor' | 'mentee';
       profilePicture?: string;
     };
     console.log('Decoded token:', decoded); // Debug log
 
-    req.user = decoded;
+    // Create a minimal User object with required properties
+    req.user = {
+      id: decoded.id,
+      username: decoded.username,
+      email: decoded.email,
+      password: '', // This will be filled by the database
+      role: decoded.role,
+      skills: [],
+      rating: 0,
+      profilePicture: decoded.profilePicture,
+      bio: '',
+      availability: [],
+      location: '',
+      linkedin: '',
+      github: '',
+      twitter: '',
+      createdAt: new Date(),
+      updatedAt: new Date()
+    } as User;
+
     next();
   } catch (error) {
     console.error('Token verification error:', error); // Debug log
