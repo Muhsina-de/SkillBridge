@@ -8,7 +8,7 @@ import MentorProfile from './pages/MentorProfile'
 import MentorReviewsPage from './pages/MentorReviewsPage'
 import Reviews from './components/reviews/Reviews'
 import SignIn from './components/auth/SignIn'
-import SignUp from './components/auth/SignUp'
+import SignUpForm from './components/signUp/SignUpForm'
 import TrendingRepos from './components/TrendingRepos/TrendingReposPage'
 import HowItWorks from './pages/HowItWorks'
 import WhyChooseUs from './pages/WhyChooseUs'
@@ -29,7 +29,7 @@ const App: React.FC = () => {
             <Routes>
               {/* Public routes */}
               <Route path="/signin" element={<SignIn />} />
-              <Route path="/signup" element={<SignUp />} />
+              <Route path="/signup" element={<SignUpForm />} />
               <Route path="/" element={<LandingPage />} />
               <Route path="/how-it-works" element={<HowItWorks />} />
               <Route path="/why-choose-us" element={<WhyChooseUs />} />

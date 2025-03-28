@@ -1,4 +1,5 @@
 import { DataTypes, Model, Optional, Sequelize, ModelStatic } from 'sequelize';
+import { Review as SharedReview } from '../../../shared/types';
 
 /**
  * Interface representing a Review's attributes
@@ -31,6 +32,22 @@ export class Review extends Model<ReviewAttributes, ReviewCreationAttributes> im
   public comment!: string;
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
+
+  /**
+   * Convert the model instance to the shared Review type
+   */
+  public toSharedReview(): SharedReview {
+    return {
+      id: this.id,
+      sessionId: 0, // This will be set when the review is associated with a session
+      menteeId: this.mentee_id,
+      mentorId: this.mentor_id,
+      rating: this.rating,
+      comment: this.comment,
+      createdAt: this.createdAt.toISOString(),
+      updatedAt: this.updatedAt.toISOString()
+    };
+  }
 
   /**
    * Updates the mentor's average rating based on all their reviews

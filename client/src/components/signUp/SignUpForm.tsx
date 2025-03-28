@@ -1,25 +1,28 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
+import { authService } from '../../services/authService';
 
 interface SignUpFormData {
   username: string;
   email: string;
   password: string;
   confirmPassword: string;
+  role: 'mentor' | 'mentee';
 }
 
-const SignUp: React.FC = () => {
+const SignUpForm: React.FC = () => {
   const navigate = useNavigate();
-  const { register } = useAuth();
   const [formData, setFormData] = useState<SignUpFormData>({
     username: '',
     email: '',
     password: '',
-    confirmPassword: ''
+    confirmPassword: '',
+    role: 'mentee'
   });
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
@@ -27,19 +30,43 @@ const SignUp: React.FC = () => {
     }));
   };
 
+  const validateForm = (): string | null => {
+    if (formData.password !== formData.confirmPassword) {
+      return 'Passwords do not match';
+    }
+    if (formData.password.length < 8) {
+      return 'Password must be at least 8 characters long';
+    }
+    if (!formData.email.includes('@')) {
+      return 'Please enter a valid email address';
+    }
+    return null;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (formData.password !== formData.confirmPassword) {
-      alert('Passwords do not match');
+    setError('');
+    
+    const validationError = validateForm();
+    if (validationError) {
+      setError(validationError);
       return;
     }
 
+    setLoading(true);
     try {
-      await register(formData.username, formData.email, formData.password, 'mentee');
-      navigate('/dashboard');
+      await authService.register({
+        username: formData.username,
+        email: formData.email,
+        password: formData.password,
+        role: formData.role
+      });
+      navigate('/signin');
     } catch (error) {
       console.error('Registration error:', error);
-      alert('Failed to create account');
+      setError('Failed to create account. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -50,6 +77,9 @@ const SignUp: React.FC = () => {
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
             Create your account
           </h2>
+          <p className="mt-2 text-center text-sm text-gray-600">
+            Join our community of mentors and mentees
+          </p>
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="rounded-md shadow-sm -space-y-px">
@@ -107,20 +137,43 @@ const SignUp: React.FC = () => {
                 name="confirmPassword"
                 type="password"
                 required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
                 placeholder="Confirm Password"
                 value={formData.confirmPassword}
                 onChange={handleChange}
               />
             </div>
+            <div>
+              <label htmlFor="role" className="sr-only">
+                Role
+              </label>
+              <select
+                id="role"
+                name="role"
+                required
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                value={formData.role}
+                onChange={handleChange}
+              >
+                <option value="mentor">Mentor</option>
+                <option value="mentee">Mentee</option>
+              </select>
+            </div>
           </div>
+
+          {error && (
+            <div className="text-red-500 text-sm text-center bg-red-50 p-2 rounded">
+              {error}
+            </div>
+          )}
 
           <div>
             <button
               type="submit"
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              disabled={loading}
+              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
             >
-              Sign up
+              {loading ? 'Creating account...' : 'Create account'}
             </button>
           </div>
         </form>
@@ -129,4 +182,4 @@ const SignUp: React.FC = () => {
   );
 };
 
-export default SignUp;
+export default SignUpForm; 
