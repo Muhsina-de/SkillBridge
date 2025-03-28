@@ -1,30 +1,43 @@
-import { Response, NextFunction } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
-import { AuthRequest } from '../types/express';
+import { User } from '../models';
 
-export const auth = (req: AuthRequest, res: Response, next: NextFunction) => {
-  try {
-    const token = req.headers.authorization?.replace('Bearer ', '');
-    
-    if (!token) {
-      return res.status(401).json({ message: 'Authentication required' });
+interface JwtPayload {
+  id: number;
+}
+
+declare global {
+  namespace Express {
+    interface Request {
+      user?: User;
     }
-    console.log("TOKEnPASSES!")
+  }
+}
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-fallback-secret') as {
-      id: number;
-      username: string;
-      email: string;
-      role: string;
-      profilePicture?: string;
-    };
-    
-    // Add user info to request object
-    req.user = decoded;
-    // console.log("reqUser", req.user);
-    
+export const authenticateToken = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+
+    if (!token) {
+      return res.status(401).json({ message: 'Authentication token required' });
+    }
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key') as JwtPayload;
+    const user = await User.findByPk(decoded.id);
+
+    if (!user) {
+      return res.status(401).json({ message: 'User not found' });
+    }
+
+    req.user = user;
     next();
   } catch (error) {
-    res.status(401).json({ message: 'Invalid or expired token' });
+    console.error('Authentication error:', error);
+    return res.status(401).json({ message: 'Invalid token' });
   }
 };

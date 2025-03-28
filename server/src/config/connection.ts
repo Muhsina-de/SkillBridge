@@ -1,26 +1,26 @@
 import { Sequelize } from 'sequelize';
-import { config } from 'dotenv';
-import appConfig from './index';
+import dotenv from 'dotenv';
 
 // Load environment variables
-config();
+dotenv.config();
 
-const sequelize = new Sequelize({
-  database: appConfig.DB_NAME,
-  username: appConfig.DB_USER,
-  password: appConfig.DB_PASSWORD,
-  host: appConfig.DB_HOST,
-  port: appConfig.DB_PORT,
-  dialect: 'postgres',
-  dialectOptions: {
-    decimalNumbers: true,
-    ssl: appConfig.NODE_ENV === 'production' ? {
-      require: true,
-      rejectUnauthorized: false
-    } : false
-  },
-  logging: appConfig.NODE_ENV === 'development' ? console.log : false
-});
+const sequelize = new Sequelize(
+  process.env.DB_NAME || 'ravenest',
+  process.env.DB_USER || 'postgres',
+  process.env.DB_PASSWORD || 'postgres',
+  {
+    host: process.env.DB_HOST || 'localhost',
+    port: parseInt(process.env.DB_PORT || '5432'),
+    dialect: 'postgres',
+    logging: process.env.NODE_ENV === 'development' ? console.log : false,
+    pool: {
+      max: 5,
+      min: 0,
+      acquire: 30000,
+      idle: 10000
+    }
+  }
+);
 
 console.log('Sequelize instance created');
 

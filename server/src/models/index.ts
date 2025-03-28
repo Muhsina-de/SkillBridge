@@ -1,85 +1,95 @@
 import { Sequelize } from 'sequelize';
-import { config } from 'dotenv';
-import { initUser } from './userprofile';
-import { initSession } from './session';
-import { initializeReview } from './review';
-import ForumTopic from './ForumTopics';
-import ForumComment from './ForumComments';
-import appConfig from '../config';
+import config from '../config/database';
+import UserModel from './user';
+import ProfileModel from './profile';
+import TopicModel from './topic';
+import CommentModel from './comment';
+import CategoryModel from './category';
+import ReviewModel from './review';
 
-// Load environment variables
-config();
-
-/**
- * Initialize Sequelize instance with database configuration
- */
-const sequelize = new Sequelize({
-  database: appConfig.DB_NAME,
-  username: appConfig.DB_USER,
-  password: appConfig.DB_PASSWORD,
-  host: appConfig.DB_HOST,
-  port: appConfig.DB_PORT,
+const sequelize = new Sequelize(config.database, config.username, config.password, {
+  host: config.host,
   dialect: 'postgres',
-  dialectOptions: {
-    decimalNumbers: true,
-    ssl: appConfig.NODE_ENV === 'production' ? {
-      require: true,
-      rejectUnauthorized: false
-    } : false
-  },
-  logging: appConfig.NODE_ENV === 'production' ? false : console.log,
+  logging: false,
 });
-
-// Initialize models
-const User = initUser(sequelize);
-const Session = initSession(sequelize);
-const Review = initializeReview(sequelize);
-
-// Initialize forum models
-ForumTopic.initialize(sequelize);
-ForumComment.initialize(sequelize);
 
 // Define associations
-User.hasMany(Session, {
-  foreignKey: 'menteeId',
-  as: 'menteeSessions',
-  onDelete: 'CASCADE'
+UserModel.hasOne(ProfileModel, {
+  foreignKey: 'userId',
+  as: 'profile'
 });
 
-User.hasMany(Session, {
-  foreignKey: 'mentorId',
-  as: 'mentorSessions',
-  onDelete: 'CASCADE'
+ProfileModel.belongsTo(UserModel, {
+  foreignKey: 'userId',
+  as: 'user'
 });
 
-Session.belongsTo(User, {
-  foreignKey: 'menteeId',
-  as: 'mentee'
+UserModel.hasMany(TopicModel, {
+  foreignKey: 'userId',
+  as: 'topics'
 });
 
-Session.belongsTo(User, {
-  foreignKey: 'mentorId',
-  as: 'mentor'
+TopicModel.belongsTo(UserModel, {
+  foreignKey: 'userId',
+  as: 'user'
 });
 
-// Call Review's associate method
-Review.associate({ User });
+CategoryModel.hasMany(TopicModel, {
+  foreignKey: 'categoryId',
+  as: 'topics'
+});
 
-// Forum associations
-ForumTopic.associate({ User, ForumComment });
-ForumComment.associate({ User, ForumTopic });
-User.hasMany(ForumTopic, { foreignKey: 'authorId' });
-User.hasMany(ForumComment, { foreignKey: 'authorId' });
+TopicModel.belongsTo(CategoryModel, {
+  foreignKey: 'categoryId',
+  as: 'category'
+});
 
-// Test database connection
-sequelize
-  .authenticate()
-  .then(() => {
-    console.log('Database connection has been established successfully.');
-  })
-  .catch((error) => {
-    console.error('Unable to connect to the database:', error);       
-    process.exit(1); // Exit if we can't connect to the database      
-  });
+TopicModel.hasMany(CommentModel, {
+  foreignKey: 'topicId',
+  as: 'comments'
+});
 
-export { sequelize, User, Session, Review, ForumTopic, ForumComment };
+CommentModel.belongsTo(TopicModel, {
+  foreignKey: 'topicId',
+  as: 'topic'
+});
+
+UserModel.hasMany(CommentModel, {
+  foreignKey: 'userId',
+  as: 'comments'
+});
+
+CommentModel.belongsTo(UserModel, {
+  foreignKey: 'userId',
+  as: 'user'
+});
+
+UserModel.hasMany(ReviewModel, {
+  foreignKey: 'userId',
+  as: 'reviews'
+});
+
+ReviewModel.belongsTo(UserModel, {
+  foreignKey: 'userId',
+  as: 'user'
+});
+
+ProfileModel.hasMany(ReviewModel, {
+  foreignKey: 'profileId',
+  as: 'reviews'
+});
+
+ReviewModel.belongsTo(ProfileModel, {
+  foreignKey: 'profileId',
+  as: 'profile'
+});
+
+export {
+  sequelize,
+  UserModel,
+  ProfileModel,
+  TopicModel,
+  CommentModel,
+  CategoryModel,
+  ReviewModel
+};

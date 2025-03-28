@@ -2,27 +2,28 @@ import express from 'express';
 import cors from 'cors';
 import path from 'path';
 import reviewRoutes from './routes/review.routes';
-import gitRoutes from './routes/github.routes';
+import githubRoutes from './routes/github.routes';
 import authRoutes from './routes/auth.routes';
 import profileRoutes from './routes/profile.routes';
-import forumRoutes from './routes/forums.routes';
+import forumsRoutes from './routes/forums.routes';
 import dashboardRoutes from './routes/dashboard.routes';
-import { UserFactory } from './models/user';
+import sessionRoutes from './routes/session.routes';
+import User from './models/user';
 import ForumTopic from './models/ForumTopics';
 import ForumComment from './models/ForumComments';
-import { authenticateJWT } from './middleware/auth';
-import { sequelize } from './config/connection';
+import { authenticateToken } from './middleware/auth';
+import sequelize from './config/connection';
 import { seedDemoUser } from './seeds/demo-user';
 import { seedForumTopics, clearForumData } from './seeds/forum-topics';
 import { seedMentors } from './seeds/mentor-seeds';
-import { config } from './config';
+import config from './config';
 import { limiter, authLimiter } from './middleware/rateLimiter';
 import { up as runMigrations } from './migrations';
 import { errorHandler } from './middleware/errorHandler';
 import { setupSocketIO } from './socket';
+import dotenv from 'dotenv';
 
-// Initialize models so they are registered with the sequelize instance
-const User = UserFactory(sequelize);
+dotenv.config();
 
 // Define associations
 ForumTopic.hasMany(ForumComment, { foreignKey: 'topicId' });
@@ -37,34 +38,28 @@ app.use(limiter);
 
 // Routes
 app.use('/api/reviews', reviewRoutes);
-app.use('/api/github', gitRoutes);
+app.use('/api/github', githubRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/profile', profileRoutes);
-app.use('/api/forums', forumRoutes);
+app.use('/api/forums', forumsRoutes);
 app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/sessions', sessionRoutes);
+
+// Error handling middleware
+app.use(errorHandler);
 
 // Serve static files in production
 if (process.env.NODE_ENV === 'production') {
-  app.use(express.static(path.join(__dirname, '../../client/build')));
+  app.use(express.static(path.join(__dirname, '../../client/dist')));
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '../../client/dist/index.html'));
+  });
 }
 
-// Error handling
-app.use(errorHandler);
-
 // Start server
-const PORT = process.env.PORT || 3001;
-const server = app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });
 
-// Setup Socket.IO
-setupSocketIO(server);
-
-// Sync database and seed if needed
-sequelize.sync({ force: false }).then(async () => {
-  console.log('Database synced');
-  await seedDemoUser();
-  await seedMentors();
-  await clearForumData();
-  await seedForumTopics();
-});
+export default app;
