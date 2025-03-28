@@ -1,4 +1,4 @@
-import express, { Request, Response } from 'express';
+import express from 'express';
 import cors from 'cors';
 import path from 'path';
 import reviewRoutes from './routes/review.routes';
@@ -10,14 +10,16 @@ import dashboardRoutes from './routes/dashboard.routes';
 import { UserFactory } from './models/user';
 import ForumTopic from './models/ForumTopics';
 import ForumComment from './models/ForumComments';
-import { authenticateJWT } from './middleware/authmiddleware';
-import { sequelize } from './models';
+import { authenticateJWT } from './middleware/auth';
+import { sequelize } from './config/connection';
 import { seedDemoUser } from './seeds/demo-user';
 import { seedForumTopics, clearForumData } from './seeds/forum-topics';
 import { seedMentors } from './seeds/mentor-seeds';
-import config from './config';
+import { config } from './config';
 import { limiter, authLimiter } from './middleware/rateLimiter';
 import { up as runMigrations } from './migrations';
+import { errorHandler } from './middleware/errorHandler';
+import { setupSocketIO } from './socket';
 
 // Initialize models so they are registered with the sequelize instance
 const User = UserFactory(sequelize);
@@ -26,122 +28,43 @@ const User = UserFactory(sequelize);
 ForumTopic.hasMany(ForumComment, { foreignKey: 'topicId' });
 ForumComment.belongsTo(ForumTopic, { foreignKey: 'topicId' });        
 
-export function createServer() {
-  const app = express();
+const app = express();
 
-  const corsOptions = {
-    origin: process.env.NODE_ENV === 'production' 
-      ? process.env.CLIENT_URL 
-      : 'http://localhost:5173',
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization']
-  };
-  app.use(cors(corsOptions));
+// Middleware
+app.use(cors());
+app.use(express.json());
+app.use(limiter);
 
-  app.use(express.json());
+// Routes
+app.use('/api/reviews', reviewRoutes);
+app.use('/api/github', gitRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/api/profile', profileRoutes);
+app.use('/api/forums', forumRoutes);
+app.use('/api/dashboard', dashboardRoutes);
 
-  // Apply rate limiting to all routes
-  app.use(limiter);
-
-  // Apply stricter rate limiting to auth routes
-  app.use('/api/auth', authLimiter);
-
-  // Health check and test endpoints
-  app.get('/api/health', (_req: Request, res: Response) => {
-    res.json({ status: 'ok', timestamp: new Date().toISOString() });
-  });
-
-  app.get('/api/test', (_req: Request, res: Response) => {
-    res.json({ message: 'Server is running!' });
-  });
-
-  // API Routes
-  app.use('/api/reviews', authenticateJWT, reviewRoutes);
-  app.use('/api/github', gitRoutes);
-  app.use('/api/auth', authRoutes);
-  app.use('/api/profiles', authenticateJWT, profileRoutes);
-  app.use('/api/forum', forumRoutes);
-  app.use('/api/dashboard', authenticateJWT, dashboardRoutes);
-
-  // Serve static files (moved after API routes)
-  if (process.env.NODE_ENV === 'production') {
-    app.use(express.static(path.join(__dirname, '../../client/dist')));
-    
-    // Handle client-side routing
-    app.get('*', (req: Request, res: Response) => {
-      res.sendFile(path.join(__dirname, '../../client/dist/index.html'));
-    });
-  }
-  
-  // Catch-all route for SPA (moved after static files)
-  app.get('*', (_req: Request, res: Response) => {
-    res.sendFile(path.join(__dirname, '../public/index.html'));       
-  });
-
-  app.get('/', (req: Request, res: Response) => {
-    res.send('Welcome to RaveNest API');
-  });
-
-  return app;
+// Serve static files in production
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static(path.join(__dirname, '../../client/build')));
 }
 
-export function startServer(app: express.Application, port: number = process.env.PORT ? parseInt(process.env.PORT) : 3001) {
-  // Run migrations first, then sync models and start the server
-  runMigrations().then(async () => {
-    try {
-      // Drop all tables and recreate them
-      await sequelize.query('DROP TABLE IF EXISTS "users" CASCADE;');
-      await sequelize.query('DROP TABLE IF EXISTS "sessions" CASCADE;');
-      await sequelize.query('DROP TABLE IF EXISTS "reviews" CASCADE;');
-      await sequelize.query('DROP TABLE IF EXISTS "forum_topics" CASCADE;');
-      await sequelize.query('DROP TABLE IF EXISTS "forum_replies" CASCADE;');
-      
-      // Run migrations again to create tables
-      await runMigrations();
-      
-      // Wait a moment to ensure the database is ready
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      // First, ensure demo user exists
-      let demoUser = await User.findOne({ where: { email: 'john@example.com' } });
-      if (!demoUser) {
-        console.log('Creating demo user...');
-        await seedDemoUser();
-        demoUser = await User.findOne({ where: { email: 'john@example.com' } });
-        if (!demoUser) {
-          throw new Error('Failed to create demo user');
-        }
-        console.log('Demo user created successfully');
-      }
-      
-      // Then seed mentors
-      console.log('Seeding mentors...');
-      await seedMentors();
-      console.log('Mentors seeded successfully');
-      
-      // Finally, seed forum data
-      console.log('Seeding forum data...');
-      await clearForumData();
-      await seedForumTopics();
-      console.log('Forum data seeded successfully');
-      
-      app.listen(port, () => {
-        console.log(`Server running on port ${port}`);
-        if (process.env.NODE_ENV === 'production') {
-          console.log('Running in production mode');
-          console.log('CORS enabled for:', process.env.CLIENT_URL);
-        } else {
-          console.log('Running in development mode');
-          console.log('CORS enabled for:', 'http://localhost:5173');
-        }
-      });
-    } catch (error) {
-      console.error('Error during server startup:', error);
-      process.exit(1);
-    }
-  }).catch((err) => {
-    console.error('Error during migration:', err);
-    process.exit(1);
-  });
-}
+// Error handling
+app.use(errorHandler);
+
+// Start server
+const PORT = process.env.PORT || 3001;
+const server = app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
+
+// Setup Socket.IO
+setupSocketIO(server);
+
+// Sync database and seed if needed
+sequelize.sync({ force: false }).then(async () => {
+  console.log('Database synced');
+  await seedDemoUser();
+  await seedMentors();
+  await clearForumData();
+  await seedForumTopics();
+});
