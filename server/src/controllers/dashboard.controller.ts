@@ -1,9 +1,37 @@
 import { Request, Response } from 'express';
-import { User } from '../models/user';
+import User from '../models/user';
+import { AuthRequest } from '../types/express';
 import { Session } from '../models/session';
 import { Review } from '../models/review';
 import { Op } from 'sequelize';
 import { sequelize } from '../models';
+
+export const getDashboardData = async (req: AuthRequest, res: Response) => {
+  try {
+    const userId = req.user?.id;
+    if (!userId) {
+      return res.status(401).json({ message: 'Unauthorized' });
+    }
+
+    const user = await User.findByPk(userId, {
+      attributes: ['id', 'username', 'email', 'role', 'profilePicture', 'bio', 'skills', 'rating']
+    });
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    res.json({
+      user,
+      stats: {
+        // Add any dashboard statistics here
+      }
+    });
+  } catch (error) {
+    console.error('Dashboard error:', error);
+    res.status(500).json({ message: 'Error fetching dashboard data' });
+  }
+};
 
 export const getMentorDashboard = async (req: Request, res: Response) => {
   try {
