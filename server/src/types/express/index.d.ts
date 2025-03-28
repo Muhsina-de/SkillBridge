@@ -27,9 +27,5 @@ export interface AuthRequest extends express.Request {
   query: any;
 }
 
-// Type exports
-export type Request = express.Request;
-export type Response = express.Response;
-export type NextFunction = express.NextFunction;
-export type Router = express.Router;
-export type Application = express.Application;
+// Re-export Express types and values
+export * from 'express';

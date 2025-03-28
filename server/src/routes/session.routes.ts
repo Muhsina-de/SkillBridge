@@ -1,11 +1,11 @@
 import express from 'express';
-import { Session } from '../models/session';
-import { authenticateJWT } from '../middleware/authmiddleware';
+import { Session } from '../models';
+import { authenticateToken } from '../middleware/auth';
 
 const router = express.Router();
 
 // Get all sessions for a mentee
-router.get('/mentee/:menteeId', authenticateJWT, async (req, res) => {
+router.get('/mentee/:menteeId', authenticateToken, async (req, res) => {
   try {
     const { menteeId } = req.params;
     const sessions = await Session.findAll({
@@ -22,7 +22,7 @@ router.get('/mentee/:menteeId', authenticateJWT, async (req, res) => {
 });
 
 // Get all sessions for a mentor
-router.get('/mentor/:mentorId', authenticateJWT, async (req, res) => {
+router.get('/mentor/:mentorId', authenticateToken, async (req, res) => {
   try {
     const { mentorId } = req.params;
     const sessions = await Session.findAll({
@@ -39,7 +39,7 @@ router.get('/mentor/:mentorId', authenticateJWT, async (req, res) => {
 });
 
 // Create a new session
-router.post('/', authenticateJWT, async (req, res) => {
+router.post('/', authenticateToken, async (req, res) => {
   try {
     const { mentorId, menteeId, startTime, endTime, notes } = req.body;
     const session = await Session.create({
@@ -58,7 +58,7 @@ router.post('/', authenticateJWT, async (req, res) => {
 });
 
 // Update session status
-router.patch('/:sessionId', authenticateJWT, async (req, res) => {
+router.patch('/:sessionId', authenticateToken, async (req, res) => {
   try {
     const { sessionId } = req.params;
     const { status } = req.body;

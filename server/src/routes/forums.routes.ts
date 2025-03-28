@@ -1,26 +1,15 @@
-import { Router } from 'express';
-import { authenticateJWT } from '../middleware/authmiddleware';
-import {
-  getTopics,
-  getTopicById,
-  createTopic,
-  updateTopic,
-  deleteTopic,
-  getComments,
-  createComment
-} from '../controllers/forum.controller';
+import express from 'express';
+import { getTopics, createTopic, getTopicById, createComment } from '../controllers/forum.controller';
+import { authenticateToken } from '../middleware/auth';
 
-const router = Router();
+const router = express.Router();
 
-// Public routes (no auth required)
-router.get('/topics', getTopics);
-router.get('/topics/:id', getTopicById);
-router.get('/topics/:topicId/comments', getComments);
+// Public routes
+router.get('/', getTopics);
+router.get('/:id', getTopicById);
 
-// Protected routes (auth required)
-router.post('/topics', authenticateJWT, createTopic);
-router.put('/topics/:id', authenticateJWT, updateTopic);
-router.delete('/topics/:id', authenticateJWT, deleteTopic);
-router.post('/topics/:topicId/comments', authenticateJWT, createComment);
+// Protected routes
+router.post('/', authenticateToken, createTopic);
+router.post('/:id/comments', authenticateToken, createComment);
 
 export default router;
