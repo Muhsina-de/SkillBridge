@@ -12,7 +12,7 @@ import User from './models/user';
 import ForumTopic from './models/ForumTopics';
 import ForumComment from './models/ForumComments';
 import { authenticateToken } from './middleware/auth';
-import sequelize from './config/connection';
+import { sequelize } from './config/connection';
 import { seedDemoUser } from './seeds/demo-user';
 import { seedForumTopics, clearForumData } from './seeds/forum-topics';
 import { seedMentors } from './seeds/mentor-seeds';

@@ -1,5 +1,5 @@
 import app from './server';
-import sequelize from './config/connection';
+import { sequelize } from './config/connection';
 import { seedDemoUser } from './seeds/demo-user';
 import { seedMentors } from './seeds/mentor-seeds';
 import { clearForumData, seedForumTopics } from './seeds/forum-topics';
