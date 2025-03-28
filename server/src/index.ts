@@ -4,8 +4,7 @@ import { seedDemoUser } from './seeds/demo-user';
 import { seedMentors } from './seeds/mentor-seeds';
 import { clearForumData, seedForumTopics } from './seeds/forum-topics';
 import { setupSocketIO } from './socket';
-
-const port = process.env.PORT ? parseInt(process.env.PORT) : 3000;
+import config from './config';
 
 if (process.env.NODE_ENV !== 'test') {
   // Sync database and seed if needed
@@ -17,8 +16,8 @@ if (process.env.NODE_ENV !== 'test') {
     await seedForumTopics();
   });
 
-  const server = app.listen(port, () => {
-    console.log(`Server running on port ${port}`);
+  const server = app.listen(config.PORT, () => {
+    console.log(`Server running on port ${config.PORT}`);
   });
 
   // Setup Socket.IO
