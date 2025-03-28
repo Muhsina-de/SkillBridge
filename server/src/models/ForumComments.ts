@@ -1,7 +1,7 @@
 import { Model, DataTypes, Optional, Sequelize } from 'sequelize';
 import type { User } from './userprofile';
 import type ForumTopic from './ForumTopics';
-import { ForumComment as SharedForumComment } from '../../../shared/types';
+import { ForumComment as SharedForumComment } from '@shared/types';
 
 interface ForumCommentAttributes {
   id: number;

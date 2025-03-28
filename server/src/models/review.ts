@@ -1,5 +1,5 @@
 import { DataTypes, Model, Optional, Sequelize, ModelStatic } from 'sequelize';
-import { Review as SharedReview } from '../../../shared/types';
+import { Review as SharedReview } from '@shared/types';
 
 /**
  * Interface representing a Review's attributes
