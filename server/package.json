@@ -4,7 +4,7 @@
   "description": "RaveNest backend server",
   "main": "dist/server/src/index.js",
   "scripts": {
-    "start": "node dist/server/src/index.js",
+    "start": "npm run seed && node dist/server/src/index.js",
     "dev": "nodemon src/index.ts",
     "build": "tsc --project tsconfig.json",
     "postinstall": "npm run build",
